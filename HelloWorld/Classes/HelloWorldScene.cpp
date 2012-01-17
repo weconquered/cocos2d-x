@@ -74,11 +74,14 @@ bool HelloWorld::init()
     // test smart ptr
     //SharedPtr<CCMutableArray2<SharedPtr<CCObject>>> p = CCMutableArray2<SharedPtr<CCObject>>::newMutableArray();
     CCMutableArray2<SharedPtr<CCObject>>* p = new CCMutableArray2<SharedPtr<CCObject>>();
-    SharedPtr<CCObject> pObj1 = CCObject::newObject();
-    SharedPtr<CCObject> pObj2 = CCObject::newObject();
-    SharedPtr<CCObject> pObj3 = CCObject::newObject();
-    SharedPtr<CCObject> pObj4 = CCObject::newObject();
-
+    SharedPtr<CCObject> pObj1 = CCObject::object();
+    pObj1->m_idTest = 1;
+    SharedPtr<CCObject> pObj2 = CCObject::object();
+    pObj2->m_idTest = 2;
+    SharedPtr<CCObject> pObj3 = CCObject::object();
+    pObj3->m_idTest = 3;
+    SharedPtr<CCObject> pObj4 = CCObject::object();
+    pObj4->m_idTest = 4;
 //     p->addObject(pObj1);
 //     p->addObject(pObj2);
 //     p->addObject(pObj3);
@@ -91,6 +94,14 @@ bool HelloWorld::init()
     p2->addObject(pObj4);
     p->addObject(p2);
     //
+
+    CCObject* pObj;
+    CCARRAY2_FOREACH(p2, pObj)
+    {
+        SharedPtr<CCObject> p(pObj);
+        CCLog("object id = %d", pObj->m_idTest);
+    }
+
     delete p;
 	return true;
 }

@@ -44,9 +44,10 @@ __arr__++)
 I found that it's not work in C++. So it keep what it's look like in version 1.0.0-rc3. ---By Bin
 */
 #define CCARRAY2_FOREACH(__array__, __object__)												\
-    if (__array__ && __array__->data->num > 0)													\
-    for(CCObject** arr = __array__->data->arr, **end = __array__->data->arr + __array__->data->num-1;	\
-    arr <= end && ((__object__ = *arr) != NULL/* || true*/);										\
+    CCArray2* __pArray__ = (__array__).get();                                                      \
+    if (__pArray__ && __pArray__->data->num > 0)													\
+    for(CCObject** arr = __pArray__->data->arr, **end = __pArray__->data->arr + __pArray__->data->num-1;	\
+    arr <= end && (((__object__) = *arr) != NULL/* || true*/);										\
     arr++)
 
 namespace cocos2d

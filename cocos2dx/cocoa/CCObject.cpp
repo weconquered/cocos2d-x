@@ -41,6 +41,7 @@ CCObject::CCObject(void)
 {
 	static unsigned int uObjectCount = 0;
 
+    m_idTest = 0;
 	m_uID = ++uObjectCount;
 
 	// when the object is created, the refrence count of it is 1
@@ -58,7 +59,7 @@ CCObject::~CCObject(void)
 	}
 }
 
-SharedPtr<CCObject> CCObject::newObject()
+SharedPtr<CCObject> CCObject::object()
 {
     return SharedPtr<CCObject>(new CCObject());
 }

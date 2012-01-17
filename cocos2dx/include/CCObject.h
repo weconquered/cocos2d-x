@@ -52,7 +52,7 @@ public:
 	CCObject(void);
 	virtual ~CCObject(void);
     
-    static SharedPtr<CCObject> newObject();
+    static SharedPtr<CCObject> object();
 
     void release(void);
 	void retain(void);
@@ -63,6 +63,8 @@ public:
 	virtual bool isEqual(const CCObject* pObject);
 
 	friend class CCAutoreleasePool;
+
+    int m_idTest;
 };
 }//namespace   cocos2d 
 
