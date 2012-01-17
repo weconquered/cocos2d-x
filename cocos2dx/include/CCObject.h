@@ -26,7 +26,7 @@ THE SOFTWARE.
 #define __COCOA_NSOBJECT_H__
 
 #include "CCCommon.h"
-
+#include "ptr.h"
 
 namespace   cocos2d {
 class CCZone;
@@ -52,6 +52,8 @@ public:
 	CCObject(void);
 	virtual ~CCObject(void);
     
+    static SharedPtr<CCObject> newObject();
+
     void release(void);
 	void retain(void);
 	CCObject* autorelease(void);

@@ -37,6 +37,7 @@ THE SOFTWARE.
 //
 
 #include "ccConfig.h"	// should be included first
+#include "ptr.h"
 #include "CCAction.h"
 #include "CCAnimation.h"
 #include "CCAnimationCache.h"
