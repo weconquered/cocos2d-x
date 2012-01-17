@@ -1,4 +1,6 @@
 #include "HelloWorldScene.h"
+#include "CCMutableArray2.h"
+#include "CCArray2.h"
 
 USING_NS_CC;
 
@@ -68,6 +70,28 @@ bool HelloWorld::init()
 	// add the sprite as a child to this layer
 	this->addChild(pSprite, 0);
 	
+    
+    // test smart ptr
+    //SharedPtr<CCMutableArray2<SharedPtr<CCObject>>> p = CCMutableArray2<SharedPtr<CCObject>>::newMutableArray();
+    CCMutableArray2<SharedPtr<CCObject>>* p = new CCMutableArray2<SharedPtr<CCObject>>();
+    SharedPtr<CCObject> pObj1 = CCObject::newObject();
+    SharedPtr<CCObject> pObj2 = CCObject::newObject();
+    SharedPtr<CCObject> pObj3 = CCObject::newObject();
+    SharedPtr<CCObject> pObj4 = CCObject::newObject();
+
+//     p->addObject(pObj1);
+//     p->addObject(pObj2);
+//     p->addObject(pObj3);
+//     p->addObject(pObj4);
+
+    SharedPtr<CCArray2> p2 = CCArray2::array();
+    p2->addObject(pObj1);
+    p2->addObject(pObj2);
+    p2->addObject(pObj3);
+    p2->addObject(pObj4);
+    p->addObject(p2);
+    //
+    delete p;
 	return true;
 }
 

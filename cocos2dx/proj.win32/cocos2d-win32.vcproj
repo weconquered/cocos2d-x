@@ -52,6 +52,7 @@
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
 				DisableSpecificWarnings="4996;4267"
+				ForcedIncludeFiles="vld.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -380,6 +381,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\CCArray2.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\CCAtlasNode.h"
 				>
 			</File>
@@ -469,6 +474,10 @@
 			</File>
 			<File
 				RelativePath="..\include\CCMutableArray.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\CCMutableArray2.h"
 				>
 			</File>
 			<File
@@ -901,6 +910,10 @@
 			</File>
 			<File
 				RelativePath="..\support\CCArray.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\support\CCArray2.cpp"
 				>
 			</File>
 			<File

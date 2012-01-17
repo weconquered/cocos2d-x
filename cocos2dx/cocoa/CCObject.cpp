@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "CCObject.h"
 #include "CCAutoreleasePool.h"
 #include "ccMacros.h"
+
 namespace   cocos2d {
 
 CCObject* CCCopying::copyWithZone(CCZone *pZone)
@@ -57,6 +58,11 @@ CCObject::~CCObject(void)
 	}
 }
 
+SharedPtr<CCObject> CCObject::newObject()
+{
+    return SharedPtr<CCObject>(new CCObject());
+}
+
 CCObject* CCObject::copy()
 {
         return copyWithZone(0);
@@ -83,7 +89,7 @@ void CCObject::retain(void)
 CCObject* CCObject::autorelease(void)
 {
 	CCPoolManager::getInstance()->addObject(this);
-
+    SharedPtr<int> p(new int);
 	m_bManaged = true;
 	return this;
 }
