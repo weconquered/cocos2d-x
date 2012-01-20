@@ -47,28 +47,43 @@ int _base64Decode( unsigned char *input, unsigned int input_len, unsigned char *
     bits = 0;
 	for( input_idx=0; input_idx < input_len ; input_idx++ ) {
 		c = input[ input_idx ];
-		if (c == '=')
-			break;
-		if (c > 255 || ! inalphabet[c])
-			continue;
-		bits += decoder[c];
-		char_count++;
-		if (char_count == 4) {
-			output[ output_idx++ ] = (bits >> 16);
-			output[ output_idx++ ] = ((bits >> 8) & 0xff);
-			output[ output_idx++ ] = ( bits & 0xff);
-			bits = 0;
-			char_count = 0;
-		} else {
-			bits <<= 6;
-		}
+        if (c == '=') {
+//			break;
+            if(char_count == 1){
+                fprintf(stderr, "base64Decode: encoding incomplete: at least 2 bits missing");
+                errors++;
+                break;
+            }
+            if(char_count == 2){
+                output[ output_idx++ ] = ( bits >> 10 );
+            }
+            if(char_count == 3){
+                output[ output_idx++ ] = ( bits >> 16 );
+                output[ output_idx++ ] = (( bits >> 8 ) & 0xff);
+            }
+            char_count = 0;
+        } else {
+		    if (c > 255 || ! inalphabet[c])
+			    continue;
+		    bits += decoder[c];
+		    char_count++;
+		    if (char_count == 4) {
+			    output[ output_idx++ ] = (bits >> 16);
+			    output[ output_idx++ ] = ((bits >> 8) & 0xff);
+			    output[ output_idx++ ] = ( bits & 0xff);
+			    bits = 0;
+			    char_count = 0;
+		    } else {
+			    bits <<= 6;
+		    }
+        }
     }
 	
 	if( c == '=' ) {
 		switch (char_count) {
 			case 1:
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_BADA)
-				std::fprintf(stderr, "base64Decode: encoding incomplete: at least 2 bits missing");
+				fprintf(stderr, "base64Decode: encoding incomplete: at least 2 bits missing");
 #endif
 				errors++;
 				break;
@@ -83,7 +98,7 @@ int _base64Decode( unsigned char *input, unsigned int input_len, unsigned char *
 	} else if ( input_idx < input_len ) {
 		if (char_count) {
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_BADA)
-			std::fprintf(stderr, "base64 encoding incomplete: at least %d bits truncated",
+			fprintf(stderr, "base64 encoding incomplete: at least %d bits truncated",
 					((4 - char_count) * 6));
 #endif
 			errors++;

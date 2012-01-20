@@ -1,6 +1,12 @@
 #include "HelloWorldScene.h"
-
+#include <vector>
+#include <string>
+#include "support/base64.h"
+using namespace std;
 USING_NS_CC;
+
+int base64Encode2( unsigned char *input, unsigned int input_len, unsigned char **output );
+int base64Decode2( unsigned char *input, unsigned int input_len, unsigned char **output );
 
 CCScene* HelloWorld::scene()
 {
@@ -67,7 +73,84 @@ bool HelloWorld::init()
 
 	// add the sprite as a child to this layer
 	this->addChild(pSprite, 0);
-	
+    for (int i = 0; i < 10; i++)
+    {
+
+        unsigned char szInput[] = "abcdefghijklmnopqlsdfjllasdjfl";
+        szInput[i+1] = 0;
+        unsigned char* pOut = NULL;
+        int len = base64Encode2(szInput, strlen((char*)szInput), &pOut);
+
+        unsigned char* pOut2 = NULL;
+        int len2 = base64Decode2(pOut, len, &pOut2);
+
+        delete[] pOut2;
+        delete[] pOut;
+    }
+
+    class UnitDataToSave{
+    public:
+        UnitDataToSave()
+        {
+            memset(szName, 0, sizeof(szName));
+            xLocation = 0;
+            yLocation = 0;
+            Life = 0;
+        }
+        void setValue(char* name, int x, int y, int l)
+        {
+            strcpy(szName, name);
+            xLocation = x;
+            yLocation = y;
+            Life = l;
+        }
+        void show()
+        {
+            CCLog("name=%s,x=%d,y=%d,l=%d", szName, xLocation, yLocation, Life);
+        }
+        char szName[50];
+        int xLocation;
+        int yLocation;
+        int Life;
+    };
+    
+    char szName1[][10] = {{"abc"}, {"def"}, {"ghi"}, {"jkl"}, {"mno"}, {"pqs"}, {"rtu"}, {"mno"}, {"pqs"}, {"rtu"} };
+
+    vector<UnitDataToSave> unitArray;
+    for (int i = 0; i < 10; i++)
+    {
+        UnitDataToSave oneData;
+        oneData.setValue(szName1[i], i, 10-i, i*2);
+        unitArray.push_back(oneData);
+    }
+
+    string strTotal;
+    vector<UnitDataToSave>::iterator it;
+    for (it = unitArray.begin(); it != unitArray.end(); ++it)
+    {
+        unsigned char* pszEncode = (unsigned char*)&(*it);
+        unsigned char* pszOut = NULL;
+        int len = base64Encode2(pszEncode, sizeof(UnitDataToSave), &pszOut);
+        if (len > 0 && pszOut != NULL)
+        {
+            strTotal.append((char*)pszOut);
+            delete[] pszOut;
+        }
+    }
+
+    // recover data
+    UnitDataToSave* pData = new UnitDataToSave[10];
+    unsigned char* pTotalOutput = NULL;
+    int totalLen = base64Decode((unsigned char*)strTotal.c_str(), strTotal.length(), &pTotalOutput);
+    int totalStructSize = sizeof(UnitDataToSave) * 10;
+//    assert(totalLen == totalStructSize);
+    memcpy(pData, pTotalOutput, totalStructSize);
+    for (int  i = 0; i < 10; i++)
+    {
+        pData[i].show();
+    }
+    delete[] pData;
+    
 	return true;
 }
 

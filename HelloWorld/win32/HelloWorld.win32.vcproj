@@ -189,6 +189,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Classes\b64.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Classes\HelloWorldScene.cpp"
 				>
 			</File>
