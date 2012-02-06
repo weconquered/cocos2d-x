@@ -77,6 +77,8 @@ public:
     void addObject(CCObject* object);
     void addObjectsFromArray(CCArray* otherArray);
     void insertObject(CCObject* object, unsigned int index);
+    //Erawppa
+    void addUniqueObject(CCObject* object);
 
     // Removing Objects
     void removeLastObject();

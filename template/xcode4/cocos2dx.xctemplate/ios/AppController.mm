@@ -1,9 +1,9 @@
 //
-//  ___PROJECTNAMEASIDENTIFIER___AppController.mm
-//  ___PROJECTNAME___
+//  ErawppaSampleCodeAppController.mm
+//  ErawppaSampleCode
 //
-//  Created by ___FULLUSERNAME___ on ___DATE___.
-//  Copyright ___ORGANIZATIONNAME___ ___YEAR___. All rights reserved.
+//  Created by  on 2011/12/5.
+//  Copyright __MyCompanyName__ 2011年. All rights reserved.
 //
 #import <UIKit/UIKit.h>
 #import "AppController.h"
@@ -45,6 +45,16 @@ static AppDelegate s_sharedApplication;
     [window makeKeyAndVisible];
 
     [[UIApplication sharedApplication] setStatusBarHidden: YES];
+    
+    // Enable Multi Touch
+    [__glView setMultipleTouchEnabled:YES];
+    
+    // Set Device
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        cocos2d::CCDirector::sharedDirector()->setiPad(true);
+    
+    // Enable Retina Display
+    cocos2d::CCDirector::sharedDirector()->enableRetinaDisplay(true);
     
     cocos2d::CCApplication::sharedApplication().run();
     return YES;

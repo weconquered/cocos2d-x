@@ -1,11 +1,10 @@
 //
-//  AppController.mm
-//  ___PROJECTNAME___
+//  ErawppaSampleCodeAppController.mm
+//  ErawppaSampleCode
 //
-//  Created by ___FULLUSERNAME___ on ___DATE___.
-//  Copyright ___ORGANIZATIONNAME___ ___YEAR___. All rights reserved.
+//  Created by  on 2011/12/5.
+//  Copyright __MyCompanyName__ 2011年. All rights reserved.
 //
-
 #import <UIKit/UIKit.h>
 #import "AppController.h"
 #import "cocos2d.h"
@@ -47,6 +46,16 @@ static AppDelegate s_sharedApplication;
 
     [[UIApplication sharedApplication] setStatusBarHidden: YES];
     
+    // Enable Multi Touch
+    [__glView setMultipleTouchEnabled:YES];
+    
+    // Set Device
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        cocos2d::CCDirector::sharedDirector()->setiPad(true);
+    
+    // Enable Retina Display
+    cocos2d::CCDirector::sharedDirector()->enableRetinaDisplay(true);
+    
     cocos2d::CCApplication::sharedApplication().run();
     return YES;
 }
@@ -72,14 +81,14 @@ static AppDelegate s_sharedApplication;
      Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
      If your application supports background execution, called instead of applicationWillTerminate: when the user quits.
      */
-    cocos2d::CCApplication::sharedApplication().applicationDidEnterBackground();
+	cocos2d::CCDirector::sharedDirector()->stopAnimation();
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     /*
      Called as part of  transition from the background to the inactive state: here you can undo many of the changes made on entering the background.
      */
-    cocos2d::CCApplication::sharedApplication().applicationWillEnterForeground();
+	cocos2d::CCDirector::sharedDirector()->startAnimation();
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {

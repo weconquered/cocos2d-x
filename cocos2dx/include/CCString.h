@@ -26,6 +26,10 @@ THE SOFTWARE.
 #include <string>
 #include <stdlib.h>
 #include "CCObject.h"
+
+//ERAWPPA
+#include <sstream>
+
 namespace cocos2d {
 
 	class CC_DLL CCString : public CCObject
@@ -40,6 +44,29 @@ namespace cocos2d {
 		{
 			m_sString = str;
 		}
+        //ERAWPPA
+        CCString(int value)
+		{
+            std::stringstream st;
+            st << value;
+            m_sString = st.str();
+		}
+        
+        CCString(float value)
+		{
+            std::stringstream st;
+            st << value;
+            m_sString = st.str();
+		}
+        
+        void assignInt(int value)
+        {
+            std::stringstream st;
+            st << value;
+            m_sString = st.str();
+        }
+        //---
+        
 		virtual ~CCString(){ m_sString.clear(); }
 		
 		int toInt()

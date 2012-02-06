@@ -413,7 +413,10 @@ static cocos2d::CCTouch *s_pTouches[MAX_TOUCHES];
             pTouch = s_pTouches[unUsedIndex] = new cocos2d::CCTouch();
             float x = [touch locationInView: [touch view]].x;
             float y = [touch locationInView: [touch view]].y;
-            pTouch->SetTouchInfo(0, x, y);
+            
+            //Erawppa
+            //pTouch->SetTouchInfo(0, x, y);
+            pTouch->SetTouchInfo(unUsedIndex, x, y);
             
             CFDictionaryAddValue(touchesIntergerDict, touch, [NSNumber numberWithInt:unUsedIndex]);
             
@@ -446,7 +449,10 @@ static cocos2d::CCTouch *s_pTouches[MAX_TOUCHES];
         
 		float x = [touch locationInView: [touch view]].x;
 		float y = [touch locationInView: [touch view]].y;
-		pTouch->SetTouchInfo(0, x, y);
+        
+        //Erawppa
+		//pTouch->SetTouchInfo(0, x, y);
+        pTouch->SetTouchInfo([index intValue], x, y);
 		
 		set.addObject(pTouch);
 	}
@@ -472,7 +478,10 @@ static cocos2d::CCTouch *s_pTouches[MAX_TOUCHES];
         
 		float x = [touch locationInView: [touch view]].x;
 		float y = [touch locationInView: [touch view]].y;
-		pTouch->SetTouchInfo(0, x, y);
+        
+        //Erawppa
+		//pTouch->SetTouchInfo(0, x, y);
+        pTouch->SetTouchInfo([index intValue], x, y);
 		
 		set.addObject(pTouch);
                 CFDictionaryRemoveValue(touchesIntergerDict, touch);
@@ -502,7 +511,10 @@ static cocos2d::CCTouch *s_pTouches[MAX_TOUCHES];
         
 		float x = [touch locationInView: [touch view]].x;
 		float y = [touch locationInView: [touch view]].y;
-		pTouch->SetTouchInfo(0, x, y);
+        
+        //Erawppa
+		//pTouch->SetTouchInfo(0, x, y);
+        pTouch->SetTouchInfo([index intValue], x, y);
 		
 		set.addObject(pTouch);
                 CFDictionaryRemoveValue(touchesIntergerDict, touch);

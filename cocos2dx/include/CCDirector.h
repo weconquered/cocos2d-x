@@ -380,6 +380,9 @@ public:
 	*/
 	static bool setDirectorType(ccDirectorType obDirectorType);
 
+    //ERAWPPA
+    CC_SYNTHESIZE(bool, m_iPad, iPad)
+
 public:
 	/** returns a shared instance of the director */
 	static CCDirector* sharedDirector(void);
@@ -504,6 +507,12 @@ public:
 protected:
 	bool m_bInvalid;
 };
+
+//ERAWPPA
+static inline float cc_scale_ipad(float x)
+{
+    return (CCDirector::sharedDirector()->getiPad()) ? x*2 : x;
+}
 
 }//namespace   cocos2d 
 

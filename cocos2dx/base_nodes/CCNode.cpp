@@ -75,6 +75,8 @@ CCNode::CCNode(void)
 #ifdef CC_NODE_TRANSFORM_USING_AFFINE_MATRIX
 , m_bIsTransformGLDirty(true)
 #endif
+//ERAWPPA
+,m_bTouchEnable(true)
 {
     // nothing
 }
@@ -1154,6 +1156,13 @@ CCPoint CCNode::convertTouchToNodeSpaceAR(CCTouch *touch)
 	CCPoint point = touch->locationInView(touch->view());
 	point = CCDirector::sharedDirector()->convertToGL(point);
 	return this->convertToNodeSpaceAR(point);
+}
+
+CCRect CCNode::nodeRect()
+{
+    return CCRectMake(m_tPosition.x - m_tContentSize.width * m_tAnchorPoint.x, 
+                      m_tPosition.y - m_tContentSize.height * m_tAnchorPoint.y,
+                      m_tContentSize.width, m_tContentSize.height);
 }
 
 }//namespace   cocos2d 

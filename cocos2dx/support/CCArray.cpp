@@ -143,6 +143,18 @@ bool CCArray::containsObject(CCObject* object)
     return ccArrayContainsObject(data, object);
 }
 
+//Erawppa
+void CCArray::addUniqueObject(CCObject* object)
+{
+    for (int i=0 ; i<data->num ; i++)
+    {
+        if (data->arr[i] == object)
+            return;
+    }
+    addObject(object);
+}
+//---
+
 void CCArray::addObject(CCObject* object)
 {
     ccArrayAppendObjectWithResize(data, object);

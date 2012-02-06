@@ -180,4 +180,12 @@ It should work same as apples CFSwapInt32LittleToHost(..)
 #define CC_SWAP_INT32_BIG_TO_HOST(i)    ((CC_HOST_IS_BIG_ENDIAN == true)? (i) : CC_SWAP32(i) )
 #define CC_SWAP_INT16_BIG_TO_HOST(i)    ((CC_HOST_IS_BIG_ENDIAN == true)? (i):  CC_SWAP16(i) )
 
+//ERAWPPA
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+#   define CC_IS_IPAD() CCDirector::sharedDirector()->getiPad()
+#endif
+
+#define     ccp_CENTER()    ccp(this->getContentSize().width/2,this->getContentSize().height/2)
+#define     ccp_IPAD(X,Y)   ccp(cc_scale_ipad(X),cc_scale_ipad(Y))
+
 #endif // __CCMACROS_H__

@@ -46,6 +46,16 @@ static AppDelegate s_sharedApplication;
 
     [[UIApplication sharedApplication] setStatusBarHidden: YES];
     
+    // Enable Multi Touch
+    [__glView setMultipleTouchEnabled:YES];
+    
+    // Set Device
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        cocos2d::CCDirector::sharedDirector()->setiPad(true);
+    
+    // Enable Retina Display
+    cocos2d::CCDirector::sharedDirector()->enableRetinaDisplay(true);
+    
     cocos2d::CCApplication::sharedApplication().run();
     return YES;
 }

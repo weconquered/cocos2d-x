@@ -42,6 +42,9 @@ THE SOFTWARE.
 #include "CCThread.h"
 #include "semaphore.h"
 
+//Erawppa
+#define STR_HAS_PREFIX(s,p) (!strncmp( s, p, ::strlen(p)))
+
 namespace   cocos2d {
 
 typedef struct _AsyncStruct
@@ -49,6 +52,8 @@ typedef struct _AsyncStruct
 	std::string			filename;
 	SelectorProtocol	*target;
 	SEL_CallFuncO		selector;
+    //Erawppa           
+    CCTexture2DPixelFormat  pixelFormat;
 } AsyncStruct;
 
 typedef struct _ImageInfo
@@ -113,6 +118,8 @@ static void* loadImage(void* data)
 				imageType = CCImage::kFmtJpg;
 				continue;
 			}
+            //Erawppa
+            imageType = CCImage::kFmtJpg;
 		}
 		else if (std::string::npos != pAsyncStruct->filename.find(".png"))
 		{
@@ -124,6 +131,8 @@ static void* loadImage(void* data)
 				imageType = CCImage::kFmtPng;
 				continue;
 			}
+            //ERawppa
+            imageType = CCImage::kFmtPng;
 		}
 		else
 		{
@@ -239,6 +248,16 @@ void CCTextureCache::addImageAsync(const char *path, SelectorProtocol *target, S
 	data->filename = fullpath.c_str();
 	data->target = target;
 	data->selector = selector;
+    
+    //Erawppa
+    if (STR_HAS_PREFIX(path,"4444"))
+        data->pixelFormat = kTexture2DPixelFormat_RGBA4444;
+    else if (STR_HAS_PREFIX(path,"565"))
+        data->pixelFormat = kTexture2DPixelFormat_RGB565;
+    else if (STR_HAS_PREFIX(path,"5A1"))
+        data->pixelFormat = kTexture2DPixelFormat_RGB5A1;
+    else
+        data->pixelFormat = kTexture2DPixelFormat_RGBA8888;
 
 	// add async struct into queue
 	pthread_mutex_lock(&s_asyncStructQueueMutex);
@@ -273,7 +292,13 @@ void CCTextureCache::addImageAsyncCallBack(ccTime dt)
 
 		// generate texture in render thread
 		CCTexture2D *texture = new CCTexture2D();
+        
+        //Erawppa
+        texture->setPVRImagesHavePremultipliedAlpha(true);
+        texture->setDefaultAlphaPixelFormat(pAsyncStruct->pixelFormat);
+        
 		texture->initWithImage(pImage);
+
 
 #if CC_ENABLE_CACHE_TEXTTURE_DATA
         // cache the texture file name
@@ -374,6 +399,18 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
                 CC_BREAK_IF(! image.initWithImageData((void*)pBuffer, nSize, CCImage::kFmtPng));
 
 				texture = new CCTexture2D();
+                
+                //Erawppa
+                texture->setPVRImagesHavePremultipliedAlpha(true);
+                if (STR_HAS_PREFIX(path,"4444"))
+                    texture->setDefaultAlphaPixelFormat(kTexture2DPixelFormat_RGBA4444);
+                else if (STR_HAS_PREFIX(path,"565"))
+                    texture->setDefaultAlphaPixelFormat(kTexture2DPixelFormat_RGB565);
+                else if (STR_HAS_PREFIX(path,"5A1"))
+                    texture->setDefaultAlphaPixelFormat(kTexture2DPixelFormat_RGB5A1);
+                else
+                    texture->setDefaultAlphaPixelFormat(kTexture2DPixelFormat_RGBA8888);
+                
 				texture->initWithImage(&image);
 
 				if( texture )
@@ -455,6 +492,18 @@ CCTexture2D * CCTextureCache::addPVRImage(const char* path)
     // Split up directory and filename
     std::string fullpath = CCFileUtils::fullPathFromRelativePath(key.c_str());
 	tex = new CCTexture2D();
+    
+    //Erawppa
+    tex->setPVRImagesHavePremultipliedAlpha(true);
+    if (STR_HAS_PREFIX(path,"4444"))
+        tex->setDefaultAlphaPixelFormat(kTexture2DPixelFormat_RGBA4444);
+    else if (STR_HAS_PREFIX(path,"565"))
+        tex->setDefaultAlphaPixelFormat(kTexture2DPixelFormat_RGB565);
+    else if (STR_HAS_PREFIX(path,"5A1"))
+        tex->setDefaultAlphaPixelFormat(kTexture2DPixelFormat_RGB5A1);
+    else
+        tex->setDefaultAlphaPixelFormat(kTexture2DPixelFormat_RGBA8888);
+    
 	if( tex->initWithPVRFile(fullpath.c_str()) )
 	{
 		m_pTextures->setObject(tex, key);

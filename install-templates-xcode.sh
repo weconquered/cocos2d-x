@@ -110,6 +110,11 @@ copy_cocosdenshion_files(){
     # copy_files licenses/LICENSE_CocosDenshion.txt "$LIBS_DIR"
 }
 
+copy_file_templates_files(){
+	echo ...copying File Templates files
+	copy_files template/FileTemplates/cocos2d-x "$LIBS_DIR"
+}
+
 # copy_cocosdenshionextras_files(){
 #	echo ...copying CocosDenshionExtras files
 #	copy_files CocosDenshion/CocosDenshionExtras "$LIBS_DIR"
@@ -245,12 +250,16 @@ copy_xcode3_file_templates(){
 # Xcode4 templates
 copy_xcode4_project_templates(){
     TEMPLATE_DIR="$HOME/Library/Developer/Xcode/Templates/cocos2d-x/"
+    FILE_TEMPLATE_DIR="$HOME/Library/Developer/Xcode/Templates/File Templates/"
 
 	print_template_banner "Installing Xcode 4 cocos2d-x iOS template"
 
 	DST_DIR="$TEMPLATE_DIR"
     check_dst_dir
 
+	LIBS_DIR="$FILE_TEMPLATE_DIR"
+    copy_file_templates_files
+    
 	LIBS_DIR="$DST_DIR""lib_cocos2dx.xctemplate/libs/"
     mkdir -p "$LIBS_DIR"
     copy_cocos2d_files
@@ -263,7 +272,7 @@ copy_xcode4_project_templates(){
 	LIBS_DIR="$DST_DIR""lib_cocosdenshion.xctemplate/libs/"
     mkdir -p "$LIBS_DIR"
     copy_cocosdenshion_files
-
+    
 	# LIBS_DIR="$DST_DIR""lib_cocosdenshionextras.xctemplate/libs/"
     # mkdir -p "$LIBS_DIR"
     # copy_cocosdenshionextras_files

@@ -213,6 +213,10 @@ namespace   cocos2d {
 			/** A custom user data pointer */
 			CC_PROPERTY(void *, m_pUserData, UserData)
 
+            //ERAWPPA for GestureRecognizer
+            CC_SYNTHESIZE(bool, m_bTouchEnable, TouchEnabled)
+            CCRect nodeRect();
+
 	protected:
 
 		// transform
