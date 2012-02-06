@@ -42,7 +42,7 @@ bool HelloWorld::init()
                                                        this, 
                                                        callfuncO_selector(HelloWorld::loadedCallback));
     CCMenu *m = CCMenu::menuWithItems(item1,NULL);
-    m->setPosition(ccp(size.width/2, size.height/2-65));
+    m->setPosition(ccpSub(ccp_CENTER(), ccp_IPAD(0, -130)));
     this->addChild(m);
     
 	return true;
@@ -59,9 +59,9 @@ void HelloWorld::loadedCallback(CCObject* pSender)
 void HelloWorld::completedCallback(CCObject* pSender)
 {
     CCLOG("completedCallback\n");
-    CCSize size = CCDirector::sharedDirector()->getWinSize();
+        
     CCSprite *sp = CCSprite::spriteWithSpriteFrameName("blocks.png");
-    sp->setPosition(ccp(size.width/2, size.height/2));
+    sp->setPosition(ccp_CENTER());
     sp->setTag(123);
     this->addChild(sp);
     
