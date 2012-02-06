@@ -123,32 +123,6 @@ static void* loadImage(void* data)
 		CCImage::EImageFormat imageType = computeImageFormatType(pAsyncStruct->filename);
 		if (imageType == CCImage::kFmtUnKnown)
 		{
-			pImage = new CCImage();
-			if (!pImage->initWithImageFileThreadSafe(filename, cocos2d::CCImage::kFmtJpg))
-			{
-				delete pImage;
-				CCLOG("can not load %s", filename);
-				imageType = CCImage::kFmtJpg;
-				continue;
-			}
-            //Erawppa
-            imageType = CCImage::kFmtJpg;
-		}
-		else if (std::string::npos != pAsyncStruct->filename.find(".png"))
-		{
-			pImage = new CCImage();
-			if (! pImage->initWithImageFileThreadSafe(filename, cocos2d::CCImage::kFmtPng))
-			{
-				delete pImage;
-				CCLOG("can not load %s", filename);
-				imageType = CCImage::kFmtPng;
-				continue;
-			}
-            //ERawppa
-            imageType = CCImage::kFmtPng;
-		}
-		else
-		{
 			CCLOG("unsupportted format %s",filename);
 			delete pAsyncStruct;
 			
@@ -317,7 +291,7 @@ void CCTextureCache::addImageAsyncCallBack(ccTime dt)
 		CCTexture2D *texture = new CCTexture2D();
         
         //Erawppa
-        texture->setPVRImagesHavePremultipliedAlpha(true);
+        texture->PVRImagesHavePremultipliedAlpha(true);
         texture->setDefaultAlphaPixelFormat(pAsyncStruct->pixelFormat);
         
 		texture->initWithImage(pImage);
@@ -424,7 +398,7 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
 				texture = new CCTexture2D();
                 
                 //Erawppa
-                texture->setPVRImagesHavePremultipliedAlpha(true);
+                texture->PVRImagesHavePremultipliedAlpha(true);
                 if (STR_HAS_PREFIX(path,"4444"))
                     texture->setDefaultAlphaPixelFormat(kTexture2DPixelFormat_RGBA4444);
                 else if (STR_HAS_PREFIX(path,"565"))
@@ -517,7 +491,7 @@ CCTexture2D * CCTextureCache::addPVRImage(const char* path)
 	tex = new CCTexture2D();
     
     //Erawppa
-    tex->setPVRImagesHavePremultipliedAlpha(true);
+    tex->PVRImagesHavePremultipliedAlpha(true);
     if (STR_HAS_PREFIX(path,"4444"))
         tex->setDefaultAlphaPixelFormat(kTexture2DPixelFormat_RGBA4444);
     else if (STR_HAS_PREFIX(path,"565"))
