@@ -48,9 +48,9 @@ THE SOFTWARE.
 #include "CCAnimationCache.h"
 #include "CCTouch.h"
 
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_AIRPLAY)
+//#if (CC_TARGET_PLATFORM != CC_PLATFORM_MARMALADE)
 #include "CCUserDefault.h"
-#endif
+//#endif
 
 #if CC_ENABLE_PROFILERS
 #include "support/CCProfiling.h"
@@ -569,7 +569,8 @@ void CCDirector::resetDirector()
 
 	stopAnimation();
 
-	CC_SAFE_RELEASE_NULL(m_pProjectionDelegate);
+    CCObject* pProjectionDelegate = (CCObject*)m_pProjectionDelegate;
+	CC_SAFE_RELEASE_NULL(pProjectionDelegate);
 
 	// purge bitmap cache
 	CCLabelBMFont::purgeCachedData();
@@ -609,7 +610,8 @@ void CCDirector::purgeDirector()
 	CC_SAFE_RELEASE_NULL(m_pFPSLabel);
 #endif
 
-		CC_SAFE_RELEASE_NULL(m_pProjectionDelegate);
+    CCObject* pProjectionDelegate = (CCObject*)m_pProjectionDelegate;
+    CC_SAFE_RELEASE_NULL(pProjectionDelegate);
 
 	// purge bitmap cache
 	CCLabelBMFont::purgeCachedData();
@@ -621,9 +623,9 @@ void CCDirector::purgeDirector()
 	CCScheduler::purgeSharedScheduler();
 	CCTextureCache::purgeSharedTextureCache();
 	
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_AIRPLAY)	
+//#if (CC_TARGET_PLATFORM != CC_PLATFORM_MARMALADE)	
 	CCUserDefault::purgeSharedUserDefault();
-#endif
+//#endif
 	// OpenGL view
 	m_pobOpenGLView->release();
 	m_pobOpenGLView = NULL;
@@ -631,17 +633,11 @@ void CCDirector::purgeDirector()
 
 void CCDirector::setNextScene(void)
 {
-	ccSceneFlag runningSceneType = ccNormalScene;
-	ccSceneFlag newSceneType = m_pNextScene->getSceneType();
-
-	if (m_pRunningScene)
-	{
-		runningSceneType = m_pRunningScene->getSceneType();
-	}
+	bool runningIsTransition = dynamic_cast<CCTransitionScene*>(m_pRunningScene) != NULL;
+	bool newIsTransition = dynamic_cast<CCTransitionScene*>(m_pNextScene) != NULL;
 
 	// If it is not a transition, call onExit/cleanup
- 	/*if (! newIsTransition)*/
-	if (! (newSceneType & ccTransitionScene))
+ 	if (! newIsTransition)
  	{
          if (m_pRunningScene)
          {
@@ -664,7 +660,7 @@ void CCDirector::setNextScene(void)
 	m_pNextScene->retain();
 	m_pNextScene = NULL;
 
-	if (! (runningSceneType & ccTransitionScene) && m_pRunningScene)
+	if ((! runningIsTransition) && m_pRunningScene)
 	{
 		m_pRunningScene->onEnter();
 		m_pRunningScene->onEnterTransitionDidFinish();

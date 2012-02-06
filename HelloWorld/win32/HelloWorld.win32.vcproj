@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)cocos2dx\platform&quot;;&quot;$(SolutionDir)cocos2dx\include&quot;;&quot;$(SolutionDir)cocos2dx&quot;;&quot;$(SolutionDir)cocos2dx\platform\third_party\win32\OGLES&quot;;..\Classes"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)cocos2dx\platform&quot;;&quot;$(SolutionDir)cocos2dx\include&quot;;&quot;$(SolutionDir)CocosDenshion\include&quot;;&quot;$(SolutionDir)cocos2dx&quot;;&quot;$(SolutionDir)cocos2dx\platform\third_party\win32\libxml2&quot;;&quot;$(SolutionDir)cocos2dx\platform\third_party\win32\iconv&quot;;&quot;$(SolutionDir)cocos2dx\platform\third_party\win32\OGLES&quot;;..\Classes;..\Classes\eplibs;..\Classes\eplibs\GestureRecognizer;..\Classes\eplibs\keypad;..\Classes\eplibs\xml;..\Classes\eplibs\3rd\base64;..\Classes\eplibs\3rd\JSON;..\Classes\eplibs\3rd\md5;..\Classes\eplibs\3rd\zlib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -49,6 +49,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				DisableSpecificWarnings="4819;4273"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -196,6 +197,198 @@
 				RelativePath="..\Classes\HelloWorldScene.h"
 				>
 			</File>
+			<Filter
+				Name="eplibs"
+				>
+				<File
+					RelativePath="..\Classes\eplibs\EPGestureRecognizerLayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Classes\eplibs\EPGestureRecognizerLayer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Classes\eplibs\EPMacros.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Classes\eplibs\EPNotificationCenter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Classes\eplibs\EPNotificationCenter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Classes\eplibs\EPResourceManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Classes\eplibs\EPResourceManager.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Classes\eplibs\EPScrollListLayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Classes\eplibs\EPScrollListLayer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Classes\eplibs\EPSpriteButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Classes\eplibs\EPSpriteButton.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Classes\eplibs\EPTextField.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Classes\eplibs\EPTextField.h"
+					>
+				</File>
+				<Filter
+					Name="3rd"
+					>
+					<Filter
+						Name="base64"
+						>
+						<File
+							RelativePath="..\Classes\eplibs\3rd\base64\base64.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\Classes\eplibs\3rd\base64\base64.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="JSON"
+						>
+						<File
+							RelativePath="..\Classes\eplibs\3rd\JSON\cJSON.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\Classes\eplibs\3rd\JSON\cJSON.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="md5"
+						>
+						<File
+							RelativePath="..\Classes\eplibs\3rd\md5\CMD5.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\Classes\eplibs\3rd\md5\CMD5.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="zlib"
+						>
+						<File
+							RelativePath="..\Classes\eplibs\3rd\zlib\easyzlib.c"
+							>
+						</File>
+						<File
+							RelativePath="..\Classes\eplibs\3rd\zlib\easyzlib.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
+				<Filter
+					Name="GestureRecognizer"
+					>
+					<File
+						RelativePath="..\Classes\eplibs\GestureRecognizer\GestureRecognizer.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\GestureRecognizer\GestureRecognizer.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\GestureRecognizer\LongPressGestureRecognizer.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\GestureRecognizer\LongPressGestureRecognizer.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\GestureRecognizer\PanGestureRecognizer.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\GestureRecognizer\PanGestureRecognizer.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\GestureRecognizer\PinchGestureRecognizer.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\GestureRecognizer\PinchGestureRecognizer.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\GestureRecognizer\RotationGestureRecognizer.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\GestureRecognizer\RotationGestureRecognizer.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\GestureRecognizer\TapGestureRecognizer.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\GestureRecognizer\TapGestureRecognizer.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="keypad"
+					>
+					<File
+						RelativePath="..\Classes\eplibs\keypad\EPNumberKeypadLayer.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\keypad\EPNumberKeypadLayer.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="xml"
+					>
+					<File
+						RelativePath="..\Classes\eplibs\xml\EPXmlReader.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\xml\EPXmlReader.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\xml\EPXmlValue.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Classes\eplibs\xml\EPXmlValue.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="win32"

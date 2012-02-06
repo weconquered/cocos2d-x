@@ -45,9 +45,6 @@ namespace cocos2d{
 		void ccTouchCancelled(CCTouch *touch, CCEvent* event);
 		void ccTouchMoved(CCTouch* touch, CCEvent* event);
 
-		void destroy(void);
-		void keep(void);
-
 
 		void onExit();
 
@@ -55,22 +52,15 @@ namespace cocos2d{
 		GLubyte getOpacity(void);
 		ccColor3B getColor(void);
 		void setColor(ccColor3B color);
-		CCRGBAProtocol* convertToRGBAProtocol();
 
-
-		bool init();
 		static CCLayer *node(void);
 		void onEnter();
 		void onExit();
 		void onEnterTransitionDidFinish();
 		bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
-		void destroy(void);
-		void keep(void);
 
 		void didAccelerate(CCAcceleration* pAccelerationValue) {}
 
-		void KeypadDestroy();
-		void KeypadKeep();
 		void registerWithTouchDispatcher(void);
 
 		void setIsTouchEnabled(bool bValue);

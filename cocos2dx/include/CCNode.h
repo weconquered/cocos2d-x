@@ -31,8 +31,6 @@ THE SOFTWARE.
 #include "ccMacros.h"
 #include "CCAffineTransform.h"
 #include "CCArray.h"
-#include "selector_protocol.h"
-
 #include "CCGL.h"
 
 namespace   cocos2d {
@@ -103,7 +101,7 @@ namespace   cocos2d {
 	- Each node has a camera. By default it points to the center of the CCNode.
 	*/ 
 
-	class CC_DLL CCNode : public SelectorProtocol, public CCObject
+	class CC_DLL CCNode : public CCObject
 	{
 
 		// variable property
@@ -254,9 +252,9 @@ namespace   cocos2d {
 
 	public:
 
-		CCNode();
+		CCNode(void);
 
-		virtual ~CCNode();
+		virtual ~CCNode(void);
 
 		char * description(void);
 
@@ -483,14 +481,6 @@ namespace   cocos2d {
 		Called internally by onExit
 		*/
 		void pauseSchedulerAndActions(void);
-
-		// SelecterProtocol methods
-
-		virtual void selectorProtocolRetain(void);
-		virtual void selectorProtocolRelease(void);
-
-		virtual CCRGBAProtocol* convertToRGBAProtocol(void) { return NULL; }
-		virtual CCLabelProtocol* convertToLabelProtocol(void) { return NULL; }
 
 		// transformation methods
 

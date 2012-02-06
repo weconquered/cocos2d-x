@@ -1,12 +1,5 @@
 namespace   cocos2d {
 
-typedef enum
-{
-	ccTouchDelegateStandardBit = 1 << 0,
-	ccTouchDelegateTargetedBit = 1 << 1,
-	ccTouchDelegateAllBit      = (ccTouchDelegateStandardBit | ccTouchDelegateTargetedBit),
-} ccTouchDelegateFlag;
-
 class CCTouch;
 class CCEvent;
 class CCSet;
@@ -16,13 +9,7 @@ class  CCTouchDelegate
 {
 
 public:
-	
-	 ccTouchDelegateFlag getTouchDelegateType(void);
-	
-	//! call the release() in child(layer or menu)
-	virtual void destroy(void);
-	//! call the retain() in child (layer or menu)
-	virtual void keep(void);
+
 
 	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
 	// optional
@@ -36,8 +23,6 @@ public:
  	virtual void ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent);
  	virtual void ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent);
  	virtual void ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent);
- 	
- 	CCTouchDelegate();
  	
  	void registerScriptTouchHandler(int eventType, const char* pszScriptFunctionName);
 	bool isScriptHandlerExist(int eventType);
@@ -61,7 +46,7 @@ public:
  class  CCTargetedTouchDelegate : public CCTouchDelegate
  {
  public:
- 	CCTargetedTouchDelegate();
+
  	/** Return YES to claim the touch.
  	 @since v0
 	 */
@@ -80,7 +65,6 @@ public:
  class  CCStandardTouchDelegate : public CCTouchDelegate
  {
  public:
- 	CCStandardTouchDelegate();
  	// optional
  	virtual void ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent);
  	virtual void ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent);

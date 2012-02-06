@@ -50,7 +50,7 @@ namespace   cocos2d {
 typedef struct _AsyncStruct
 {
 	std::string			filename;
-	SelectorProtocol	*target;
+	CCObject	*target;
 	SEL_CallFuncO		selector;
     //Erawppa           
     CCTexture2DPixelFormat  pixelFormat;
@@ -72,6 +72,22 @@ static sem_t s_sem;
 
 static std::queue<AsyncStruct*>		*s_pAsyncStructQueue;
 static std::queue<ImageInfo*>		*s_pImageQueue;
+
+static CCImage::EImageFormat computeImageFormatType(string& filename)
+{
+	CCImage::EImageFormat ret = CCImage::kFmtUnKnown;
+
+	if ((std::string::npos != filename.find(".jpg")) || (std::string::npos != filename.find(".jpeg")))
+	{
+		ret = CCImage::kFmtJpg;
+	}
+	else if ((std::string::npos != filename.find(".png")) || (std::string::npos != filename.find(".PNG")))
+	{
+		ret = CCImage::kFmtPng;
+	}
+
+	return ret;
+}
 
 static void* loadImage(void* data)
 {
@@ -103,12 +119,9 @@ static void* loadImage(void* data)
 
 		const char *filename = pAsyncStruct->filename.c_str();
 
-		CCLOG("thread 0x%x is loading image %s", pthread_self(), filename);
-
-		// generate image
-		CCImage *pImage = NULL;
-		CCImage::EImageFormat imageType;
-		if (std::string::npos != pAsyncStruct->filename.find(".jpg") || std::string::npos != pAsyncStruct->filename.find(".jpeg"))
+		// compute image type
+		CCImage::EImageFormat imageType = computeImageFormatType(pAsyncStruct->filename);
+		if (imageType == CCImage::kFmtUnKnown)
 		{
 			pImage = new CCImage();
 			if (!pImage->initWithImageFileThreadSafe(filename, cocos2d::CCImage::kFmtJpg))
@@ -141,11 +154,21 @@ static void* loadImage(void* data)
 			
 			continue;
 		}
+		
+        // generate image			
+		CCImage *pImage = new CCImage();
+		if (! pImage->initWithImageFileThreadSafe(filename, imageType))
+		{
+			delete pImage;
+			CCLOG("can not load %s", filename);
+			continue;
+		}
 
 		// generate image info
 		ImageInfo *pImageInfo = new ImageInfo();
 		pImageInfo->asyncStruct = pAsyncStruct;
 		pImageInfo->image = pImage;
+		pImageInfo->imageType = imageType;
 
 		// put the image info into the queue
 		pthread_mutex_lock(&s_ImageInfoMutex);
@@ -196,7 +219,7 @@ char * CCTextureCache::description()
 	return ret;
 }
 
-void CCTextureCache::addImageAsync(const char *path, SelectorProtocol *target, SEL_CallFuncO selector)
+void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallFuncO selector)
 {
 	CCAssert(path != NULL, "TextureCache: fileimage MUST not be NULL");	
 
@@ -223,7 +246,7 @@ void CCTextureCache::addImageAsync(const char *path, SelectorProtocol *target, S
 
 	if (target)
 	{
-		target->selectorProtocolRetain();
+		target->retain();
 	}
 
 	// lazy init
@@ -286,7 +309,7 @@ void CCTextureCache::addImageAsyncCallBack(ccTime dt)
 		AsyncStruct *pAsyncStruct = pImageInfo->asyncStruct;
 		CCImage *pImage = pImageInfo->image;
 
-		SelectorProtocol *target = pAsyncStruct->target;
+		CCObject *target = pAsyncStruct->target;
 		SEL_CallFuncO selector = pAsyncStruct->selector;
 		const char* filename = pAsyncStruct->filename.c_str();
 
@@ -319,7 +342,7 @@ void CCTextureCache::addImageAsyncCallBack(ccTime dt)
 		if (target && selector)
 		{
 			(target->*selector)(texture);
-			target->selectorProtocolRelease();
+			target->release();
 		}		
 
 		delete pImage;
@@ -517,21 +540,25 @@ CCTexture2D * CCTextureCache::addPVRImage(const char* path)
 	return tex;
 }
 
-
 CCTexture2D* CCTextureCache::addUIImage(CCImage *image, const char *key)
 {
-	CCAssert(image != NULL && key != NULL, "TextureCache: image MUST not be nill");
+	CCAssert(image != NULL, "TextureCache: image MUST not be nill");
 
 	CCTexture2D * texture = NULL;
 	// textureForKey() use full path,so the key should be full path
-	std::string forKey = CCFileUtils::fullPathFromRelativePath(key);
+	std::string forKey;
+	if (key)
+	{
+		forKey = CCFileUtils::fullPathFromRelativePath(key);
+	}
 
-	//m_pDictLock->lock();
+	// Don't have to lock here, because addImageAsync() will not 
+	// invoke opengl function in loading thread.
 
 	do 
 	{
 		// If key is nil, then create a new texture each time
-		if((texture = m_pTextures->objectForKey(forKey)))
+		if(key && (texture = m_pTextures->objectForKey(forKey)))
 		{
 			break;
 		}
@@ -540,7 +567,7 @@ CCTexture2D* CCTextureCache::addUIImage(CCImage *image, const char *key)
 		texture = new CCTexture2D();
 		texture->initWithImage(image);
 
-		if(texture)
+		if(key && texture)
 		{
 			m_pTextures->setObject(texture, forKey);
 			texture->autorelease();
@@ -551,8 +578,6 @@ CCTexture2D* CCTextureCache::addUIImage(CCImage *image, const char *key)
 		}
 
 	} while (0);
-	
-	//m_pDictLock->unlock();
 
 	return texture;
 }
@@ -692,6 +717,7 @@ void VolatileTexture::addImageTexture(CCTexture2D *tt, const char* imageFileName
     vt->m_eCashedImageType = kImageFile;
     vt->m_strFileName = imageFileName;
     vt->m_FmtImage    = format;
+    vt->m_PixelFormat = tt->getPixelFormat();
 }
 
 void VolatileTexture::addDataTexture(CCTexture2D *tt, void* data, CCTexture2DPixelFormat pixelFormat, const CCSize& contentSize)
@@ -781,7 +807,10 @@ void VolatileTexture::reloadAllTextures()
 
 				if (image.initWithImageData((void*)pBuffer, nSize, vt->m_FmtImage))
 				{
+                    CCTexture2DPixelFormat oldPixelFormat = CCTexture2D::defaultAlphaPixelFormat();
+                    CCTexture2D::setDefaultAlphaPixelFormat(vt->m_PixelFormat);
 					vt->texture->initWithImage(&image);
+                    CCTexture2D::setDefaultAlphaPixelFormat(oldPixelFormat);
 				}
 			}
 			break;

@@ -432,7 +432,6 @@
 		BF835B9913276C7900F3C033 /* ccTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = BF8358FF13276C7700F3C033 /* ccTypes.h */; };
 		BF835B9A13276C7900F3C033 /* CCZone.h in Headers */ = {isa = PBXBuildFile; fileRef = BF83590013276C7700F3C033 /* CCZone.h */; };
 		BF835B9B13276C7900F3C033 /* cocos2d.h in Headers */ = {isa = PBXBuildFile; fileRef = BF83590113276C7700F3C033 /* cocos2d.h */; };
-		BF835B9D13276C7900F3C033 /* selector_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = BF83590313276C7700F3C033 /* selector_protocol.h */; };
 		BF835B9E13276C7900F3C033 /* CCKeypadDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF83590513276C7700F3C033 /* CCKeypadDelegate.cpp */; };
 		BF835B9F13276C7900F3C033 /* CCKeypadDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF83590613276C7700F3C033 /* CCKeypadDispatcher.cpp */; };
 		BF835BA013276C7900F3C033 /* CCLabelAtlas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF83590813276C7700F3C033 /* CCLabelAtlas.cpp */; };
@@ -1108,7 +1107,6 @@
 		BF8358FF13276C7700F3C033 /* ccTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccTypes.h; sourceTree = "<group>"; };
 		BF83590013276C7700F3C033 /* CCZone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCZone.h; sourceTree = "<group>"; };
 		BF83590113276C7700F3C033 /* cocos2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocos2d.h; sourceTree = "<group>"; };
-		BF83590313276C7700F3C033 /* selector_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = selector_protocol.h; sourceTree = "<group>"; };
 		BF83590513276C7700F3C033 /* CCKeypadDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCKeypadDelegate.cpp; sourceTree = "<group>"; };
 		BF83590613276C7700F3C033 /* CCKeypadDispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCKeypadDispatcher.cpp; sourceTree = "<group>"; };
 		BF83590813276C7700F3C033 /* CCLabelAtlas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCLabelAtlas.cpp; sourceTree = "<group>"; };
@@ -2427,7 +2425,6 @@
 				BF8358FF13276C7700F3C033 /* ccTypes.h */,
 				BF83590013276C7700F3C033 /* CCZone.h */,
 				BF83590113276C7700F3C033 /* cocos2d.h */,
-				BF83590313276C7700F3C033 /* selector_protocol.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -2764,7 +2761,6 @@
 				BF835B9913276C7900F3C033 /* ccTypes.h in Headers */,
 				BF835B9A13276C7900F3C033 /* CCZone.h in Headers */,
 				BF835B9B13276C7900F3C033 /* cocos2d.h in Headers */,
-				BF835B9D13276C7900F3C033 /* selector_protocol.h in Headers */,
 				BF835BBB13276C7900F3C033 /* CCAccelerometer_platform.h in Headers */,
 				BF835BBC13276C7900F3C033 /* CCApplication_platform.h in Headers */,
 				BF835BBD13276C7900F3C033 /* CCArchOptimalParticleSystem.h in Headers */,
@@ -3438,6 +3434,7 @@
 					TARGET_OS_IPHONE,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../CocosDenshion/include",
 					"\"$(SRCROOT)/../../chipmunk/include/constraints\"",
@@ -3476,6 +3473,7 @@
 					TARGET_OS_IPHONE,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../CocosDenshion/include",
 					"\"$(SRCROOT)/../../chipmunk/include/constraints\"",
@@ -3510,6 +3508,7 @@
 					USE_FILE32API,
 					TARGET_OS_IPHONE,
 				);
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 					"\"$(SRCROOT)/../../cocos2dx\"",
@@ -3534,6 +3533,7 @@
 					USE_FILE32API,
 					TARGET_OS_IPHONE,
 				);
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"\"$(SDKROOT)/usr/include/libxml2\"",
 					"\"$(SRCROOT)/../../cocos2dx\"",
@@ -3554,6 +3554,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../..\"";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3576,6 +3577,7 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../..\"";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3598,6 +3600,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/../../chipmunk/include/chipmunk/constraints/\"",
 					"\"$(SRCROOT)/../../chipmunk/include/chipmunk/\"",
@@ -3617,6 +3620,7 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/../../chipmunk/include/chipmunk/constraints/\"",
 					"\"$(SRCROOT)/../../chipmunk/include/chipmunk/\"",
@@ -3638,6 +3642,7 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = "";
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = CocosDenshion;
@@ -3655,6 +3660,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
+				GCC_VERSION = "";
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = CocosDenshion;
@@ -3670,6 +3676,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
@@ -3684,6 +3691,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";

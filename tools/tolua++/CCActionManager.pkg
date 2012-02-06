@@ -2,13 +2,12 @@
 #include "CCAction.h"
 #include "CCMutableArray.h"
 #include "CCObject.h"
-#include "selector_protocol.h"
 
 namespace cocos2d {
 
 struct _hashElement;
 
-class  CCActionManager : public CCObject, public SelectorProtocol
+class  CCActionManager : public CCObject
 {
 public:
 	CCActionManager(void);	
@@ -23,8 +22,6 @@ public:
 	void pauseTarget(CCObject *pTarget);
 	void resumeTarget(CCObject *pTarget);
 	void purgeSharedManager(void);
-	void selectorProtocolRetain(void);
-	void selectorProtocolRelease(void);
 	static CCActionManager* sharedManager(void);
 
 };

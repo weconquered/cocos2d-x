@@ -1,4 +1,5 @@
-$#include "LuaCocos2d.h"
+$using namespace cocos2d;
+
 $pfile "CCNode.pkg"
 
 $pfile "CCObject.pkg"
@@ -67,7 +68,6 @@ $pfile "CCAction.pkg"
 
 $pfile "CCProtocols.pkg"
 
-$pfile "selector_protocol.pkg"
 $pfile "CCSet.pkg"
 
 $pfile "CCMutableArray.pkg"
@@ -115,6 +115,5 @@ $pfile "CCMenuItem.pkg"
 $pfile "CCMotionStreak.pkg"
 
 $pfile "CCCommon.pkg"
-$pfile "CCFileUtils.pkg"
 
 $pfile "CCParticleSystem.pkg"

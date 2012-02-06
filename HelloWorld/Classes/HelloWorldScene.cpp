@@ -1,6 +1,12 @@
 #include "HelloWorldScene.h"
+#include "SimpleAudioEngine.h"
+#include "EPNotificationCenter.h"
+#include "EPResourceManager.h"
+#include "EPXmlReader.h"
+#include "EPXmlValue.h"
 
-USING_NS_CC;
+using namespace cocos2d;
+using namespace CocosDenshion;
 
 CCScene* HelloWorld::scene()
 {
@@ -9,10 +15,10 @@ CCScene* HelloWorld::scene()
 	
 	// 'layer' is an autorelease object
 	HelloWorld *layer = HelloWorld::node();
-
+    
 	// add layer as a child to scene
 	scene->addChild(layer);
-
+    
 	// return the scene
 	return scene;
 }
@@ -20,62 +26,143 @@ CCScene* HelloWorld::scene()
 // on "init" you need to initialize your instance
 bool HelloWorld::init()
 {
-	//////////////////////////////
-	// 1. super init first
-	if ( !CCLayer::init() )
+	if ( !EPGestureRecognizerLayer::init() )
 	{
 		return false;
 	}
-
-	/////////////////////////////
-	// 2. add a menu item with "X" image, which is clicked to quit the program
-	//    you may modify it.
-
-	// add a "close" icon to exit the progress. it's an autorelease object
-	CCMenuItemImage *pCloseItem = CCMenuItemImage::itemFromNormalImage(
-										"CloseNormal.png",
-										"CloseSelected.png",
-										this,
-										menu_selector(HelloWorld::menuCloseCallback) );
-	pCloseItem->setPosition( ccp(CCDirector::sharedDirector()->getWinSize().width - 20, 20) );
-
-	// create menu, it's an autorelease object
-	CCMenu* pMenu = CCMenu::menuWithItems(pCloseItem, NULL);
-	pMenu->setPosition( CCPointZero );
-	this->addChild(pMenu, 1);
-
-	/////////////////////////////
-	// 3. add your codes below...
-
-	// add a label shows "Hello World"
-	// create and initialize a label
-    CCLabelTTF* pLabel = CCLabelTTF::labelWithString("Hello World", "Arial", 24);
-	// ask director the window size
-	CCSize size = CCDirector::sharedDirector()->getWinSize();
-
-	// position the label on the center of the screen
-	pLabel->setPosition( ccp(size.width / 2, size.height - 50) );
-
-	// add the label as a child to this layer
-	this->addChild(pLabel, 1);
-
-	// add "HelloWorld" splash screen"
-	CCSprite* pSprite = CCSprite::spriteWithFile("HelloWorld.png");
-
-	// position the sprite on the center of the screen
-	pSprite->setPosition( ccp(size.width/2, size.height/2) );
-
-	// add the sprite as a child to this layer
-	this->addChild(pSprite, 0);
-	
+    
+    EPNotificationCenter::sharedNotifCenter()->addObserver(this, 
+                                                           callfuncO_selector(HelloWorld::completedCallback),
+                                                           kResourceLoadedNotif, 
+                                                           NULL);
+    
+    CCSize size = CCDirector::sharedDirector()->getWinSize();
+    
+    CCMenuItem *item1 = CCMenuItemFont::itemFromString("loaded", 
+                                                       this, 
+                                                       callfuncO_selector(HelloWorld::loadedCallback));
+    CCMenu *m = CCMenu::menuWithItems(item1,NULL);
+    m->setPosition(ccp(size.width/2, size.height/2-65));
+    this->addChild(m);
+    
 	return true;
 }
 
-void HelloWorld::menuCloseCallback(CCObject* pSender)
+void HelloWorld::loadedCallback(CCObject* pSender)
 {
-	CCDirector::sharedDirector()->end();
+    m_res = new EPResourceManager;    
+    m_res->addPngResourceAsync("HelloWorld",false);
+    m_res->addPngResourceAsync("4444_pics",true);
+    m_res->loadResourceAsync();    
+}
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-	exit(0);
-#endif
+void HelloWorld::completedCallback(CCObject* pSender)
+{
+    CCLOG("completedCallback\n");
+    CCSize size = CCDirector::sharedDirector()->getWinSize();
+    CCSprite *sp = CCSprite::spriteWithSpriteFrameName("blocks.png");
+    sp->setPosition(ccp(size.width/2, size.height/2));
+    sp->setTag(123);
+    this->addChild(sp);
+    
+    this->addTapRecognizer(sp);
+    
+    this->addRotationRecognizer(sp);
+    
+    this->addPinchRecognizer(sp);
+    
+    this->addPanRecognizer(sp);
+    
+    this->addLongPressRecognizer(sp);
+    this->setLongPressInterval(0.5f);
+    
+    //
+    // sample.xml
+    //
+    EPXmlReader *reader = new EPXmlReader;
+    reader->addArrayToken("bone");
+    
+    std::string path = CCFileUtils::fullPathFromRelativePath("sample.xml");
+    reader->loadFromFile(path.c_str());
+    
+    EPXmlValue *root = reader->getRootDictionary();
+    
+    root->dump();
+    
+    EPXmlValue *bones = root->objectForKey("bones");
+    EPXmlValue *boneArray = bones->objectForKey("bone");
+    EPXmlValue *value;
+    ARRAY_FOREACH(value, boneArray)
+    {
+        CCLOG("[name] : %s\n",value->stringForKey("name"));
+        EPXmlValue *position = value->objectForKey("position");
+        CCLOG("[x] : %d\n",position->integerForKey("x"));
+        CCLOG("[y] : %d\n",position->integerForKey("y"));
+    }
+}
+
+bool HelloWorld::gestureRecognizer(GestureRecognizer *gestureRecognizer)
+{
+//    if (gestureRecognizer->getRecognizerType() == kTapGestureRecognizer)
+//        return true;
+    return true;
+}
+
+void HelloWorld::performTap(TapGestureRecognizer *recognizer ,CCNode *node)
+{
+    if (node->getTag() == 123)
+    {
+        this->pressButton(node, callfuncN_selector(HelloWorld::pressAction));
+        CCLOG("performTap");
+    }
+}
+
+void HelloWorld::performLongPress(LongPressGestureRecognizer *recognizer ,CCNode *node)
+{
+    if (node->getTag() == 123)
+    {
+        CCLOG("performLongPress");
+    }
+}
+
+void HelloWorld::performPan(PanGestureRecognizer *recognizer ,CCNode *node)
+{
+    if (node->getTag() == 123)
+    {
+        CCPoint pt = recognizer->getTranslationView();
+        
+        if (recognizer->getGestureRecognizerState() == kGestureRecognizerStateBegan)
+            m_from = pt;
+        else if (recognizer->getGestureRecognizerState() == kGestureRecognizerStateChanged)
+        {
+            CCPoint distance = ccpSub(pt, m_from);
+            
+            node->setPosition(ccpAdd(node->getPosition(),distance));
+            m_from = pt;
+        }        
+    }
+}
+
+void HelloWorld::performPinch(PinchGestureRecognizer *recognizer ,CCNode *node)
+{
+    if (node->getTag() == 123)
+    {
+        CCLOG("performPinch : %f\n",recognizer->getPinchScale());
+        node->setScale(recognizer->getPinchScale());
+    }
+}
+
+void HelloWorld::performRotation(RotationGestureRecognizer *recognizer ,CCNode *node)
+{
+    if (node->getTag() == 123)
+    {
+        CCLOG("performRotation : %f\n",recognizer->getGestureRotation());
+        node->setRotation(recognizer->getGestureRotation() + node->getRotation());
+    }
+}
+
+
+void HelloWorld::pressAction(CCNode* node)
+{
+    CCLOG("pressAction");
 }

@@ -80,7 +80,7 @@ CCNode::CCNode(void)
 {
     // nothing
 }
-CCNode::~CCNode()
+CCNode::~CCNode(void)
 {
 	CCLOGINFO( "cocos2d: deallocing" );
 
@@ -991,16 +991,6 @@ void CCNode::pauseSchedulerAndActions()
 {
 	CCScheduler::sharedScheduler()->pauseTarget(this);
 	CCActionManager::sharedManager()->pauseTarget(this);
-}
-
-void CCNode::selectorProtocolRetain(void)
-{
-	retain();
-}
-
-void CCNode::selectorProtocolRelease(void)
-{
-	release();
 }
 
 CCAffineTransform CCNode::nodeToParentTransform(void)

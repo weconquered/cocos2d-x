@@ -48,13 +48,7 @@ namespace cocos2d{
 
         CCMenu* CCMenu::node()
         {
-            CCMenu *menu = new CCMenu();
-            if (menu && menu->init()) {
-                menu->autorelease();
-                return menu;
-            }
-            CC_SAFE_DELETE(menu)
-            return 0;
+            return menuWithItem(NULL);
         }
 
 	CCMenu * CCMenu::menuWithItems(CCMenuItem* item, ...)
@@ -77,12 +71,6 @@ namespace cocos2d{
 	{
 		return menuWithItems(item, NULL);
 	}
-
-    bool CCMenu::init()
-    {
-        va_list args;
-        return initWithItems(NULL, args);
-    }
 
 	bool CCMenu::initWithItems(CCMenuItem* item, va_list args)
 	{
@@ -238,16 +226,6 @@ namespace cocos2d{
 		}
 	}
 
-	void CCMenu::destroy(void)
-	{
-		release();
-	}
-
-	void CCMenu::keep(void)
-	{
-		retain();
-	}
-
 	//Menu - Alignment
 	void CCMenu::alignItemsVertically()
 	{
@@ -262,7 +240,7 @@ namespace cocos2d{
             CCObject* pObject = NULL;
             CCARRAY_FOREACH(m_pChildren, pObject)
             {
-                CCNode* pChild = (CCNode*) pObject;
+                CCNode* pChild = dynamic_cast<CCNode*>(pObject);
                 if (pChild)
                 {
                     height += pChild->getContentSize().height * pChild->getScaleY() + padding;
@@ -276,7 +254,7 @@ namespace cocos2d{
             CCObject* pObject = NULL;
             CCARRAY_FOREACH(m_pChildren, pObject)
             {
-                CCNode* pChild = (CCNode*) pObject;
+                CCNode* pChild = dynamic_cast<CCNode*>(pObject);
                 if (pChild)
                 {
                     pChild->setPosition(ccp(0, y - pChild->getContentSize().height * pChild->getScaleY() / 2.0f));
@@ -300,7 +278,7 @@ namespace cocos2d{
             CCObject* pObject = NULL;
             CCARRAY_FOREACH(m_pChildren, pObject)
             {
-                CCNode* pChild = (CCNode*) pObject;
+                CCNode* pChild = dynamic_cast<CCNode*>(pObject);
                 if (pChild)
                 {
                     width += pChild->getContentSize().width * pChild->getScaleX() + padding;
@@ -314,7 +292,7 @@ namespace cocos2d{
             CCObject* pObject = NULL;
             CCARRAY_FOREACH(m_pChildren, pObject)
             {
-                CCNode* pChild = (CCNode*) pObject;
+                CCNode* pChild = dynamic_cast<CCNode*>(pObject);
                 if (pChild)
                 {
                     pChild->setPosition(ccp(x + pChild->getContentSize().width * pChild->getScaleX() / 2.0f, 0));
@@ -354,7 +332,7 @@ namespace cocos2d{
             CCObject* pObject = NULL;
             CCARRAY_FOREACH(m_pChildren, pObject)
             {
-                CCNode* pChild = (CCNode*) pObject;
+                CCNode* pChild = dynamic_cast<CCNode*>(pObject);
                 if (pChild)
                 {
                     CCAssert(row < rows.size(), "");
@@ -396,7 +374,7 @@ namespace cocos2d{
             CCObject* pObject = NULL;
             CCARRAY_FOREACH(m_pChildren, pObject)
             {
-                CCNode* pChild = (CCNode*) pObject;
+                CCNode* pChild = dynamic_cast<CCNode*>(pObject);
                 if (pChild)
                 {
 				    if (rowColumns == 0)
@@ -463,7 +441,7 @@ namespace cocos2d{
             CCObject* pObject = NULL;
             CCARRAY_FOREACH(m_pChildren, pObject)
             {
-                CCNode* pChild = (CCNode*) pObject;
+                CCNode* pChild = dynamic_cast<CCNode*>(pObject);
                 if (pChild)
                 {
                     // check if too many menu items for the amount of rows/columns
@@ -511,7 +489,7 @@ namespace cocos2d{
             CCObject* pObject = NULL;
             CCARRAY_FOREACH(m_pChildren, pObject)
             {
-                CCNode* pChild = (CCNode*) pObject;
+                CCNode* pChild = dynamic_cast<CCNode*>(pObject);
                 if (pChild)
                 {
                     if (columnRows == 0)
@@ -555,10 +533,10 @@ namespace cocos2d{
             CCObject* pObject = NULL;
             CCARRAY_FOREACH(m_pChildren, pObject)
             {
-                CCNode* pChild = (CCNode*) pObject;
+                CCNode* pChild = dynamic_cast<CCNode*>(pObject);
                 if (pChild)
                 {
-                    CCRGBAProtocol *pRGBAProtocol = pChild->convertToRGBAProtocol();
+                    CCRGBAProtocol *pRGBAProtocol = dynamic_cast<CCRGBAProtocol*>(pChild);
 				    if (pRGBAProtocol)
 				    {
 					    pRGBAProtocol->setOpacity(m_cOpacity);
@@ -582,10 +560,10 @@ namespace cocos2d{
             CCObject* pObject = NULL;
             CCARRAY_FOREACH(m_pChildren, pObject)
             {
-                CCNode* pChild = (CCNode*) pObject;
+                CCNode* pChild = dynamic_cast<CCNode*>(pObject);
                 if (pChild)
                 {
-                    CCRGBAProtocol *pRGBAProtocol = pChild->convertToRGBAProtocol();
+                    CCRGBAProtocol *pRGBAProtocol = dynamic_cast<CCRGBAProtocol*>(pChild);
                     if (pRGBAProtocol)
                     {
                     	pRGBAProtocol->setColor(m_tColor);
@@ -610,7 +588,7 @@ namespace cocos2d{
             CCObject* pObject = NULL;
             CCARRAY_FOREACH(m_pChildren, pObject)
             {
-                CCNode* pChild = (CCNode*) pObject;
+                CCNode* pChild = dynamic_cast<CCNode*>(pObject);
                 if (pChild && pChild->getIsVisible() && ((CCMenuItem*)pChild)->getIsEnabled())
                 {
                     CCPoint local = pChild->convertToNodeSpace(touchLocation);

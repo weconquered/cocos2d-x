@@ -17,12 +17,21 @@
 */
 
 #include <Box2D/Common/b2Settings.h>
+#ifdef SHP
+#include <FBaseSys.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#else
 #include <cstdlib>
 #include <cstdio>
 #include <cstdarg>
-#ifdef SHP
-#include <FBaseSys.h>
 #endif
+
+
+using namespace std;
+
+
 b2Version b2_version = {2, 2, 1};
 
 // Memory allocators. Modify these to use your own allocator.
