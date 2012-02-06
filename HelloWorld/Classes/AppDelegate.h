@@ -1,3 +1,11 @@
+//
+//  ErawppaSampleCodeAppDelegate.h
+//  ErawppaSampleCode
+//
+//  Created by Erawppa Erawppa on 2011/12/7.
+//  Copyright __MyCompanyName__ 2011年. All rights reserved.
+//
+
 #ifndef  _APP_DELEGATE_H_
 #define  _APP_DELEGATE_H_
 
