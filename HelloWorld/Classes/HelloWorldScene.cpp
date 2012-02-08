@@ -1,9 +1,13 @@
+#define COCOS2D_DEBUG 1
+
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
 #include "EPNotificationCenter.h"
 #include "EPResourceManager.h"
 #include "EPXmlReader.h"
 #include "EPXmlValue.h"
+
+
 
 using namespace cocos2d;
 using namespace CocosDenshion;
@@ -75,7 +79,7 @@ void HelloWorld::completedCallback(CCObject* pSender)
     
     this->addLongPressRecognizer(sp);
     this->setLongPressInterval(0.5f);
-    
+    /*
     //
     // sample.xml
     //
@@ -99,6 +103,7 @@ void HelloWorld::completedCallback(CCObject* pSender)
         CCLOG("[x] : %d\n",position->integerForKey("x"));
         CCLOG("[y] : %d\n",position->integerForKey("y"));
     }
+    */
 }
 
 bool HelloWorld::gestureRecognizer(GestureRecognizer *gestureRecognizer)

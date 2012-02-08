@@ -65,7 +65,7 @@ void EPXmlValue::setValue(const char* value)
     if (m_xmlKeyNodePtr)
     {
         xmlNodeSetContent(m_xmlNodePtr, (const xmlChar*)value);
-        xmlNodeSetName(m_xmlKeyNodePtr, (const xmlChar*)"string");
+        //xmlNodeSetName(m_xmlKeyNodePtr, (const xmlChar*)"string");
     }
     std::string v = value;
     setString(v);
@@ -80,7 +80,7 @@ void EPXmlValue::setValue(int value)
     if (m_xmlKeyNodePtr)
     {
         xmlNodeSetContent(m_xmlNodePtr, (const xmlChar*)v.c_str());
-        xmlNodeSetName(m_xmlKeyNodePtr, (const xmlChar*)"integer");
+        //xmlNodeSetName(m_xmlKeyNodePtr, (const xmlChar*)"integer");
     }
     setInteger(v);
 }
@@ -94,7 +94,7 @@ void EPXmlValue::setValue(double value)
     if (m_xmlKeyNodePtr)
     {
         xmlNodeSetContent(m_xmlNodePtr, (const xmlChar*)v.c_str());    
-        xmlNodeSetName(m_xmlKeyNodePtr, (const xmlChar*)"real");
+        //xmlNodeSetName(m_xmlKeyNodePtr, (const xmlChar*)"real");
     }
     setDouble(v);
 }
@@ -105,14 +105,14 @@ void EPXmlValue::setValue(bool value)
     if (value)
     {
         v = "true";
-        if (m_xmlKeyNodePtr)
-            xmlNodeSetName(m_xmlKeyNodePtr, (const xmlChar*)"true");
+        //if (m_xmlKeyNodePtr)
+            //xmlNodeSetName(m_xmlKeyNodePtr, (const xmlChar*)"true");
     }
     else
     {
         v = "false";
-        if (m_xmlKeyNodePtr)
-            xmlNodeSetName(m_xmlKeyNodePtr, (const xmlChar*)"false");
+        //if (m_xmlKeyNodePtr)
+            //xmlNodeSetName(m_xmlKeyNodePtr, (const xmlChar*)"false");
     }
     setBoolean(v);
 }
@@ -124,7 +124,7 @@ void EPXmlValue::setValue(const char* value,int length)
 //    if (m_xmlKeyNodePtr)
 //    {
 //        xmlNodeSetContent(m_xmlNodePtr, (const xmlChar*)encode.c_str());
-//        xmlNodeSetName(m_xmlKeyNodePtr, (const xmlChar*)"data");
+//        //xmlNodeSetName(m_xmlKeyNodePtr, (const xmlChar*)"data");
 //    }
 //    setData(encode);
 }
