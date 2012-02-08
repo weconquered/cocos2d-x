@@ -69,6 +69,7 @@ static pthread_mutex_t		s_asyncStructQueueMutex;
 static pthread_mutex_t      s_ImageInfoMutex;
 
 static sem_t s_sem;
+static bool need_quit;
 
 static std::queue<AsyncStruct*>		*s_pAsyncStructQueue;
 static std::queue<ImageInfo*>		*s_pImageQueue;
@@ -108,7 +109,10 @@ static void* loadImage(void* data)
         if (pQueue->empty())
         {
             pthread_mutex_unlock(&s_asyncStructQueueMutex);
-            continue;
+	if (need_quit)
+		break;
+	else
+		continue;
         }
         else
         {
@@ -176,7 +180,8 @@ CCTextureCache::CCTextureCache()
 CCTextureCache::~CCTextureCache()
 {
 	CCLOGINFO("cocos2d: deallocing CCTextureCache.");
-
+	need_quit = true;
+	sem_post(&s_sem);
 	CC_SAFE_RELEASE(m_pTextures);
 }
 
@@ -236,7 +241,7 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
 		pthread_create(&s_loadingThread, NULL, loadImage, NULL);
 
 		CCScheduler::sharedScheduler()->scheduleSelector(schedule_selector(CCTextureCache::addImageAsyncCallBack), this, 0, false);
-
+		need_quit = false;
 		firstRun = false;
 	}
 
@@ -503,6 +508,10 @@ CCTexture2D * CCTextureCache::addPVRImage(const char* path)
     
 	if( tex->initWithPVRFile(fullpath.c_str()) )
 	{
+#if CC_ENABLE_CACHE_TEXTTURE_DATA
+        // cache the texture file name
+        VolatileTexture::addImageTexture(tex, fullpath.c_str(), CCImage::kFmtRawData);
+#endif
 		m_pTextures->setObject(tex, key);
 		tex->autorelease();
 	}
@@ -772,22 +781,39 @@ void VolatileTexture::reloadAllTextures()
 
 		switch (vt->m_eCashedImageType)
 		{
-		case kImageFile:
-			{
-				CCImage image;
-				CCFileData data(vt->m_strFileName.c_str(), "rb");
-				unsigned long nSize  = data.getSize();
-				unsigned char* pBuffer = data.getBuffer();
+        case kImageFile:
+            {
+                CCImage image;
+                std::string lowerCase(vt->m_strFileName.c_str());
+                for (unsigned int i = 0; i < lowerCase.length(); ++i)
+                {
+                    lowerCase[i] = tolower(lowerCase[i]);
+                }
 
-				if (image.initWithImageData((void*)pBuffer, nSize, vt->m_FmtImage))
-				{
+                if (std::string::npos != lowerCase.find(".pvr")) 
+                {
                     CCTexture2DPixelFormat oldPixelFormat = CCTexture2D::defaultAlphaPixelFormat();
                     CCTexture2D::setDefaultAlphaPixelFormat(vt->m_PixelFormat);
-					vt->texture->initWithImage(&image);
+
+                    vt->texture->initWithPVRFile(vt->m_strFileName.c_str());
                     CCTexture2D::setDefaultAlphaPixelFormat(oldPixelFormat);
-				}
-			}
-			break;
+                } 
+                else 
+                {
+                    CCFileData data(vt->m_strFileName.c_str(), "rb");
+                    unsigned long nSize  = data.getSize();
+                    unsigned char* pBuffer = data.getBuffer();
+
+                    if (image.initWithImageData((void*)pBuffer, nSize, vt->m_FmtImage))
+                    {
+                        CCTexture2DPixelFormat oldPixelFormat = CCTexture2D::defaultAlphaPixelFormat();
+                        CCTexture2D::setDefaultAlphaPixelFormat(vt->m_PixelFormat);
+                        vt->texture->initWithImage(&image);
+                        CCTexture2D::setDefaultAlphaPixelFormat(oldPixelFormat);
+                    }
+                }
+            }
+            break;
 		case kImageData:
 			{
 				unsigned int nPOTWide, nPOTHigh;
