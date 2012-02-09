@@ -1,7 +1,6 @@
 /****************************************************************************
 Copyright (c) 2010-2011 cocos2d-x.org
-Copyright (c) 2008-2010 Ricardo Quesada
-Copyright (c) 2011      Zynga Inc.
+Copyright (c) 2011 Stephane Capo, Nicolas Blondel, Quentin Stere, Noel Leron
 
 http://www.cocos2d-x.org
 
@@ -24,13 +23,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-#include "cocos2d.h"
+#include "CCPageControl.h"
 #include "CCGestureRecognizer.h"
+
 namespace   cocos2d {
 
-const char* cocos2dVersion()
+CCPageControl::CCPageControl() : CCView()
 {
-	return "cocos2d-1.0.1-x-0.11.0";
+	
 }
 
-}//namespace   cocos2d 
+CCPageControl::~CCPageControl()
+{
+
+}
+}

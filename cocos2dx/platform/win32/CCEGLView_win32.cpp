@@ -35,6 +35,8 @@ THE SOFTWARE.
 #include "CCIMEDispatcher.h"
 #include "CCKeypadDispatcher.h"
 #include "CCApplication.h"
+#include "CCLayer.h"
+#include "CCGestureRecognizer.h"
 
 NS_CC_BEGIN;
 
@@ -190,18 +192,34 @@ CCEGLView::CCEGLView()
 , m_pEGL(NULL)
 , m_hWnd(NULL)
 , m_eInitOrientation(CCDeviceOrientationPortrait)
-, m_fScreenScaleFactor(1.0f)
+, m_fScreenScaleFactorX(1.0f)
+, m_fScreenScaleFactorY(1.0f)
+,m_isFullScreen(false)
 , m_lpfnAccelerometerKeyHook(NULL)
 {
+	enablePause = false;
+	m_mouseClic = false;
+	m_altPressed = false;
     m_pTouch    = new CCTouch;
     m_pSet      = new CCSet;
     m_tSizeInPoints.cx = m_tSizeInPoints.cy = 0;
     SetRectEmpty(&m_rcViewPort);
+	myStack.myTouchStack.clear();
+	myStack.myTouchEndCount=0;
 }
 
 CCEGLView::~CCEGLView()
 {
+	delete m_pTouch;
+	delete m_pSet;
 }
+void	CCEGLView::GetScreenCapacity(int& hSize,int& vSize)
+{
+	HDC screen = GetDC(NULL);
+	hSize=GetDeviceCaps(screen,HORZSIZE);
+	vSize=GetDeviceCaps(screen,VERTSIZE);
+}
+
 
 bool CCEGLView::Create(LPCTSTR pTitle, int w, int h)
 {
@@ -271,51 +289,209 @@ bool CCEGLView::Create(LPCTSTR pTitle, int w, int h)
 	return bRet;
 }
 
+void	CCEGLView::Update()
+{
+	std::vector<TouchStruct>::iterator	it=myStack.myTouchStack.begin();
+
+	while(it!=myStack.myTouchStack.end())
+	{
+		bool canExit=false;
+		TouchStruct& current=(*it);
+
+		switch(current.type)
+		{
+		case 0:
+			{
+				m_pTouch->SetTouchInfo(0, (float)(current.pos.x - m_rcViewPort.left) / m_fScreenScaleFactorX,
+				(float)(current.pos.y - m_rcViewPort.top) / m_fScreenScaleFactorY);
+				m_pSet->addObject(m_pTouch);
+				m_pDelegate->touchesBegan(m_pSet, NULL);
+				break;
+			}
+		case 1:
+			{
+				m_pTouch->SetTouchInfo(0, (float)(current.pos.x- m_rcViewPort.left) / m_fScreenScaleFactorX,
+					(float)(current.pos.y - m_rcViewPort.top) / m_fScreenScaleFactorY);
+				m_pDelegate->touchesMoved(m_pSet, NULL);
+				break;
+			}
+		case 2:
+			{
+				m_pTouch->SetTouchInfo(0, (float)(current.pos.x- m_rcViewPort.left) / m_fScreenScaleFactorX,
+					(float)(current.pos.y - m_rcViewPort.top) / m_fScreenScaleFactorY);
+				m_pDelegate->touchesEnded(m_pSet, NULL);
+				m_pSet->removeObject(m_pTouch);
+				myStack.myTouchEndCount--;
+				canExit=true;
+				break;
+			}
+		}
+		// one touch end per loop
+		it=myStack.myTouchStack.erase(it);
+		if(canExit)
+		{
+			break;
+		}
+	}
+
+}
+
+
+void CCEGLView::takeWindowFocus()
+{
+	//Attach foreground window thread
+
+	//to our thread
+	AttachThreadInput(
+		GetWindowThreadProcessId(
+			::GetForegroundWindow(),NULL),
+		GetCurrentThreadId(),TRUE);
+
+	//Do our stuff here ;-)
+
+	SetForegroundWindow(m_hWnd);
+	SetFocus(m_hWnd); //Just playing safe
+
+
+	//Detach the attached thread
+
+	AttachThreadInput(
+		GetWindowThreadProcessId(
+			::GetForegroundWindow(),NULL),
+		GetCurrentThreadId(),FALSE);
+}
+
 LRESULT CCEGLView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 
 	switch (message)
 	{
-	case WM_LBUTTONDOWN:
-		if (m_pDelegate && m_pTouch && MK_LBUTTON == wParam)
+
+		case WM_SHOWWINDOW:
 		{
-            POINT pt = {(short)LOWORD(lParam), (short)HIWORD(lParam)};
-            if (PtInRect(&m_rcViewPort, pt))
-            {
-                m_bCaptured = true;
-                SetCapture(m_hWnd);
-                m_pTouch->SetTouchInfo(0, (float)(pt.x - m_rcViewPort.left) / m_fScreenScaleFactor,
-                    (float)(pt.y - m_rcViewPort.top) / m_fScreenScaleFactor);
-                m_pSet->addObject(m_pTouch);
-                m_pDelegate->touchesBegan(m_pSet, NULL);
-            }
+			this->takeWindowFocus();
+			break;
 		}
-		break;
+
+		case WM_SYSKEYDOWN:
+		{
+			if (!m_mouseClic)
+			{
+				m_altPressed = true;
+			}
+			break;
+		}
+		case WM_SYSKEYUP:
+		{
+			if (!m_mouseClic)
+			{
+				m_altPressed = false;
+			}
+			break;
+		}
+	case WM_LBUTTONDOWN:
+		{
+			if (!m_altPressed)
+			{
+				if (m_pDelegate && m_pTouch && MK_LBUTTON == wParam)
+				{
+					POINT pt = {(short)LOWORD(lParam), (short)HIWORD(lParam)};
+					if (PtInRect(&m_rcViewPort, pt))
+					{
+						if(myStack.myTouchEndCount<4)
+						{
+							m_mouseClic = true;
+	#ifdef WIN32
+							CCDirector::sharedDirector()->ChangeMouseCursor(CURSOR_POINT_PRESSED);
+	#endif
+							m_bCaptured = true;
+							SetCapture(m_hWnd);
+	/*						m_pTouch->SetTouchInfo(0, (float)(pt.x - m_rcViewPort.left) / m_fScreenScaleFactorX,
+								(float)(pt.y - m_rcViewPort.top) / m_fScreenScaleFactorY);
+							m_pSet->addObject(m_pTouch);
+							m_pDelegate->touchesBegan(m_pSet, NULL);*/
+							TouchStruct	toAdd;
+							toAdd.pos.x=(float)LOWORD(lParam);
+							toAdd.pos.y=(float)HIWORD(lParam);
+							toAdd.type=0;
+
+							myStack.myTouchStack.push_back(toAdd);
+						}
+					}
+				}
+			}
+			break;
+		}
 
 	case WM_MOUSEMOVE:
-		if (MK_LBUTTON == wParam && m_bCaptured)
-		{
-            m_pTouch->SetTouchInfo(0, (float)((short)LOWORD(lParam)- m_rcViewPort.left) / m_fScreenScaleFactor,
-                (float)((short)HIWORD(lParam) - m_rcViewPort.top) / m_fScreenScaleFactor);
-            m_pDelegate->touchesMoved(m_pSet, NULL);
-		}
-		break;
+        {
+				POINT pos;
+				GetCursorPos(&pos);
+				int value = CCDirector::sharedDirector()->GetPos().y - pos.y;
+
+				if ( m_altPressed && ( value > 0) )
+				{
+					//Up
+					CCDirector::sharedDirector()->addInputs(ST_ADD);
+				}
+				else if ( m_altPressed && ( value < 0) )
+				{
+					//Down
+					CCDirector::sharedDirector()->addInputs(ST_SUBSTRACT);
+				}
+				CCDirector::sharedDirector()->SetPos(pos);
+				
+				if (MK_LBUTTON == wParam && m_bCaptured)
+				{
+/*					m_pTouch->SetTouchInfo(0, (float)((short)LOWORD(lParam)- m_rcViewPort.left) / m_fScreenScaleFactorX,
+						(float)((short)HIWORD(lParam) - m_rcViewPort.top) / m_fScreenScaleFactorY);
+					m_pDelegate->touchesMoved(m_pSet, NULL);*/
+					if(myStack.myTouchEndCount<4)
+					{
+						TouchStruct	toAdd;
+						toAdd.pos.x=(float)LOWORD(lParam);
+						toAdd.pos.y=(float)HIWORD(lParam);
+						toAdd.type=1;
+
+						myStack.myTouchStack.push_back(toAdd);
+					}
+
+				}
+			}
+			break;
 
 	case WM_LBUTTONUP:
-		if (m_bCaptured)
 		{
-			m_pTouch->SetTouchInfo(0, (float)((short)LOWORD(lParam)- m_rcViewPort.left) / m_fScreenScaleFactor,
-                (float)((short)HIWORD(lParam) - m_rcViewPort.top) / m_fScreenScaleFactor);
-			m_pDelegate->touchesEnded(m_pSet, NULL);
-			m_pSet->removeObject(m_pTouch);
-            ReleaseCapture();
-			m_bCaptured = false;
-		}
-		break;
-	case WM_SIZE:
-		switch (wParam)
-		{
+			if (!m_altPressed)
+			{
+				if (m_bCaptured)
+				{
+					if(myStack.myTouchEndCount<4)
+					{
+#ifdef WIN32
+						m_mouseClic = false;
+
+						CCDirector::sharedDirector()->ChangeMouseCursor(CURSOR_BACK_TO_POINT);
+#endif
+	/*					m_pTouch->SetTouchInfo(0, (float)((short)LOWORD(lParam)- m_rcViewPort.left) / m_fScreenScaleFactorX,
+							(float)((short)HIWORD(lParam) - m_rcViewPort.top) / m_fScreenScaleFactorY);
+						m_pDelegate->touchesEnded(m_pSet, NULL);
+						m_pSet->removeObject(m_pTouch);*/
+						TouchStruct	toAdd;
+						toAdd.pos.x=(float)LOWORD(lParam);
+						toAdd.pos.y=(float)HIWORD(lParam);
+						toAdd.type=2;
+
+						myStack.myTouchStack.push_back(toAdd);
+						myStack.myTouchEndCount++;
+					}
+					ReleaseCapture();
+
+					m_bCaptured = false;
+					
+				}
+			}
 		case SIZE_RESTORED:
 			CCApplication::sharedApplication().applicationWillEnterForeground();
 			break;
@@ -324,6 +500,25 @@ LRESULT CCEGLView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		break;
+			
+		case WM_MOUSEWHEEL:
+		{
+			if (!m_altPressed && !m_mouseClic)
+			{
+				short zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+
+				if ( zDelta > 0 )
+				{
+					CCDirector::sharedDirector()->addInputs(ST_ADD);
+				}
+				else
+				{
+					CCDirector::sharedDirector()->addInputs(ST_SUBSTRACT);
+				}
+			}
+			break;
+		}
+		
 	case WM_KEYDOWN:
 		if (wParam == VK_F1 || wParam == VK_F2)
 		{
@@ -394,6 +589,17 @@ LRESULT CCEGLView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
+		case WM_SETFOCUS:
+			m_altPressed = false;
+			CCDirector::sharedDirector()->resume();
+			break;
+		case WM_KILLFOCUS:
+			if (enablePause)
+			{
+				CCDirector::sharedDirector()->pause();
+			}
+			m_altPressed = false;
+			break;
 
 	default:
 		return DefWindowProc(m_hWnd, message, wParam, lParam);
@@ -437,6 +643,11 @@ void CCEGLView::release()
     delete this;
 }
 
+void CCEGLView::addSubview(CCLayer* _layer)
+{
+	CCDirector::sharedDirector()->addSubview(_layer);
+}
+
 void CCEGLView::setTouchDelegate(EGLTouchDelegate * pDelegate)
 {
     m_pDelegate = pDelegate;
@@ -476,11 +687,12 @@ void CCEGLView::setViewPortInPoints(float x, float y, float w, float h)
 {
     if (m_pEGL)
     {
-        float factor = m_fScreenScaleFactor / CC_CONTENT_SCALE_FACTOR();
-        glViewport((GLint)(x * factor) + m_rcViewPort.left,
-            (GLint)(y * factor) + m_rcViewPort.top,
-            (GLint)(w * factor),
-            (GLint)(h * factor));
+        float factorx = m_fScreenScaleFactorX / CC_CONTENT_SCALE_FACTOR();
+		float factory = m_fScreenScaleFactorY / CC_CONTENT_SCALE_FACTOR();
+        glViewport((GLint)(x * factorx) + m_rcViewPort.left,
+            (GLint)(y * factory) + m_rcViewPort.top,
+            (GLint)(w * factorx),
+            (GLint)(h * factory));
     }
 }
 
@@ -488,11 +700,12 @@ void CCEGLView::setScissorInPoints(float x, float y, float w, float h)
 {
     if (m_pEGL)
     {
-        float factor = m_fScreenScaleFactor / CC_CONTENT_SCALE_FACTOR();
-        glScissor((GLint)(x * factor) + m_rcViewPort.left,
-            (GLint)(y * factor) + m_rcViewPort.top,
-            (GLint)(w * factor),
-            (GLint)(h * factor));
+        float factorx = m_fScreenScaleFactorX / CC_CONTENT_SCALE_FACTOR();
+		float factory = m_fScreenScaleFactorY / CC_CONTENT_SCALE_FACTOR();
+        glScissor((GLint)(x * factorx) + m_rcViewPort.left,
+            (GLint)(y * factory) + m_rcViewPort.top,
+            (GLint)(w * factorx),
+            (GLint)(h * factory));
     }
 }
 
@@ -519,40 +732,108 @@ void CCEGLView::resize(int width, int height)
     {
         return;
     }
-    // calculate new window width and height
-    rcClient.right = rcClient.left + width;
-    rcClient.bottom = rcClient.top + height;
-    AdjustWindowRectEx(&rcClient, GetWindowLong(m_hWnd, GWL_STYLE), false, GetWindowLong(m_hWnd, GWL_EXSTYLE));
+	if(m_isFullScreen)
+	{
+		GetWindowRect(GetDesktopWindow(), &rcClient);
 
-    // change width and height
-    SetWindowPos(m_hWnd, 0, 0, 0, rcClient.right - rcClient.left, 
-        rcClient.bottom - rcClient.top, SWP_NOCOPYBITS | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+		AdjustWindowRectEx(&rcClient, GetWindowLong(m_hWnd, GWL_STYLE), false, GetWindowLong(m_hWnd, GWL_EXSTYLE));
+		// change width and height
+		SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, rcClient.right - rcClient.left, 
+			rcClient.bottom - rcClient.top, SWP_NOCOPYBITS | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	}
+	else
+	{
+		// calculate new window width and height
+		rcClient.right = rcClient.left + width;
+		rcClient.bottom = rcClient.top + height;
+		AdjustWindowRectEx(&rcClient, GetWindowLong(m_hWnd, GWL_STYLE), false, GetWindowLong(m_hWnd, GWL_EXSTYLE));
 
+		// change width and height
+		SetWindowPos(m_hWnd, 0, 0, 0, rcClient.right - rcClient.left, 
+			rcClient.bottom - rcClient.top, SWP_NOCOPYBITS | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	}
     if (m_pEGL)
     {
         m_pEGL->resizeSurface();
     }
 
-    // calculate view port in pixels
-    int viewPortW = (int)(m_tSizeInPoints.cx * m_fScreenScaleFactor);
-    int viewPortH = (int)(m_tSizeInPoints.cy * m_fScreenScaleFactor);
-    if (m_bOrientationReverted)
-    {
-        int tmp = viewPortW;
-        viewPortW = viewPortH;
-        viewPortH = tmp;
-    }
-    GetClientRect(m_hWnd, &rcClient);
+	if(m_isFullScreen)
+	{
+		// ASSORIA m_fScreenScaleFactor can be reset here to match better resolution
+
+
+		GetWindowRect(GetDesktopWindow(), &rcClient);
+		// calculate client new width and height
+		int newW = rcClient.right - rcClient.left;
+		int newH = rcClient.bottom - rcClient.top;
+
+#ifdef TEST_SCALE_FACTOR
+
+
+		float scaleX;
+		float scaleY;
+
+		if (m_bOrientationReverted)
+		{
+			scaleX=((float)newW)/((float)m_tSizeInPoints.cy * CC_CONTENT_SCALE_FACTOR());
+			scaleY=((float)newH)/((float)m_tSizeInPoints.cx * CC_CONTENT_SCALE_FACTOR());
+		}
+		else
+		{
+			scaleX=((float)newW)/((float)m_tSizeInPoints.cy * CC_CONTENT_SCALE_FACTOR());
+			scaleY=((float)newH)/((float)m_tSizeInPoints.cx * CC_CONTENT_SCALE_FACTOR());
+		}
+/*
+		if(scaleX<scaleY)
+		{
+			m_fScreenScaleFactor=scaleX*CC_CONTENT_SCALE_FACTOR();
+		}
+		else
+		{
+			m_fScreenScaleFactor=scaleY*CC_CONTENT_SCALE_FACTOR();
+		}*/
+		m_fScreenScaleFactorX=scaleX*CC_CONTENT_SCALE_FACTOR();
+		m_fScreenScaleFactorY=scaleY*CC_CONTENT_SCALE_FACTOR();
+#endif
+		int viewPortW = (int)(m_tSizeInPoints.cx * m_fScreenScaleFactorX);
+		int viewPortH = (int)(m_tSizeInPoints.cy * m_fScreenScaleFactorY);
+		if (m_bOrientationReverted)
+		{
+			viewPortW = (int)(m_tSizeInPoints.cy * m_fScreenScaleFactorX);
+			viewPortH = (int)(m_tSizeInPoints.cx * m_fScreenScaleFactorY);
+		}
+
+
+		// calculate new view port
+		m_rcViewPort.left   = rcClient.left + (newW - viewPortW) / 2;
+		m_rcViewPort.top    = rcClient.top + (newH - viewPortH) / 2;
+		m_rcViewPort.right  = m_rcViewPort.left + viewPortW;
+		m_rcViewPort.bottom = m_rcViewPort.top + viewPortH;
+
+	}
+	else
+	{
+		// calculate view port in pixels
+		int viewPortW = (int)(m_tSizeInPoints.cx * m_fScreenScaleFactorX);
+		int viewPortH = (int)(m_tSizeInPoints.cy * m_fScreenScaleFactorY);
+		if (m_bOrientationReverted)
+		{
+			int tmp = viewPortW;
+			viewPortW = viewPortH;
+			viewPortH = tmp;
+		}
+		GetClientRect(m_hWnd, &rcClient);
 
     // calculate client new width and height
     int newW = rcClient.right - rcClient.left;
     int newH = rcClient.bottom - rcClient.top;
 
-    // calculate new view port
-    m_rcViewPort.left   = rcClient.left + (newW - viewPortW) / 2;
-    m_rcViewPort.top    = rcClient.top + (newH - viewPortH) / 2;
-    m_rcViewPort.right  = m_rcViewPort.left + viewPortW;
-    m_rcViewPort.bottom = m_rcViewPort.top + viewPortH;
+		// calculate new view port
+		m_rcViewPort.left   = rcClient.left + (newW - viewPortW) / 2;
+		m_rcViewPort.top    = rcClient.top + (newH - viewPortH) / 2;
+		m_rcViewPort.right  = m_rcViewPort.left + viewPortW;
+		m_rcViewPort.bottom = m_rcViewPort.top + viewPortH;
+	}
 }
 
 void CCEGLView::centerWindow()
@@ -587,9 +868,10 @@ void CCEGLView::centerWindow()
     SetWindowPos(m_hWnd, 0, offsetX, offsetY, 0, 0, SWP_NOCOPYBITS | SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 }
 
-void CCEGLView::setScreenScale(float factor)
+void CCEGLView::setScreenScale(float factorx,float factory)
 {
-    m_fScreenScaleFactor = factor;
+    m_fScreenScaleFactorX = factorx;
+	m_fScreenScaleFactorY = factory;
 }
 
 bool CCEGLView::canSetContentScaleFactor()
@@ -599,7 +881,8 @@ bool CCEGLView::canSetContentScaleFactor()
 
 void CCEGLView::setContentScaleFactor(float contentScaleFactor)
 {
-    m_fScreenScaleFactor = contentScaleFactor;
+    m_fScreenScaleFactorX = contentScaleFactor;
+	m_fScreenScaleFactorY = contentScaleFactor;
     if (m_bOrientationReverted)
     {
         resize((int)(m_tSizeInPoints.cy * contentScaleFactor), (int)(m_tSizeInPoints.cx * contentScaleFactor));

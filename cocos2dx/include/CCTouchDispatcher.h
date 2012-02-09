@@ -100,13 +100,16 @@ public:
         , m_pStandardHandlers(NULL)
 		, m_pHandlersToAdd(NULL)
 		, m_pHandlersToRemove(NULL)
-		
+		, bPause(false)
 	{}
 
 public:
+    void Update();
 	/** Whether or not the events are going to be dispatched. Default: true */
     bool isDispatchEvents(void);
 	void setDispatchEvents(bool bDispatchEvents);
+
+    bool	checkHandler(CCTouchDelegate *toTest);
 
 	/** Adds a standard touch delegate to the dispatcher's list.
 	 See StandardTouchDelegate description.
@@ -133,7 +136,8 @@ public:
 	void setPriority(int nPriority, CCTouchDelegate *pDelegate);
 
 	void touches(CCSet *pTouches, CCEvent *pEvent, unsigned int uIndex);
-
+    inline void Set_Pause(bool _value){bPause = _value;}
+    inline bool Get_Pause()const {return bPause;}
 	virtual void touchesBegan(CCSet* touches, CCEvent* pEvent);
 	virtual void touchesMoved(CCSet* touches, CCEvent* pEvent);
 	virtual void touchesEnded(CCSet* touches, CCEvent* pEvent);
@@ -165,6 +169,8 @@ protected:
 
 	// 4, 1 for each type of event
 	struct ccTouchHandlerHelperData m_sHandlerHelperData[ccTouchMax];
+private:
+    bool bPause;
 };
 }//namespace   cocos2d 
 

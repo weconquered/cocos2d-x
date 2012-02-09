@@ -37,6 +37,8 @@ THE SOFTWARE.
 #include "CCActionGrid.h"
 #include "CCRenderTexture.h"
 #include "CCActionTiledGrid.h"
+#include "CCGestureRecognizer.h"
+
 namespace   cocos2d {
 
 const unsigned int kSceneFade = 0xFADEFADE;

@@ -48,6 +48,8 @@ All features from CCNode are valid, plus the following new features:
 class CC_DLL CCLayer : public CCNode, public CCTouchDelegate, public CCAccelerometerDelegate, public CCKeypadDelegate
 {
 public:
+    DECLARE_KINDOF(CCLayer,CCNode);
+
 	CCLayer();
 	virtual ~CCLayer();
 	bool init();
@@ -64,6 +66,11 @@ public:
 	virtual void ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent);
 	virtual void ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent);
 	
+    virtual void ccRecognizersTouchesBegan(CCSet *pTouches, CCEvent *pEvent);
+    virtual void ccRecognizersTouchesMoved(CCSet *pTouches, CCEvent *pEvent);
+    virtual void ccRecognizersTouchesEnded(CCSet *pTouches, CCEvent *pEvent);
+    virtual void ccRecognizersTouchesCancelled(CCSet *pTouches, CCEvent *pEvent);
+
     virtual void didAccelerate(CCAcceleration* pAccelerationValue) {CC_UNUSED_PARAM(pAccelerationValue);}
 
 	/** If isTouchEnabled, this method is called onEnter. Override it to change the
@@ -97,6 +104,9 @@ public:
     it's new in cocos2d-x
     */
     CC_PROPERTY(bool, m_bIsKeypadEnabled, IsKeypadEnabled)
+
+    bool subscribe;
+    bool error;
 };
     
 // for the subclass of CCLayer, each has to implement the static "node" method 
@@ -133,6 +143,23 @@ else \
 	return NULL; \
 	} \
 	}; 
+
+#define LAYER_NODE_FUNC_PARAM(layer,__PARAMTYPE__,__PARAM__) \
+    static layer* node(__PARAMTYPE__ __PARAM__) \
+{ \
+    layer *pRet = new layer(); \
+    if (pRet && pRet->init(__PARAM__)) \
+{ \
+    pRet->autorelease(); \
+    return pRet; \
+} \
+else \
+{ \
+    delete pRet; \
+    pRet = NULL; \
+    return NULL; \
+} \
+}; 
 
 
 

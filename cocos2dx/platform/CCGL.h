@@ -81,8 +81,14 @@ THE SOFTWARE.
 #endif
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+#ifdef NO_EGL
+#include <GL/glu.h>
+#include <GL/gl.h>
+#include "GL/glext.h"
+#else
 #include <GLES/gl.h>
 #include <GLES/glext.h>
+#endif
 #endif
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)

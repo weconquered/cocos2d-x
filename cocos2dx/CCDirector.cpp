@@ -23,7 +23,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-
+#include "CCLayer.h"
+#include "CCView.h"
 #include "cocoa/CCNS.h"
 #include "CCDirector.h"
 #include "CCScene.h"
@@ -47,7 +48,13 @@ THE SOFTWARE.
 #include "CCGL.h"
 #include "CCAnimationCache.h"
 #include "CCTouch.h"
-
+#include "CCGestureRecognizer.h"
+#include "CCTexture2D.h"
+#include "CCString.h"
+#include "CCImage.h"
+#include "CCBundle.h"
+#include "CCFileUtils.h"
+#include "CCNotificationCenter.h"
 //#if (CC_TARGET_PLATFORM != CC_PLATFORM_MARMALADE)
 #include "CCUserDefault.h"
 //#endif
@@ -62,9 +69,20 @@ using namespace std;
 using namespace cocos2d;
 namespace  cocos2d 
 {
-
+CCString *EVENT_KEY_PRESS = new CCString("EVENT_KEY_PRESS");
+CCString *TOUCH_RIGHT = new CCString("TOUCH_RIGHT");
+CCString *TOUCH_LEFT = new CCString("TOUCH_LEFT");
+CCString *TOUCH_UP = new CCString("TOUCH_UP");
+CCString *TOUCH_DOWN = new CCString("TOUCH_DOWN");
+CCString *TOUCH_ESCAPE = new CCString("TOUCH_ESCAPE");
+CCString *TOUCH_SPACE = new CCString("TOUCH_SPACE");
+CCString *TOUCH_ADD = new CCString("TOUCH_ADD");
+CCString *TOUCH_SUBSTRAC = new CCString("TOUCH_SUBSTRAC");
+CCString *EVENT_PAUSE_GAME = new CCString("EVENT_PAUSE_GAME");
+CCString *EVENT_RESUME_GAME = new CCString("EVENT_RESUME_GAME");
 // singleton stuff
 static CCDisplayLinkDirector s_sharedDirector;
+ccDisplayDeviceRatio	CCDirector::m_eScreenRatio;
 static bool s_bFirstRun = true;
 
 #define kDefaultFPS		60  // 60 frames per second
@@ -84,7 +102,16 @@ CCDirector* CCDirector::sharedDirector(void)
 bool CCDirector::init(void)
 {
 	CCLOG("cocos2d: %s", cocos2dVersion());
-
+#ifdef WIN32
+    Current_Texture = NULL;
+    showWindowsCursor = false;
+    Texture_Open = NULL;
+    Texture_OpenGrab = NULL;
+    Texture_Pinch = NULL;
+    Texture_PinchRelease = NULL;
+    Texture_Point = NULL;
+    Texture_PointPressed = NULL;
+#endif
 	// scenes
 	m_pRunningScene = NULL;
 	m_pNextScene = NULL;
@@ -96,7 +123,7 @@ bool CCDirector::init(void)
 
 	// Set default projection (3D)
 	m_eProjection = kCCDirectorProjectionDefault;
-
+    m_eScreenRatio = CCDirectorScreenRatio_4_3;
 	// projection delegate if "Custom" projection is used
 	m_pProjectionDelegate = NULL;
 
@@ -132,7 +159,24 @@ bool CCDirector::init(void)
 CCDirector::~CCDirector(void)
 {
 	CCLOGINFO("cocos2d: deallocing %p", this);
-
+#ifdef WIN32
+    delete Texture_Open;
+    delete Texture_OpenGrab;
+    delete Texture_Pinch;
+    delete Texture_PinchRelease;
+    delete Texture_Point;
+    delete Texture_PointPressed;
+    ShowCursor(true);
+#endif
+    delete EVENT_KEY_PRESS;
+    delete TOUCH_RIGHT;
+    delete TOUCH_LEFT;
+    delete TOUCH_UP;
+    delete TOUCH_DOWN;
+    delete TOUCH_ESCAPE;
+    delete TOUCH_SPACE;
+    delete TOUCH_ADD;
+    delete TOUCH_SUBSTRAC;
 #if CC_DIRECTOR_FAST_FPS
 	CC_SAFE_RELEASE(m_pFPSLabel);
 #endif 
@@ -151,6 +195,68 @@ CCDirector::~CCDirector(void)
 
 	// delete fps string
 	delete []m_pszFPS;
+}
+
+void	CCDirector::updateInputs()
+{
+    m_pobOpenGLView->Update();
+
+    if (!m_touchList.empty())
+    {
+        std::vector<SQUIDS_TOUCH>::iterator IT = m_touchList.begin();
+
+        while (IT != m_touchList.end())
+        {
+            switch((*IT))
+            {
+            case ST_ESCAPE:
+                {
+                    CCNotificationCenter::defaultCenter()->postNotificationName(EVENT_KEY_PRESS, NULL, TOUCH_ESCAPE);
+                    //SQGameSetup::sharedGameSetup()->endGame();
+                    break;
+                }
+            case ST_RIGHT:
+                {
+                    CCNotificationCenter::defaultCenter()->postNotificationName(EVENT_KEY_PRESS, NULL, TOUCH_RIGHT);
+                    break;
+                }
+            case ST_LEFT:
+                {
+                    CCNotificationCenter::defaultCenter()->postNotificationName(EVENT_KEY_PRESS, NULL, TOUCH_LEFT);
+                    break;
+                }
+            case ST_UP:
+                {
+                    CCNotificationCenter::defaultCenter()->postNotificationName(EVENT_KEY_PRESS, NULL, TOUCH_UP);
+                    break;
+                }
+            case ST_DOWN:
+                {
+                    CCNotificationCenter::defaultCenter()->postNotificationName(EVENT_KEY_PRESS, NULL, TOUCH_DOWN);
+                    break;
+                }
+            case ST_ADD:
+                {
+                    CCNotificationCenter::defaultCenter()->postNotificationName(EVENT_KEY_PRESS, NULL, TOUCH_ADD);
+                    break;
+                }
+            case ST_SUBSTRACT:
+                {
+                    CCNotificationCenter::defaultCenter()->postNotificationName(EVENT_KEY_PRESS, NULL, TOUCH_SUBSTRAC);
+                    break;
+                }
+            case ST_SPACE:
+                {
+                    CCNotificationCenter::defaultCenter()->postNotificationName(EVENT_KEY_PRESS, NULL, TOUCH_SPACE);
+                    break;
+                }
+            default:
+                break;
+            }
+            IT++;
+        }
+        m_touchList.clear();
+    }
 }
 
 void CCDirector::setGLDefaultValues(void)
@@ -185,7 +291,8 @@ void CCDirector::drawScene(void)
 	{
 		CCScheduler::sharedScheduler()->tick(m_fDeltaTime);
 	}
-
+    //Update inputs
+    this->updateInputs();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /* to avoid flickr, nextScene MUST be here: after tick and before draw.
@@ -206,6 +313,12 @@ void CCDirector::drawScene(void)
     if (m_pRunningScene)
     {
         m_pRunningScene->visit();
+    }
+
+    std::vector<CCLayer*>::iterator	itsubview;
+    for(itsubview=m_Subviews.begin();itsubview!=m_Subviews.end();itsubview++)
+    {
+        (*itsubview)->visit();
     }
 
 	// draw the notifications node
@@ -235,6 +348,93 @@ void CCDirector::drawScene(void)
         m_pobOpenGLView->swapBuffers();
     }
 }
+
+#ifdef WIN32
+void CCDirector::ChangeMouseCursor(CURSOR_TEXTURE _value)
+{
+    bool oldshowcursor=showWindowsCursor;
+
+    switch(_value)
+    {
+    case CURSOR_OPEN:
+        {
+
+            showWindowsCursor = false;
+
+            Current_Texture = Texture_Open;
+            break;
+        }
+    case CURSOR_OPEN_GRAB:
+        {
+
+            showWindowsCursor = false;
+
+            Current_Texture = Texture_OpenGrab;
+            break;
+        }
+    case CURSOR_PINCH:
+        {
+
+            showWindowsCursor = false;
+
+            Current_Texture = Texture_Pinch;
+            break;
+        }
+    case CURSOR_PINCH_RELEASE:
+        {
+
+            showWindowsCursor = false;
+
+            Current_Texture = Texture_PinchRelease;
+            break;
+        }
+    case CURSOR_POINT:
+        {
+
+            showWindowsCursor = false;
+
+            Current_Texture = Texture_Point;
+            break;
+        }
+    case CURSOR_BACK_TO_POINT:
+        {
+            if (!showWindowsCursor)
+            {
+                Current_Texture = Texture_Point;
+            }
+            break;
+        }
+    case CURSOR_POINT_PRESSED:
+        {
+            if (!showWindowsCursor)
+            {				
+                Current_Texture = Texture_PointPressed;
+            }
+            break;
+        }
+    case NO_CURSOR:
+        {
+
+            showWindowsCursor = false;
+
+            Current_Texture = NULL;
+            break;
+        }
+    case WINDOWS_CURSOR:
+        {
+            showWindowsCursor = true;
+            break;
+        }
+    default:
+        break;
+    }
+
+    if(oldshowcursor != showWindowsCursor)
+    {
+        ShowCursor(showWindowsCursor);
+    }
+}
+#endif
 
 void CCDirector::calculateDeltaTime(void)
 {
@@ -296,6 +496,90 @@ void CCDirector::setOpenGLView(CC_GLVIEW *pobOpenGLView)
  		CCTouchDispatcher *pTouchDispatcher = CCTouchDispatcher::sharedDispatcher();
  		m_pobOpenGLView->setTouchDelegate(pTouchDispatcher);
         pTouchDispatcher->setDispatchEvents(true);
+#if 0//cjh def WIN32
+        ShowCursor(false);
+        CCImage image;
+        unsigned long nSize = 0;
+        unsigned char* pBuffer = 0;
+        for (int i = 0; i < 6; i++)
+        {
+            if ( i == 0 )
+            {
+                CCString* path = CCBundle::mainBundle()->pathForResource("open.png");
+                CCFileData data(path->m_sString.c_str(), "rb");
+                nSize = data.getSize();
+                pBuffer = data.getBuffer();
+                if (image.initWithImageData(pBuffer, nSize))
+                {
+                    Texture_Open = new CCTexture2D();
+                    Texture_Open->initWithImage(&image);
+                }
+
+            }
+            else if ( i == 1 )
+            {
+                CCString* path = CCBundle::mainBundle()->pathForResource("open_grab.png");
+                CCFileData data(path->m_sString.c_str(), "rb");
+                nSize = data.getSize();
+                pBuffer = data.getBuffer();
+                if (image.initWithImageData(pBuffer, nSize))
+                {
+                    Texture_OpenGrab = new CCTexture2D();
+                    Texture_OpenGrab->initWithImage(&image);
+                }
+            }
+            else if ( i == 2 )
+            {
+                CCString* path = CCBundle::mainBundle()->pathForResource("pinch.png");
+                CCFileData data(path->m_sString.c_str(), "rb");
+                nSize = data.getSize();
+                pBuffer = data.getBuffer();
+                if (image.initWithImageData(pBuffer, nSize))
+                {
+                    Texture_Pinch = new CCTexture2D();
+                    Texture_Pinch->initWithImage(&image);
+                }
+            }
+            else if ( i == 3 )
+            {
+                CCString* path = CCBundle::mainBundle()->pathForResource("pinch_released.png");
+                CCFileData data(path->m_sString.c_str(), "rb");
+                nSize = data.getSize();
+                pBuffer = data.getBuffer();
+                if (image.initWithImageData(pBuffer, nSize))
+                {
+                    Texture_PinchRelease = new CCTexture2D();
+                    Texture_PinchRelease->initWithImage(&image);
+                }
+            }
+            else if ( i == 4 )
+            {
+                CCString* path = CCBundle::mainBundle()->pathForResource("point.png");
+                CCFileData data(path->m_sString.c_str(), "rb");
+                nSize = data.getSize();
+                pBuffer = data.getBuffer();
+                if (image.initWithImageData(pBuffer, nSize))
+                {
+                    Texture_Point = new CCTexture2D();
+                    Texture_Point->initWithImage(&image);
+                }
+            }
+            else if ( i == 5 )
+            {
+                CCString* path = CCBundle::mainBundle()->pathForResource("point_pressed.png");
+                CCFileData data(path->m_sString.c_str(), "rb");
+                nSize = data.getSize();
+                pBuffer = data.getBuffer();
+                if (image.initWithImageData(pBuffer, nSize))
+                {
+                    Texture_PointPressed = new CCTexture2D();
+                    Texture_PointPressed->initWithImage(&image);
+                }
+            }
+        }
+
+        this->ChangeMouseCursor(CURSOR_POINT);
+#endif
 	}
 }
 
@@ -392,6 +676,34 @@ void CCDirector::setDepthTest(bool bOn)
 		glDisable(GL_DEPTH_TEST);
 	}
 }
+
+CCPoint CCDirector::convertVectorToGL(const CCPoint& obPoint)
+{
+	float newY =  - obPoint.y;
+	float newX =  - obPoint.x;
+
+	CCPoint ret = CCPointZero;
+	switch (m_eDeviceOrientation)
+	{
+	case CCDeviceOrientationPortrait:
+		ret = ccp(obPoint.x, newY);
+		break;
+	case CCDeviceOrientationPortraitUpsideDown:
+		ret = ccp(newX, obPoint.y);
+		break;
+	case CCDeviceOrientationLandscapeLeft:
+		ret.x = obPoint.y;
+		ret.y = obPoint.x;
+		break;
+	case CCDeviceOrientationLandscapeRight:
+		ret.x = newY;
+		ret.y = newX;
+		break;
+	}
+	
+	return ret;
+}
+
 
 CCPoint CCDirector::convertToGL(const CCPoint& obPoint)
 {
@@ -583,6 +895,74 @@ void CCDirector::resetDirector()
 	CCTextureCache::purgeSharedTextureCache();
 }
 
+void	CCDirector::addSubview(CCLayer* _layer)
+{
+	m_Subviews.push_back(_layer);
+	_layer->retain();
+	_layer->onEnter();
+	_layer->onEnterTransitionDidFinish();
+}
+
+void	CCDirector::removeSubView(CCLayer* _layer)
+{
+	
+	std::vector<CCLayer*>::iterator itlayer;
+	for(itlayer=m_Subviews.begin();itlayer!=m_Subviews.end();++itlayer)
+	{
+		if((*itlayer) == _layer)
+		{
+			m_Subviews.erase(itlayer);
+			_layer->onExit();
+			_layer->release();
+			break;
+		}
+	}
+}
+
+CCView*	CCDirector::getSubViewByID(int id)
+{
+	std::vector<CCLayer*>::iterator it;
+	for(it=m_Subviews.begin();it!=m_Subviews.end();++it)
+	{
+		CCView* current=(CCView*)(*it);
+		if(current->getViewID()==id)
+		{
+			return current;
+		}
+	}
+	return 0;
+}
+
+CCPoint CCDirector::getPosInSubView(const CCPoint& loc,int id)
+{
+	/*CCView* current=getSubViewByID(id);
+	if(current)
+	{
+		CCPoint newpos=current->getLocalPos(loc);
+		return newpos;
+	}*/
+
+	return loc;
+}
+
+int		CCDirector::getSubViewID(const CCPoint& loc)
+{
+	// last added is tested first
+	std::vector<CCLayer*>::reverse_iterator it;
+	for(it=m_Subviews.rbegin();it!=m_Subviews.rend();++it)
+	{
+		CCLayer* current=(*it);
+		if(current->getIsRunning())
+		{
+			CCRect rect=current->boundingBoxInPixels();
+			if(CCRect::CCRectContainsPoint(rect,loc))
+			{
+				return ((CCView*)current)->getViewID();
+			}
+		}
+	}
+	return 0;
+}
 
 void CCDirector::purgeDirector()
 {
@@ -679,6 +1059,9 @@ void CCDirector::pause(void)
 	// when paused, don't consume CPU
 	setAnimationInterval(1 / 4.0);
 	m_bPaused = true;
+#ifdef WIN32
+    CCNotificationCenter::defaultCenter()->postNotificationName(EVENT_PAUSE_GAME);
+#endif
 }
 
 void CCDirector::resume(void)
@@ -697,6 +1080,9 @@ void CCDirector::resume(void)
 
 	m_bPaused = false;
 	m_fDeltaTime = 0;
+#ifdef WIN32
+    CCNotificationCenter::defaultCenter()->postNotificationName(EVENT_RESUME_GAME);
+#endif
 }
 
 #if CC_DIRECTOR_FAST_FPS
@@ -930,6 +1316,8 @@ void CCDisplayLinkDirector::mainLoop(void)
 	}
 	else if (! m_bInvalid)
  	{
+        CCGestureRecognizer::timeUpdate();
+        CCNotificationCenter::defaultCenter()->update();
  		drawScene();
 	 
  		// release the objects

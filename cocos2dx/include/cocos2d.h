@@ -93,7 +93,7 @@ THE SOFTWARE.
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_WOPHONE)
 #include "CCTextFieldTTF.h"
 #endif
-
+#include "CCGestureRecognizer.h"
 //
 // cocoa includes
 //

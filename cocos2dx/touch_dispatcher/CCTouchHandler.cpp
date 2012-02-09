@@ -25,6 +25,7 @@ THE SOFTWARE.
 
 #include "CCTouchHandler.h"
 #include "ccMacros.h"
+#include "CCGestureRecognizer.h"
 
 namespace   cocos2d {
 

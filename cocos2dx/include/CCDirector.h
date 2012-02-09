@@ -60,6 +60,12 @@ typedef enum {
 	CCDirectorProjectionCustom = kCCDirectorProjectionCustom,
 } ccDirectorProjection;
 
+typedef enum	
+{
+    CCDirectorScreenRatio_4_3,
+    CCDirectorScreenRatio_16_9
+} ccDisplayDeviceRatio;
+
 /** @typedef ccDirectorType
  Possible Director Types.
  @since v0.8.2
@@ -139,6 +145,47 @@ class CCScene;
 class CCEGLView;
 class CCProjectionProtocol;
 class CCNode;
+class CCString;
+class CCView;
+class CCLayer;
+class CCTexture2D;
+
+enum SQUIDS_TOUCH
+{
+    ST_ESCAPE = 0,
+    ST_RIGHT,
+    ST_LEFT,
+    ST_UP,
+    ST_DOWN,
+    ST_ADD,
+    ST_SUBSTRACT,
+    ST_SPACE,
+};
+
+enum CURSOR_TEXTURE
+{
+    CURSOR_OPEN = 0,
+    CURSOR_OPEN_GRAB,
+    CURSOR_PINCH,
+    CURSOR_PINCH_RELEASE,
+    CURSOR_POINT,
+    CURSOR_BACK_TO_POINT,
+    CURSOR_POINT_PRESSED,
+    NO_CURSOR,
+    WINDOWS_CURSOR,
+};
+
+extern CC_DLL CCString* EVENT_KEY_PRESS;
+extern CC_DLL CCString* TOUCH_RIGHT;
+extern CC_DLL CCString* TOUCH_LEFT;
+extern CC_DLL CCString* TOUCH_UP;
+extern CC_DLL CCString* TOUCH_DOWN;
+extern CC_DLL CCString* TOUCH_ESCAPE;
+extern CC_DLL CCString* TOUCH_SPACE;
+extern CC_DLL CCString* TOUCH_ADD;
+extern CC_DLL CCString* TOUCH_SUBSTRAC;
+extern CC_DLL CCString* EVENT_PAUSE_GAME;
+extern CC_DLL CCString* EVENT_RESUME_GAME;
 
 /**
 @brief Class that creates and handle the main Window and manages how
@@ -162,13 +209,37 @@ and when to execute the Scenes.
 */
 class CC_DLL CCDirector : public CCObject
 {
+private:
+    std::vector<SQUIDS_TOUCH> m_touchList;
 public: 
 	virtual bool init(void);
 	virtual ~CCDirector(void);
 	CCDirector(void) {}
 
 	// attribute
+#ifdef WIN32
+    void ChangeMouseCursor(CURSOR_TEXTURE _value);
+    bool showWindowsCursor;
+    CCTexture2D* Texture_Open;
+    CCTexture2D* Texture_OpenGrab;
+    CCTexture2D* Texture_Pinch;
+    CCTexture2D* Texture_PinchRelease;
+    CCTexture2D* Texture_Point;
+    CCTexture2D* Texture_PointPressed;
+    CCTexture2D* Current_Texture;
+    POINT pos;
+    inline void SetPos(POINT _value){pos = _value;}
+    // CCView
+    inline POINT GetPos() const {return pos;}
+    inline void Set_CursorWindowsPos(float _valuex, float _valuey) {SetCursorPos((int)_valuex,(int) _valuey);}
+#endif
+    void	addSubview(CCLayer* _layer);
+    void	removeSubView(CCLayer* _layer);
 
+    int		getSubViewID(const CCPoint& loc);
+    CCView*	getSubViewByID(int id);
+
+    CCPoint getPosInSubView(const CCPoint& loc,int id);
 	/** Get current running Scene. Director can only run one Scene at the time */
 	inline CCScene* getRunningScene(void) { return m_pRunningScene; }
 
@@ -200,7 +271,11 @@ public:
 	 */
 	inline ccDirectorProjection getProjection(void) { return m_eProjection; }
 	void setProjection(ccDirectorProjection kProjection);
-
+    static inline ccDisplayDeviceRatio	getScreenRatio(void) { return m_eScreenRatio; }
+    void setScreenRatio(ccDisplayDeviceRatio kratio)
+    {
+        m_eScreenRatio=kratio;
+    }
     /** How many frames were called since the director started */
     
     
@@ -244,7 +319,7 @@ public:
 	 Useful to convert (multi) touches coordinates to the current layout (portrait or landscape)
 	 */
 	CCPoint convertToGL(const CCPoint& obPoint);
-
+    CCPoint convertVectorToGL(const CCPoint& obPoint);
 	/** converts an OpenGL coordinate to a UIKit coordinate
 	 Useful to convert node points to window points for calls such as glScissor
 	 */
@@ -384,7 +459,8 @@ public:
 	/** returns a shared instance of the director */
 	static CCDirector* sharedDirector(void);
 	void resetDirector();
-
+    void updateInputs();
+    inline void addInputs(SQUIDS_TOUCH _value){m_touchList.push_back(_value);}
 protected:
 
 	void purgeDirector();
@@ -478,6 +554,8 @@ protected:
 #if CC_ENABLE_PROFILERS
 	ccTime m_fAccumDtForProfiler;
 #endif
+    std::vector<CCLayer*>	m_Subviews;
+    static ccDisplayDeviceRatio	m_eScreenRatio;
 };
 
 /** 

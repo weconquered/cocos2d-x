@@ -1146,4 +1146,74 @@ CCPoint CCNode::convertTouchToNodeSpaceAR(CCTouch *touch)
 	return this->convertToNodeSpaceAR(point);
 }
 
+CCSize CCNode::getTouchableArea()
+{
+  // we use content size if touchable area is 0
+  if( touchableArea_.width != 0.0f &&
+      touchableArea_.height != 0.0f )
+    return touchableArea_;
+  else
+    return m_tContentSize;
+}
+
+void CCNode::setTouchableArea(CCSize area)
+{
+	touchableArea_ = area;
+}
+
+bool CCNode::isPointInArea(CCPoint pt)
+{
+  if( !m_bIsVisible )
+    return false;
+
+  /*  convert the point to the nodes local coordinate system to make it
+   easier to compare against the area the node occupies*/
+  pt = this->convertToNodeSpace(pt);
+
+  // we have to take the anchor point into account for checking
+  CCRect rect;
+  /*  we should be able to use touchableArea here, even if a node doesn't set
+   this, it will return the contentArea.  */
+  rect.size = this->getTouchableArea();
+#ifdef ASSORIA
+  CCPoint anchor = m_tAnchorPoint;
+
+
+  // we pretty much need to undo the anchor to get our rect to start at the lower left
+  anchor.x = 0.5f - anchor.x;
+  anchor.y = 0.5f - anchor.y;
+
+  rect.origin = CCPointMake( -(rect.size.width*anchor.x), -(rect.size.height*anchor.y) );
+#else
+  // convertToNodeSpace already use anchor ?
+  rect.origin = CCPointZero;
+#endif
+  if( CCRect::CCRectContainsPoint(rect,pt) )
+    return true;
+  return false;
+}
+
+bool CCNode::isNodeInTreeTouched(const CCPoint& pt)
+{
+	if(this->isPointInArea(pt) )
+	return true;
+
+	bool rslt = false;
+
+	if(m_pChildren && m_pChildren->count() > 0)
+	{
+		CCObject* child;
+		CCARRAY_FOREACH(m_pChildren, child)
+		{
+			CCNode* pChild = (CCNode*) child;
+			if (pChild->isNodeInTreeTouched(pt))
+			{
+				rslt = true;
+				break;	
+			}
+		}
+	}
+	return rslt;
+}
+
 }//namespace   cocos2d 

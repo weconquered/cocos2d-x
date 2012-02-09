@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "CCObject.h"
 #include "ccConfig.h"
 #include "CCScriptSupport.h"
+#include "CCMutableArray.h"
 
 namespace   cocos2d {
 
@@ -38,20 +39,37 @@ class CCTouch;
 class CCEvent;
 class CCSet;
 class CCTouchDispatcher;
-	
+class CCGestureRecognizer;
+
 class CC_DLL CCTouchDelegate
 {
 protected:
+    CCMutableArray<CCGestureRecognizer *> * m_gestureRecognizers;
 	std::map<int, std::string> *m_pEventTypeFuncMap;
 
 public:
 
-	CCTouchDelegate() : m_pEventTypeFuncMap(NULL) {}
+    CCTouchDelegate() 
+        : m_pEventTypeFuncMap(NULL)
+        , m_gestureRecognizers(new CCMutableArray<CCGestureRecognizer*>())
+    {
+        
+    } 
 
 	virtual ~CCTouchDelegate()
 	{
 		CC_SAFE_DELETE(m_pEventTypeFuncMap);
+        if(m_gestureRecognizers)
+        {
+            m_gestureRecognizers->release();
+            m_gestureRecognizers=0;
+        }
 	}
+
+    CCMutableArray<CCGestureRecognizer *>*	getRecognizers()
+    {
+        return m_gestureRecognizers;
+    }
 
 	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {CC_UNUSED_PARAM(pTouch); CC_UNUSED_PARAM(pEvent); return false;};
 	// optional
@@ -65,6 +83,11 @@ public:
  	virtual void ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent) {CC_UNUSED_PARAM(pTouches); CC_UNUSED_PARAM(pEvent);}
  	virtual void ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent) {CC_UNUSED_PARAM(pTouches); CC_UNUSED_PARAM(pEvent);}
  	virtual void ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent) {CC_UNUSED_PARAM(pTouches); CC_UNUSED_PARAM(pEvent);}
+
+    virtual void ccRecognizersTouchesBegan(CCSet *pTouches, CCEvent *pEvent) {CC_UNUSED_PARAM(pTouches); CC_UNUSED_PARAM(pEvent);}
+    virtual void ccRecognizersTouchesMoved(CCSet *pTouches, CCEvent *pEvent) {CC_UNUSED_PARAM(pTouches); CC_UNUSED_PARAM(pEvent);}
+    virtual void ccRecognizersTouchesEnded(CCSet *pTouches, CCEvent *pEvent) {CC_UNUSED_PARAM(pTouches); CC_UNUSED_PARAM(pEvent);}
+    virtual void ccRecognizersTouchesCancelled(CCSet *pTouches, CCEvent *pEvent) {CC_UNUSED_PARAM(pTouches); CC_UNUSED_PARAM(pEvent);}
 
 	/*
 	 * In TouchesTest, class Padle inherits from CCSprite and CCTargetedTouchDelegate.
@@ -115,6 +138,57 @@ public:
 			CCScriptEngineManager::sharedScriptEngineManager()->getScriptEngine()->executeTouchesEvent((*m_pEventTypeFuncMap)[eventType].c_str(),
 				                                                                                        pTouches);
 		}
+	}
+
+    inline void addGestureRecognizer(CCGestureRecognizer* gestureRecognizer)
+	{
+		 m_gestureRecognizers->addObject(gestureRecognizer);
+	}
+	inline void removeGestureRecognizer(CCGestureRecognizer* gestureRecognizer)
+	{
+		m_gestureRecognizers->removeObject(gestureRecognizer);
+	}
+
+	void clearGestureRecognizers()
+	{
+		if(m_gestureRecognizers)
+		{
+			m_gestureRecognizers->release();
+			m_gestureRecognizers=0;
+		}
+	}
+
+	virtual bool gestureRecognizershouldReceiveTouch(CCGestureRecognizer *gestureRecognizer, CCTouch *touch)
+	{
+		return true;
+	}
+	virtual bool gestureRecognizerShouldBegin(CCGestureRecognizer *gestureRecognizer)
+	{
+		return true;
+	}
+
+	inline void stopAllGestureRecognizers()
+	{
+	// TODO ?
+	/*
+	CCGestureRecognizer* recognizer;
+	CCARRAY_FOREACH(gestureRecognizers_, recognizer)
+    {
+        if( recognizer.node == self )
+            [[CCDirector sharedDirector].openGLView removeGestureRecognizer:recognizer.gestureRecognizer];
+    }*/
+	}
+	inline void startAllGestureRecognizers()
+	{
+	// TODO ?
+	/*
+    CCGestureRecognizer* recognizer;
+	CCARRAY_FOREACH(gestureRecognizers_, recognizer)
+    {
+        if( recognizer.node == self )
+            [[CCDirector sharedDirector].openGLView addGestureRecognizer:recognizer.gestureRecognizer];
+    }
+	*/
 	}
 };
 /**

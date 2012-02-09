@@ -25,18 +25,37 @@ THE SOFTWARE.
 #ifndef __CC_EGLVIEW_WIN32_H__
 #define __CC_EGLVIEW_WIN32_H__
 
+#include <string>
+#include <vector>
+#include <map>
 #include <Windows.h>
 
 #include "CCCommon.h"
 #include "CCGeometry.h"
+#include "platform.h"
 
 NS_CC_BEGIN;
 
 class CCSet;
 class CCTouch;
 class EGLTouchDelegate;
+class CCLayer;
 
 class CCEGL;
+
+class  TouchStruct
+{
+public:
+	CCPoint			pos;
+	unsigned int	type;
+};
+
+class TouchStack
+{
+public:
+	std::vector<TouchStruct> 	myTouchStack;
+	int							myTouchEndCount;
+};
 
 class CC_DLL CCEGLView
 {
@@ -46,13 +65,14 @@ public:
     virtual ~CCEGLView();
 
     CCSize  getSize();
+	void	takeWindowFocus();
     bool    isOpenGLReady();
     void    release();
     void    setTouchDelegate(EGLTouchDelegate * pDelegate);
     void    swapBuffers();
     bool    canSetContentScaleFactor();
     void    setContentScaleFactor(float contentScaleFactor);
-
+	void	addSubview(CCLayer* _layer);
 	virtual bool Create(LPCTSTR pTitle, int w, int h);
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -66,10 +86,12 @@ public:
     HWND getHWnd();
     void resize(int width, int height);
     void centerWindow();
-    void setScreenScale(float factor);
+    void setScreenScale(float factorx,float factory);
+	inline void Set_enablePause(bool _value){enablePause = _value;}
+	inline bool Get_enablePause()const {return enablePause;}
 	typedef void (*LPFN_ACCELEROMETER_KEYHOOK)( UINT message,WPARAM wParam, LPARAM lParam );
 	void setAccelerometerKeyHook( LPFN_ACCELEROMETER_KEYHOOK lpfnAccelerometerKeyHook );
-
+    void Update();
     // static function
 
     /**
@@ -77,15 +99,25 @@ public:
     */
     static CCEGLView& sharedOpenGLView();
 
+	void	setFullScreen(bool fullscreen)
+	{
+		m_isFullScreen=fullscreen;
+	}
+
+	void	GetScreenCapacity(int& hSize,int& vSize);
 protected:
+	TouchStack myStack;
 
 private:
-
+	bool				enablePause;
+	bool				m_mouseClic;
+	bool				m_altPressed;
     bool                m_bCaptured;
 	bool				m_bOrientationReverted;
 	bool				m_bOrientationInitVertical;
     CCSet *             m_pSet;
     CCTouch *           m_pTouch;
+	struct cc_timeval	m_LastZoomUpdateTime;
     EGLTouchDelegate *  m_pDelegate;
 
     CCEGL *            m_pEGL;
@@ -94,9 +126,11 @@ private:
 
 	int					m_eInitOrientation;
     SIZE                m_tSizeInPoints;
-    float               m_fScreenScaleFactor;
+    float               m_fScreenScaleFactorX;
+	float               m_fScreenScaleFactorY;
     RECT                m_rcViewPort;
 	LPFN_ACCELEROMETER_KEYHOOK	m_lpfnAccelerometerKeyHook;
+	bool				m_isFullScreen;
 };
 
 NS_CC_END;

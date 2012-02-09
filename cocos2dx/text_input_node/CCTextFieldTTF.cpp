@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 #include "CCDirector.h"
 #include "CCEGLView.h"
-
+#include "CCGestureRecognizer.h"
 NS_CC_BEGIN;
 
 static int _calcCharCount(const char * pszText)

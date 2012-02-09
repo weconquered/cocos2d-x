@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "CCAccelerometer.h"
 #include "CCDirector.h"
 #include "CCPointExtension.h"
+#include "CCGestureRecognizer.h"
 namespace   cocos2d {
 
 // CCLayer
@@ -41,10 +42,17 @@ CCLayer::CCLayer()
 {
 	setAnchorPoint(ccp(0.5f, 0.5f));
 	m_bIsRelativeAnchorPoint = false;
+    subscribe = false;
+    error = false;
 }
 
 CCLayer::~CCLayer()
 {
+    if(m_gestureRecognizers)
+    {
+        m_gestureRecognizers->release();
+        m_gestureRecognizers=0;
+    }
 }
 
 bool CCLayer::init()
@@ -82,6 +90,8 @@ CCLayer *CCLayer::node()
 
 void CCLayer::registerWithTouchDispatcher()
 {
+    subscribe = true;
+    error = true;
 	CCTouchDispatcher::sharedDispatcher()->addStandardDelegate(this,0);
 }
 
@@ -100,12 +110,19 @@ void CCLayer::setIsTouchEnabled(bool enabled)
 		{
 			if (enabled)
 			{
-				this->registerWithTouchDispatcher();
+                if ( !subscribe )
+                {
+                    subscribe = true;
+                    this->registerWithTouchDispatcher();
+                }
 			}
 			else
 			{
 				// have problems?
 				CCTouchDispatcher::sharedDispatcher()->removeDelegate(this);
+                ((CCTouchDelegate*)this)->stopAllGestureRecognizers();
+                subscribe = false;
+                error = false;
 			}
 		}
 	}
@@ -171,6 +188,7 @@ void CCLayer::onEnter()
 	if (m_bIsTouchEnabled)
 	{
 		this->registerWithTouchDispatcher();
+        ((CCTouchDelegate*)this)->startAllGestureRecognizers();
 	}
 
 	// then iterate over all the children
@@ -194,8 +212,17 @@ void CCLayer::onExit()
 	if( m_bIsTouchEnabled )
 	{
 		CCTouchDispatcher::sharedDispatcher()->removeDelegate(this);
+        ((CCTouchDelegate*)this)->stopAllGestureRecognizers();
+        subscribe = false;
+        error = false;
 	}
-
+    if ( subscribe )
+    {
+        CCTouchDispatcher::sharedDispatcher()->removeDelegate(this);
+        ((CCTouchDelegate*)this)->stopAllGestureRecognizers();
+        subscribe = false;
+        error = false;
+    }
     // remove this layer from the delegates who concern Accelerometer Sensor
     if (m_bIsAccelerometerEnabled)
     {
@@ -270,7 +297,45 @@ void CCLayer::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent)
 		excuteScriptTouchesHandler(CCTOUCHCANCELLED, pTouches);
 	}
 }
+void CCLayer::ccRecognizersTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent)
+{
+    CCGestureRecognizer* recognizer;
+    for(unsigned int i=0; i<this->getRecognizers()->count(); i++)
+    {
+        recognizer=this->getRecognizers()->getObjectAtIndex(i);
+        recognizer->ccTouchesBegan(pTouches, pEvent);
+    }
+}
 
+void CCLayer::ccRecognizersTouchesEnded(CCSet *pTouches, CCEvent *pEvent)
+{
+    CCGestureRecognizer* recognizer;
+    for(unsigned int i=0; i<((CCTouchDelegate*)this)->getRecognizers()->count(); i++)
+    {
+        recognizer=((CCTouchDelegate*)this)->getRecognizers()->getObjectAtIndex(i);
+        recognizer->ccTouchesEnded(pTouches, pEvent);
+    }
+}
+
+void CCLayer::ccRecognizersTouchesMoved(CCSet *pTouches, CCEvent *pEvent)
+{
+    CCGestureRecognizer* recognizer;
+    for(unsigned int i=0; i<((CCTouchDelegate*)this)->getRecognizers()->count(); i++)
+    {
+        recognizer=((CCTouchDelegate*)this)->getRecognizers()->getObjectAtIndex(i);
+        recognizer->ccTouchesMoved(pTouches, pEvent);
+    }
+}
+
+void CCLayer::ccRecognizersTouchesCancelled(CCSet *pTouches, CCEvent *pEvent)
+{
+    CCGestureRecognizer* recognizer;
+    for(unsigned int i=0; i<((CCTouchDelegate*)this)->getRecognizers()->count(); i++)
+    {
+        recognizer=((CCTouchDelegate*)this)->getRecognizers()->getObjectAtIndex(i);
+        recognizer->ccTouchesCancelled(pTouches, pEvent);
+    }
+}
 /// ColorLayer
 
 

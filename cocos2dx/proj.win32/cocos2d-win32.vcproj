@@ -51,7 +51,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
-				DisableSpecificWarnings="4996;4267"
+				DisableSpecificWarnings="4996;4267;4251"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -208,11 +208,27 @@
 				>
 			</File>
 			<File
+				RelativePath="..\cocoa\CCBundle.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\cocoa\CCClassFromString.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\cocoa\CCData.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\cocoa\CCGeometry.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\cocoa\CCGestureRecognizer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\cocoa\CCNotificationCenter.cpp"
 				>
 			</File>
 			<File
@@ -228,7 +244,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\cocoa\CCPageControl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\cocoa\CCScrollView.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\cocoa\CCSet.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\cocoa\CCView.cpp"
 				>
 			</File>
 			<File
@@ -416,6 +444,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\CCGestureRecognizer.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\CCGL.h"
 				>
 			</File>
@@ -484,6 +516,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\CCPageControl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\CCParallaxNode.h"
 				>
 			</File>
@@ -533,6 +569,10 @@
 			</File>
 			<File
 				RelativePath="..\include\CCScriptSupport.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\CCScrollView.h"
 				>
 			</File>
 			<File
@@ -633,6 +673,10 @@
 			</File>
 			<File
 				RelativePath="..\include\CCUserDefault.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\CCView.h"
 				>
 			</File>
 			<File

@@ -193,6 +193,10 @@ namespace   cocos2d {
 			*/
 			CC_PROPERTY_PASS_BY_REF(CCSize, m_tContentSizeInPixels, ContentSizeInPixels)
 
+            CC_PROPERTY(CCSize, touchableArea_, TouchableArea)
+            bool isPointInArea(CCPoint pt);
+            bool isNodeInTreeTouched(const CCPoint& pt);
+
 			/** whether or not the node is running */
 			CC_PROPERTY_READONLY(bool, m_bIsRunning, IsRunning)
 

@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CCTouchDispatcher.h"
 #include "CCTouch.h"
 #include "CCStdC.h"
-
+#include "CCGestureRecognizer.h"
 #include <vector>
 #include <stdarg.h>
 

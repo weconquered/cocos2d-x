@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "CCTexture2D.h"
 #include "support/data_support/ccCArray.h"
 #include "ccMacros.h"
+#include "CCGestureRecognizer.h"
 #include <algorithm>
 
 /**
