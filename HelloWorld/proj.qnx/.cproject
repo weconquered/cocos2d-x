@@ -72,6 +72,8 @@
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform/third_party/qnx/libraries/${CPUVARDIR}"/>
 								</option>
 								<option id="com.qnx.qcc.option.linker.ldoptions.1363839882" name="Linker Options (-Wl,)" superClass="com.qnx.qcc.option.linker.ldoptions" valueType="stringList">
+									<listOptionValue builtIn="false" value="../../../Box2D/proj.qnx/${ConfigName}/libBox2D.a"/>
+									<listOptionValue builtIn="false" value="../../../chipmunk/proj.qnx/${ConfigName}/libchipmunk.a"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/proj.qnx/${ConfigName}/libcocos2dx.a"/>
 								</option>
 								<inputType id="com.qnx.qcc.inputType.linker.697035559" superClass="com.qnx.qcc.inputType.linker">

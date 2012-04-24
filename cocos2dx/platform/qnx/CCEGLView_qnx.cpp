@@ -87,7 +87,7 @@ enum Orientation
 class CCTouchElement : public CCObject
 {
 public:
-	static CCTouchElement* TouchElementWithType(int type, int id, float x, float y)
+	static CCTouchElement* touchElementWithType(int type, int id, float x, float y)
 	{
 		CCTouchElement* pRet = new CCTouchElement();
 		if (pRet)
@@ -625,10 +625,10 @@ const char* CCEGLView::getWindowGroupId() const
     return m_window_group_id;
 }
 
-#define InvalidArray(__array__, __row__, __col__, __type__) \
-	for (int i = 0; i < __row__; ++i) \
-		for (int j = 0; j < __col__; ++j) \
-			__array__[i][j] = (__type__)-1;
+//#define InvalidArray(__array__, __row__, __col__, __type__) \
+//	for (int i = 0; i < __row__; ++i) \
+//		for (int j = 0; j < __col__; ++j) \
+//			__array__[i][j] = (__type__)-1;
 
 
 bool CCEGLView::HandleEvents()
@@ -641,21 +641,23 @@ bool CCEGLView::HandleEvents()
     int             domain = 0;
     char             buf[4] = {0};
 
-    int nTouchType = CC_TOUCH_TYPE_NONE;
-    int nTouchBeginNum = 0;
-    int nTouchMovedNum = 0;
-    int nTouchEndedNum = 0;
+//    int nTouchType = CC_TOUCH_TYPE_NONE;
+//    int nTouchBeginNum = 0;
+//    int nTouchMovedNum = 0;
+//    int nTouchEndedNum = 0;
 
     CCDirector* pDirector = CCDirector::sharedDirector();
 
-    int ids[CC_TOUCH_INDEX_MAX][CC_MAX_TOUCHES];
-    InvalidArray(ids, CC_TOUCH_INDEX_MAX, CC_MAX_TOUCHES, int);
+//    int ids[CC_TOUCH_INDEX_MAX][CC_MAX_TOUCHES];
+//    InvalidArray(ids, CC_TOUCH_INDEX_MAX, CC_MAX_TOUCHES, int);
+//
+//    float xs[CC_TOUCH_INDEX_MAX][CC_MAX_TOUCHES];
+//    InvalidArray(xs, CC_TOUCH_INDEX_MAX, CC_MAX_TOUCHES, float);
+//
+//    float ys[CC_TOUCH_INDEX_MAX][CC_MAX_TOUCHES];
+//    InvalidArray(ys, CC_TOUCH_INDEX_MAX, CC_MAX_TOUCHES, float);
 
-    float xs[CC_TOUCH_INDEX_MAX][CC_MAX_TOUCHES];
-    InvalidArray(xs, CC_TOUCH_INDEX_MAX, CC_MAX_TOUCHES, float);
-
-    float ys[CC_TOUCH_INDEX_MAX][CC_MAX_TOUCHES];
-    InvalidArray(ys, CC_TOUCH_INDEX_MAX, CC_MAX_TOUCHES, float);
+    CCArray* pTouchArr = CCArray::arrayWithCapacity(20);
 
     for (;;)
     {
@@ -760,28 +762,8 @@ bool CCEGLView::HandleEvents()
                     screen_get_mtouch_event(m_screenEvent, &mtouch_event, 0);
                     touch_id = mtouch_event.contact_id;
 
-                    nTouchType |= CC_TOUCH_TYPE_ENDED;
 
-                    for (int i = 0; i < CC_MAX_TOUCHES; i++)
-                    {
-                    	if (ids[CC_TOUCH_INDEX_ENDED][i] < 0)
-                    	{
-                    		ids[CC_TOUCH_INDEX_ENDED][i] = touch_id;
-                    		xs[CC_TOUCH_INDEX_ENDED][i] = (float)(mtouch_event.x);
-                    		ys[CC_TOUCH_INDEX_ENDED][i] = (float)(mtouch_event.y);
-                    		nTouchEndedNum++;
-                    		break;
-                    	}
-                    	else if (ids[CC_TOUCH_INDEX_ENDED][i] == touch_id)
-                    	{
-                    		ids[CC_TOUCH_INDEX_ENDED][i] = touch_id;
-                    		xs[CC_TOUCH_INDEX_ENDED][i] = (float)(mtouch_event.x);
-                    		ys[CC_TOUCH_INDEX_ENDED][i] = (float)(mtouch_event.y);
-                    		break;
-                    	}
-                    }
-
-                    CCLog("SCREEN_EVENT_MTOUCH_RELEASE, id = %d", touch_id);
+                    pTouchArr->addObject(CCTouchElement::touchElementWithType(CC_TOUCH_TYPE_ENDED, touch_id, (float)(mtouch_event.x), (float)(mtouch_event.y)));
 
                 }
                     break;
@@ -791,28 +773,7 @@ bool CCEGLView::HandleEvents()
                     screen_get_mtouch_event(m_screenEvent, &mtouch_event, 0);
                     touch_id = mtouch_event.contact_id;
 
-                    nTouchType |= CC_TOUCH_TYPE_BEGIN;
-
-                    for (int i = 0; i < CC_MAX_TOUCHES; i++)
-                    {
-                    	if (ids[CC_TOUCH_INDEX_BEGIN][i] < 0)
-                    	{
-                    		ids[CC_TOUCH_INDEX_BEGIN][i] = touch_id;
-                    		xs[CC_TOUCH_INDEX_BEGIN][i] = (float)(mtouch_event.x);
-                    		ys[CC_TOUCH_INDEX_BEGIN][i] = (float)(mtouch_event.y);
-                    		nTouchBeginNum++;
-                    		break;
-                    	}
-                    	else if (ids[CC_TOUCH_INDEX_BEGIN][i] == touch_id)
-                    	{
-                    		ids[CC_TOUCH_INDEX_BEGIN][i] = touch_id;
-                    		xs[CC_TOUCH_INDEX_BEGIN][i] = (float)(mtouch_event.x);
-                    		ys[CC_TOUCH_INDEX_BEGIN][i] = (float)(mtouch_event.y);
-                    		break;
-                    	}
-                    }
-
-                    CCLog("SCREEN_EVENT_MTOUCH_TOUCH, id = %d", touch_id);
+                    pTouchArr->addObject(CCTouchElement::touchElementWithType(CC_TOUCH_TYPE_BEGIN, touch_id, (float)(mtouch_event.x), (float)(mtouch_event.y)));
 
                 }
 
@@ -823,28 +784,7 @@ bool CCEGLView::HandleEvents()
                     screen_get_mtouch_event(m_screenEvent, &mtouch_event, 0);
                     touch_id = mtouch_event.contact_id;
 
-                    nTouchType |= CC_TOUCH_TYPE_MOVED;
-
-                    for (int i = 0; i < CC_MAX_TOUCHES; i++)
-                    {
-                    	if (ids[CC_TOUCH_INDEX_MOVED][i] < 0)
-                    	{
-                    		ids[CC_TOUCH_INDEX_MOVED][i] = touch_id;
-                    		xs[CC_TOUCH_INDEX_MOVED][i] = (float)(mtouch_event.x);
-                    		ys[CC_TOUCH_INDEX_MOVED][i] = (float)(mtouch_event.y);
-                    		nTouchMovedNum++;
-                    		break;
-                    	}
-                    	else if (ids[CC_TOUCH_INDEX_MOVED][i] == touch_id)
-                    	{
-                    		ids[CC_TOUCH_INDEX_MOVED][i] = touch_id;
-                    		xs[CC_TOUCH_INDEX_MOVED][i] = (float)(mtouch_event.x);
-                    		ys[CC_TOUCH_INDEX_MOVED][i] = (float)(mtouch_event.y);
-                    		break;
-                    	}
-                    }
-
-                    CCLog("SCREEN_EVENT_MTOUCH_MOVE, id = %d", touch_id);
+                    pTouchArr->addObject(CCTouchElement::touchElementWithType(CC_TOUCH_TYPE_MOVED, touch_id, (float)(mtouch_event.x), (float)(mtouch_event.y)));
 
                 }
 
@@ -865,71 +805,24 @@ bool CCEGLView::HandleEvents()
                             if (mouse_pressed)
                             {
                                 // Left mouse button was released
-//                                if (m_pDelegate && touch_id < MAX_TOUCHES)
-//                                {
-//                                    CCTouch* touch = s_pTouches[touch_id];
-//                                    if (touch)
-//                                    {
-//                                        CCSet set;
-//                                        touch->SetTouchInfo(((float)(pair[0]) - m_rcViewPort.origin.x) / m_fScreenScaleFactor,
-//                                                               ((float)(pair[1]) - m_rcViewPort.origin.y) / m_fScreenScaleFactor);
-//                                        set.addObject(touch);
-//                                        m_pDelegate->touchesMoved(&set, NULL);
-//                                    }
-//                                }
+                            	int id = 0;
+                            	handleTouchesMove(1, &id, (float*)&pair[0], (float*)&pair[1]);
                             }
                             else
                             {
                                 // Left mouse button is pressed
                                 mouse_pressed = true;
-//                                if (m_pDelegate && touch_id < MAX_TOUCHES)
-//                                {
-//                                    CCTouch* touch = s_pTouches[touch_id];
-//                                    if (!touch)
-//                                        touch = new CCTouch;
-//
-//                                    touch->SetTouchInfo(((float)(pair[0]) - m_rcViewPort.origin.x) / m_fScreenScaleFactor,
-//                                                           ((float)(pair[1]) - m_rcViewPort.origin.y) / m_fScreenScaleFactor);
-//                                    s_pTouches[touch_id] = touch;
-//
-//                                    CCSet set;
-//                                    set.addObject(touch);
-//                                    m_pDelegate->touchesBegan(&set, NULL);
-//                                }
+                            	int id = 0;
+                            	handleTouchesBegin(1, &id, (float*)&pair[0], (float*)&pair[1]);
                             }
                         }
                         else
                         {
-//                            if (mouse_pressed)
-//                            {
-//                                if (m_pDelegate && touch_id < MAX_TOUCHES)
-//                                {
-//                                    mouse_pressed = false;
-//
-//                                    CCTouch* touch = s_pTouches[touch_id];
-//                                    if (touch)
-//                                    {
-//                                        CCSet set;
-//                                        touch->SetTouchInfo(((float)(pair[0]) - m_rcViewPort.origin.x) / m_fScreenScaleFactor,
-//                                                               ((float)(pair[1]) - m_rcViewPort.origin.y) / m_fScreenScaleFactor);
-//                                        set.addObject(touch);
-//                                        m_pDelegate->touchesEnded(&set, NULL);
-//
-//                                        touch->release();
-//                                        for (int i = touch_id; i < MAX_TOUCHES; i++)
-//                                        {
-//                                            if (i != (MAX_TOUCHES - 1))
-//                                            {
-//                                                s_pTouches[i] = s_pTouches[i + 1];
-//                                            }
-//                                            else
-//                                            {
-//                                                s_pTouches[i] = NULL;
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
+                            if (mouse_pressed)
+                            {
+                            	int id = 0;
+                            	handleTouchesEnd(1, &id, (float*)&pair[0], (float*)&pair[1]);
+                            }
                         }
                     }
                     break;
@@ -974,28 +867,86 @@ bool CCEGLView::HandleEvents()
         }
     }
 
+    CCArray* pCollectedMoveArr = CCArray::arrayWithCapacity(10);
+    CCObject* pObj = NULL;
+    CCARRAY_FOREACH(pTouchArr, pObj)
+    {
+    	CCTouchElement* pElement = (CCTouchElement*)pObj;
+    	if (pElement->type == CC_TOUCH_TYPE_BEGIN)
+    	{
+    		// process the collected move events.
+    		if (pCollectedMoveArr->count() > 0)
+    		{
+    			handleCollectedMoveEvent(pCollectedMoveArr);
+    		}
+    		CCLOG("handle begin: x = %f, y = %f, id = %d", pElement->x, pElement->y, pElement->id);
+    		handleTouchesBegin(1, &pElement->id, &pElement->x, &pElement->y);
+    	}
+    	else if (pElement->type == CC_TOUCH_TYPE_ENDED)
+    	{
+    		if (pCollectedMoveArr->count() > 0)
+    		{
+    			handleCollectedMoveEvent(pCollectedMoveArr);
+    		}
+    		CCLOG("handle end: x = %f, y = %f, id = %d", pElement->x, pElement->y, pElement->id);
+    		handleTouchesEnd(1, &pElement->id, &pElement->x, &pElement->y);
+    	}
+    	else if (pElement->type == CC_TOUCH_TYPE_MOVED)
+    	{
+    		// collect move events.
+    		pCollectedMoveArr->addObject(pElement);
+    	}
+    }
 
-	if (nTouchType & CC_TOUCH_TYPE_BEGIN)
+	if (pCollectedMoveArr->count() > 0)
 	{
-		CCLog("nTouchBeginNum = %d", nTouchBeginNum);
-		handleTouchesBegin(nTouchBeginNum, ids[CC_TOUCH_INDEX_BEGIN], xs[CC_TOUCH_INDEX_BEGIN], ys[CC_TOUCH_INDEX_BEGIN]);
+		handleCollectedMoveEvent(pCollectedMoveArr);
 	}
 
-    if (nTouchType & CC_TOUCH_TYPE_MOVED)
-    {
-    	CCLog("nTouchMovedNum = %d", nTouchMovedNum);
-    	handleTouchesMove(nTouchMovedNum, ids[CC_TOUCH_INDEX_MOVED], xs[CC_TOUCH_INDEX_MOVED], ys[CC_TOUCH_INDEX_MOVED]);
-    }
-
-    if (nTouchType & CC_TOUCH_TYPE_ENDED)
-    {
-    	CCLog("nTouchEndedNum = %d", nTouchEndedNum);
-    	handleTouchesEnd(nTouchEndedNum, ids[CC_TOUCH_INDEX_ENDED], xs[CC_TOUCH_INDEX_ENDED], ys[CC_TOUCH_INDEX_ENDED]);
-    }
-
-
-
     return true;
+}
+
+#define InvalidSingleDimArray(__array__, __num__, __type__) \
+	for (int i = 0; i < __num__; ++i) \
+			__array__[i] = (__type__)-1;
+
+void CCEGLView::handleCollectedMoveEvent(CCArray* pCollectedArr)
+{
+	int ids[CC_MAX_TOUCHES];
+	InvalidSingleDimArray(ids, CC_MAX_TOUCHES, int);
+	float xs[CC_MAX_TOUCHES];
+	InvalidSingleDimArray(xs, CC_MAX_TOUCHES, float);
+	float ys[CC_MAX_TOUCHES];
+	InvalidSingleDimArray(ys, CC_MAX_TOUCHES, float);
+
+	unsigned int uTouchMovedNum = 0;
+	CCObject* pObj = NULL;
+	CCARRAY_FOREACH(pCollectedArr, pObj)
+	{
+		CCTouchElement* pElement = (CCTouchElement*)pObj;
+		for (int i = 0; i < CC_MAX_TOUCHES; i++)
+		{
+			if (ids[i] < 0)
+			{
+				ids[i] = pElement->id;
+				xs[i] = pElement->x;
+				ys[i] = pElement->y;
+				uTouchMovedNum++;
+				CCLOG("move: x=%f, y=%f, id=%d", pElement->x, pElement->y, pElement->id);
+				break;
+			}
+			else if (ids[i] == pElement->id)
+			{
+				xs[i] = pElement->x;
+				ys[i] = pElement->y;
+				CCLOG("reset-->move: x=%f, y=%f, id=%d", pElement->x, pElement->y, pElement->id);
+				break;
+			}
+		}
+	}
+
+	handleTouchesMove(uTouchMovedNum, ids, xs, ys);
+	pCollectedArr->removeAllObjects();
 }
 
 void CCEGLView::swapBuffers()

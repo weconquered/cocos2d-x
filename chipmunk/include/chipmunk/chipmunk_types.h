@@ -135,8 +135,11 @@ static inline cpFloat cpflerpconst(cpFloat f1, cpFloat f2, cpFloat d)
 }
 
 /// Hash value type.
+#ifdef __QNX__
+typedef unsigned long cpHashValue;
+#else
 typedef uintptr_t cpHashValue;
-
+#endif
 // Oh C, how we love to define our own boolean types to get compiler compatibility
 /// Chipmunk's boolean type.
 #ifdef CP_BOOL_TYPE
@@ -166,14 +169,22 @@ typedef uintptr_t cpHashValue;
     typedef CP_COLLISION_TYPE_TYPE cpCollisionType;
 #else
 /// Type used for cpSpace.collision_type.
-    typedef uintptr_t cpCollisionType;
+	#ifdef __QNX__
+    	typedef unsigned long cpCollisionType;
+	#else
+		typedef uintptr_t cpCollisionType;
+	#endif
 #endif
 
 #ifdef CP_GROUP_TYPE
     typedef CP_GROUP_TYPE cpGroup;
 #else
 /// Type used for cpShape.group.
-    typedef uintptr_t cpGroup;
+	#ifdef __QNX__
+		typedef unsigned long cpGroup;
+	#else
+		typedef uintptr_t cpGroup;
+	#endif
 #endif
 
 #ifdef CP_LAYERS_TYPE

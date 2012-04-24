@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include <EGL/egl.h>
 #include <screen/screen.h>
 #include <bps/event.h>
+#include "CCArray.h"
 
 NS_CC_BEGIN
 
@@ -55,6 +56,7 @@ public:
     const char* getWindowGroupId() const;
     // keep compatible
     void    end();
+
     void    swapBuffers();
     void    setIMEKeyboardState(bool bOpen);
     bool     HandleEvents();
@@ -75,7 +77,7 @@ private:
     bool        createNativeWindow(const EGLConfig &config);
     void        showKeyboard();
     void        hideKeyboard();
-
+    void 	handleCollectedMoveEvent(CCArray* pCollectedArr);
     bool                m_isGLInitialized;
     
     EventHandler*        m_pEventHandler;
