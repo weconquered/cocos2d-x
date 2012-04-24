@@ -30,65 +30,39 @@ THE SOFTWARE.
 #include <FUi.h>
 #include <FSystem.h>
 #include "CCGeometry.h"
-#include <GLES/egl.h>
-#include <GLES/gl.h>
-#include <GLES/glext.h>
+#include "CCGL.h"
+#include "CCEGLViewProtocol.h"
 
 NS_CC_BEGIN
-
-class CCSet;
-class CCTouch;
-class EGLTouchDelegate;
 
 class CCEGL;
 
 class CC_DLL CCEGLView
-    :public Osp::Ui::Controls::Form
-    ,public Osp::Ui::ITouchEventListener
-    ,public Osp::Ui::ITextEventListener
+    : public Osp::Ui::Controls::Form
+    , public CCEGLViewProtocol
+    , public Osp::Ui::ITouchEventListener
+    , public Osp::Ui::ITextEventListener
 {
 public:
-
     CCEGLView();
     virtual ~CCEGLView();
 
-    CCRect  getFrame();
-    CCSize  getSize();
+    /* override functions */
     bool    isOpenGLReady();
-    bool    isIpad();
-    void    release();
-    void    setTouchDelegate(EGLTouchDelegate * pDelegate);
+    void    end();
     void    swapBuffers();
-    bool    canSetContentScaleFactor();
-    void    setContentScaleFactor(float contentScaleFactor);
+    void    setIMEKeyboardState(bool bOpen);
 
-    int setDeviceOrientation(Osp::Ui::Orientation eOritation);
-    void setViewPortInPoints(float x, float y, float w, float h);
-    void setScissorInPoints(float x, float y, float w, float h);
-
-    void setIMEKeyboardState(bool bOpen);
     // static function
     /**
     @brief    get the shared main open gl window
     */
     static CCEGLView& sharedOpenGLView();
     
-    float getMainScreenScale() { return -1.0f; }
+    bool Create(Osp::App::Application* pApp, Osp::Ui::Orientation eOrientation);
 
-    /*
-     * param
-     *   width[in]: resource width
-     *   height[in]: resource height
-     */
-    bool Create(Osp::App::Application* pApp, int width, int height);
-    void resize(int width, int height);
     virtual result OnInitializing(void);
     virtual result OnTerminating(void);
-
-    void onTouchesBegin(int id[], float x[], float y[], int pointerNumber);
-    void onTouchesMove(int id[], float x[], float y[], int pointerNumber);
-    void onTouchesEnd(int id[], float x[], float y[], int pointerNumber);
-    void onTouchEvent(const Osp::Ui::Control& source, Osp::Ui::TouchStatus status);
 
     // touch event
     virtual void OnTouchIndicated(const Osp::Ui::Control& source,
@@ -120,36 +94,10 @@ public:
     virtual void OnTextValueChanged(const Osp::Ui::Control& source);
     virtual void OnTextValueChangeCanceled(const Osp::Ui::Control& source);
 
-#ifdef CC_BADA_2_0
-    // pointer to OES methods from EGL
-    static PFNGLGENERATEMIPMAPOESPROC         glGenerateMipmapOES;
-    static PFNGLGENFRAMEBUFFERSOESPROC        glGenFramebuffersOES;
-    static PFNGLBINDFRAMEBUFFEROESPROC          glBindFramebufferOES;
-    static PFNGLFRAMEBUFFERTEXTURE2DOESPROC   glFramebufferTexture2DOES;
-    static PFNGLDELETEFRAMEBUFFERSOESPROC     glDeleteFramebuffersOES;
-    static PFNGLCHECKFRAMEBUFFERSTATUSOESPROC glCheckFramebufferStatusOES;
-#endif
-
 private:
-    Osp::Ui::Controls::Keypad *m_pKeypad;
-
-    CCSize m_sSizeInPixel;
-    CCSize m_sSizeInPoint;
-    CCRect m_rcViewPort;
-    bool   m_bNotHVGA;
-
-    EGLTouchDelegate *m_pDelegate;
-    float  m_fScreenScaleFactor;
-
-    bool                m_bCaptured;
-
-    CCSet *             m_pSet;
-    CCTouch *           m_pTouch;
-    CCEGL *            m_pEGL;
-
-    int                    m_eInitOrientation;
-
-    Osp::Ui::Orientation  m_nowOrientation;
+    bool m_bHVGADevice;
+    CCEGL* m_pEGL;
+    Osp::Ui::Controls::Keypad* m_pKeypad;
 };
 
 NS_CC_END

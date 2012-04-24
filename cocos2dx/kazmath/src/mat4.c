@@ -26,7 +26,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /**
  * @file mat4.c
  */
+#ifndef SHP
 #include <memory.h>
+#endif
 #include <assert.h>
 #include <stdlib.h>
 

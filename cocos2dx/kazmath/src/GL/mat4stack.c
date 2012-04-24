@@ -24,7 +24,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <stdlib.h>
+#ifndef SHP
 #include <memory.h>
+#endif
 #include <assert.h>
 #include <stdio.h>
 

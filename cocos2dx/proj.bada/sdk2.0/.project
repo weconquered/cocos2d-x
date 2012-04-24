@@ -148,6 +148,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include</locationURI>
 		</link>
 		<link>
+			<name>kazmath</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/kazmath</locationURI>
+		</link>
+		<link>
 			<name>keypad_dispatcher</name>
 			<type>2</type>
 			<locationURI>PARENT-2-PROJECT_LOC/keypad_dispatcher</locationURI>
@@ -201,6 +206,11 @@
 			<name>script_support</name>
 			<type>2</type>
 			<locationURI>PARENT-2-PROJECT_LOC/script_support</locationURI>
+		</link>
+		<link>
+			<name>shaders</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/shaders</locationURI>
 		</link>
 		<link>
 			<name>sprite_nodes</name>

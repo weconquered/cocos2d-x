@@ -28,8 +28,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include <assert.h>
+#ifndef SHP
 #include <memory.h>
-
+#endif
 #include "kazmath/utility.h"
 #include "kazmath/vec4.h"
 #include "kazmath/mat4.h"

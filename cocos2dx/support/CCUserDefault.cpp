@@ -23,15 +23,10 @@ THE SOFTWARE.
 ****************************************************************************/
 #include "CCUserDefault.h"
 #include "platform/CCFileUtils.h"
-
-//#if (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
 #include <libxml/parser.h>
 #include <libxml/tree.h>
-//#else
-//#include <libxml/parser.h>
-//#include <libxml/tree.h>
-//#endif
-
+#include <string.h>
+#include <stdlib.h>
 
 // root name of xml
 #define USERDEFAULT_ROOT_NAME    "userDefaultRoot"

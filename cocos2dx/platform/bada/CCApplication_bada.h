@@ -25,16 +25,13 @@ THE SOFTWARE.
 #ifndef __CC_APPLICATION_BADA_H__
 #define __CC_APPLICATION_BADA_H__
 
-
+#include <FApp.h>
+#include <FSystem.h>
+#include <FUi.h>
 #include "CCGeometry.h"
 #include "CCDirector.h"
 
-#include <FApp.h>
-#include <FSystem.h>
-
 NS_CC_BEGIN
-
-
 
 class CC_DLL CCApplication
     : public Osp::App::Application
@@ -59,13 +56,13 @@ public:
     @brief  The function be called when the application enter background
     @param  the pointer of the application
     */
-    virtual void applicationDidEnterBackground() {}
+    virtual void applicationDidEnterBackground() = 0;
 
     /**
     @brief  The function be called when the application enter foreground
     @param  the pointer of the application
     */
-    virtual void applicationWillEnterForeground() {}
+    virtual void applicationWillEnterForeground() = 0;
 
     /**
     @brief    Get status bar rectangle in EGLView window.

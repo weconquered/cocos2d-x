@@ -27,10 +27,11 @@ THE SOFTWARE.
 #ifndef __CCSHADERCACHE_H__
 #define __CCSHADERCACHE_H__
 
-#include "CCDictionary.h"
+#include "CCObject.h"
 
 NS_CC_BEGIN
 
+class CCDictionary;
 class CCGLProgram;
 
 /** CCShaderCache

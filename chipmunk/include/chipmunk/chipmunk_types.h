@@ -135,7 +135,7 @@ static inline cpFloat cpflerpconst(cpFloat f1, cpFloat f2, cpFloat d)
 }
 
 /// Hash value type.
-#ifdef __QNX__
+#if defined(__QNX__) || defined(SHP)
 typedef unsigned long cpHashValue;
 #else
 typedef uintptr_t cpHashValue;
@@ -169,7 +169,7 @@ typedef uintptr_t cpHashValue;
     typedef CP_COLLISION_TYPE_TYPE cpCollisionType;
 #else
 /// Type used for cpSpace.collision_type.
-	#ifdef __QNX__
+	#if defined(__QNX__) || defined(SHP)
     	typedef unsigned long cpCollisionType;
 	#else
 		typedef uintptr_t cpCollisionType;
@@ -180,7 +180,7 @@ typedef uintptr_t cpHashValue;
     typedef CP_GROUP_TYPE cpGroup;
 #else
 /// Type used for cpShape.group.
-	#ifdef __QNX__
+	#if defined(__QNX__) || defined(SHP)
 		typedef unsigned long cpGroup;
 	#else
 		typedef uintptr_t cpGroup;

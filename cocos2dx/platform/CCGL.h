@@ -143,8 +143,10 @@ extern PFNGLDELETEBUFFERSARBPROC             glDeleteBuffersARB;
 #endif
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_BADA)
-#include "GLES/gl.h"
-#include "GLES/glext.h"
+#include <FGraphicsOpengl2.h>
+using namespace Osp::Graphics::Opengl;
+// GLchar is not defined in bada sdk.
+typedef char GLchar;
 #endif
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_QNX)

@@ -25,7 +25,7 @@
 #define __NEON_MATRIX_IMPL_H__
 
 #ifdef __arm__
-#if defined(ANDROID) || defined(__QNX__)
+#if defined(ANDROID) || defined(__QNX__) || defined(SHP)
 // android don't have arm/arch.h but it defines __arm__
 #else
 #include "arm/arch.h"

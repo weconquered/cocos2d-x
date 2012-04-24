@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "CCGLProgram.h"
 #include "ccMacros.h"
 #include "ccShaders.h"
+#include "CCDictionary.h"
 
 NS_CC_BEGIN
 
@@ -54,6 +55,7 @@ CCShaderCache* CCShaderCache::sharedShaderCache()
             CC_SAFE_DELETE(_sharedShaderCache);
         }
     }
+
     return _sharedShaderCache;
 }
 

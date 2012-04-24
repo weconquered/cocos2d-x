@@ -389,34 +389,34 @@ const char* CCFileUtils::fullPathFromRelativePath(const char *pszRelativePath)
 /// functions iOS specific
 void CCFileUtils::setiPhoneRetinaDisplaySuffix(const char *suffix)
 {
-    assert(0);
+    CCAssert(0, "");
 }
 
 void CCFileUtils::setiPadSuffix(const char *suffix)
 {
-    assert(0);
+	CCAssert(0, "");
 }
 
 void CCFileUtils::setiPadRetinaDisplaySuffix(const char *suffix)
 {
-    assert(0);
+	CCAssert(0, "");
 }
 
 bool CCFileUtils::iPadFileExistsAtPath(const char *filename)
 {
-    assert(0);
+	CCAssert(0, "");
     return false;
 }
 
 bool CCFileUtils::iPadRetinaDisplayFileExistsAtPath(const char *filename)
 {
-    assert(0);
+	CCAssert(0, "");
     return false;
 }
 
 bool CCFileUtils::iPhoneRetinaDisplayFileExistsAtPath(const char *filename)
 {
-    assert(0);
+	CCAssert(0, "");
     return false;
 }
 
