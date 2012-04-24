@@ -28,6 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stddef.h>   /* ptrdiff_t */
 #include <stdlib.h>   /* exit() */
 
+
 namespace   cocos2d {
 
 /* These macros use decltype or the earlier __typeof GNU extension.
@@ -960,7 +961,7 @@ typedef struct UT_hash_table {
     * the hash will still work, albeit no longer in constant time. */
    unsigned ineff_expands, noexpand;
 
-   uint32_t signature; /* used only to find hash tables in external analysis */
+   unsigned int signature; /* used only to find hash tables in external analysis */
 #ifdef HASH_BLOOM
    uint32_t bloom_sig; /* used only to test bloom exists in external analysis */
    uint8_t *bloom_bv;

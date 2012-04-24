@@ -25,20 +25,16 @@ THE SOFTWARE.
 #ifndef __CC_EGLVIEW_QNX_H__
 #define __CC_EGLVIEW_QNX_H__
 
+#include "CCEGLViewProtocol.h"
 #include "CCGeometry.h"
-#include <GLES/gl.h>
-#include <GLES/glext.h>
+#include "CCGL.h"
 #include <EGL/egl.h>
 #include <screen/screen.h>
 #include <bps/event.h>
 
 NS_CC_BEGIN
 
-class CCSet;
-class CCTouch;
-class EGLTouchDelegate;
-
-class CC_DLL CCEGLView
+class CC_DLL CCEGLView : public CCEGLViewProtocol
 {
 public:
 class CC_DLL EventHandler
@@ -52,36 +48,15 @@ public:
     CCEGLView();
     virtual ~CCEGLView();
 
-    CCSize  getSize();
     bool    isOpenGLReady();
-    bool    isIpad();
-    /**
-     * the width and height is the real size of phone
-     */
-    void    setFrameWidthAndHeight(int width, int height);
-    /**
-     * create a drawing rect, 
-     * the width and heiht is the resource size match best
-     */
-    bool    Create(int width, int height);
-    EGLTouchDelegate* getDelegate(void);
+
     
     void    setEventHandler(EventHandler* pHandler);
     const char* getWindowGroupId() const;
     // keep compatible
-    void    release();
-    void    setTouchDelegate(EGLTouchDelegate * pDelegate);
+    void    end();
     void    swapBuffers();
-    bool    canSetContentScaleFactor();
-    void    setContentScaleFactor(float contentScaleFactor); 
-    void    setViewPortInPoints(float x, float y, float w, float h);
-    void    setScissorInPoints(float x, float y, float w, float h);
-    CCRect  getViewPort();
-    float   getScreenScaleFactor();
     void    setIMEKeyboardState(bool bOpen);
-    
-    float   getMainScreenScale() { return 1.0f; }
-
     bool     HandleEvents();
 
     // static function
@@ -90,14 +65,6 @@ public:
     */
     static CCEGLView& sharedOpenGLView();
 
-    // pointer to OES methods from EGL
-    static PFNGLGENERATEMIPMAPOESPROC         glGenerateMipmapOES;
-    static PFNGLGENFRAMEBUFFERSOESPROC        glGenFramebuffersOES;
-    static PFNGLBINDFRAMEBUFFEROESPROC          glBindFramebufferOES;
-    static PFNGLFRAMEBUFFERTEXTURE2DOESPROC   glFramebufferTexture2DOES;
-    static PFNGLDELETEFRAMEBUFFERSOESPROC     glDeleteFramebuffersOES;
-    static PFNGLCHECKFRAMEBUFFERSTATUSOESPROC glCheckFramebufferStatusOES;
-
 private:
 
     bool         initGL();
@@ -105,21 +72,13 @@ private:
     bool        isGLExtension(const char *searchName) const;
     bool         initDriver();
     void         printEGLInfo(const EGLConfig &config) const;
-    EGLConfig   chooseConfig(const EGLDisplay &eglDisplay, const char* str);
-    int         chooseFormat(const EGLDisplay &eglDisplay, const EGLConfig &config);
     bool        createNativeWindow(const EGLConfig &config);
     void        showKeyboard();
     void        hideKeyboard();
 
-    CCSize              m_sSizeInPixel;
-    CCSize                  m_sSizeInPoint;
-    CCRect              m_rcViewPort;
-    bool                m_bNotHVGA;
     bool                m_isGLInitialized;
     
     EventHandler*        m_pEventHandler;
-    EGLTouchDelegate   *m_pDelegate;
-    float                  m_fScreenScaleFactor;
 
     bool                 m_isWindowActive;
 

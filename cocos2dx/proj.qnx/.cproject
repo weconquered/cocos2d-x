@@ -36,6 +36,7 @@
 									<listOptionValue builtIn="false" value="${QNX_TARGET}/../target-override/usr/include"/>
 									<listOptionValue builtIn="false" value="../../../"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx"/>
+									<listOptionValue builtIn="false" value="../../../cocos2dx/kazmath/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform/qnx"/>
@@ -94,7 +95,9 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tileMap_parallax_nodes"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="touch_dispatcher"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="extensions"/>
-						<entry excluding="actions|base_nodes|cocoa|effects|include|keypad_dispatcher|label_nodes|layers_scenes_transitions_nodes|menu_nodes|misc_nodes|particle_nodes|platform|script_support|sprite_nodes|support|text_input_node|textures|tileMap_parallax_nodes|touch_dispatcher|extensions" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+						<entry excluding="kazmath|shaders|actions|base_nodes|cocoa|effects|include|keypad_dispatcher|label_nodes|layers_scenes_transitions_nodes|menu_nodes|misc_nodes|particle_nodes|platform|script_support|sprite_nodes|support|text_input_node|textures|tileMap_parallax_nodes|touch_dispatcher|extensions" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="kazmath"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="shaders"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -133,6 +136,7 @@
 									<listOptionValue builtIn="false" value="${QNX_TARGET}/../target-override/usr/include"/>
 									<listOptionValue builtIn="false" value="../../../"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx"/>
+									<listOptionValue builtIn="false" value="../../../cocos2dx/kazmath/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform/qnx"/>
@@ -229,6 +233,7 @@
 									<listOptionValue builtIn="false" value="${QNX_TARGET}/../target-override/usr/include"/>
 									<listOptionValue builtIn="false" value="../../../"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx"/>
+									<listOptionValue builtIn="false" value="../../../cocos2dx/kazmath/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform/qnx"/>
@@ -328,6 +333,7 @@
 									<listOptionValue builtIn="false" value="${QNX_TARGET}/../target-override/usr/include"/>
 									<listOptionValue builtIn="false" value="../../../"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx"/>
+									<listOptionValue builtIn="false" value="../../../cocos2dx/kazmath/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform/qnx"/>
@@ -425,6 +431,7 @@
 									<listOptionValue builtIn="false" value="${QNX_TARGET}/../target-override/usr/include"/>
 									<listOptionValue builtIn="false" value="../../../"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx"/>
+									<listOptionValue builtIn="false" value="../../../cocos2dx/kazmath/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform/qnx"/>
@@ -524,6 +531,7 @@
 									<listOptionValue builtIn="false" value="${QNX_TARGET}/../target-override/usr/include"/>
 									<listOptionValue builtIn="false" value="../../../"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx"/>
+									<listOptionValue builtIn="false" value="../../../cocos2dx/kazmath/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform/qnx"/>
@@ -622,6 +630,7 @@
 									<listOptionValue builtIn="false" value="${QNX_TARGET}/../target-override/usr/include"/>
 									<listOptionValue builtIn="false" value="../../../"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx"/>
+									<listOptionValue builtIn="false" value="../../../cocos2dx/kazmath/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/include"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform"/>
 									<listOptionValue builtIn="false" value="../../../cocos2dx/platform/qnx"/>

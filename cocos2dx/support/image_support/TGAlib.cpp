@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include <string.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 #include "TGAlib.h"
 #include "CCFileUtils.h"
 

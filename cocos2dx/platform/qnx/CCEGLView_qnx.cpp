@@ -23,7 +23,6 @@ THE SOFTWARE.
 ****************************************************************************/
 
 #include "CCEGLView_qnx.h"
-#include "GLES/gl.h"
 
 #include <ctype.h>
 #include <input/screen_helpers.h>
@@ -53,18 +52,59 @@ NS_CC_BEGIN
 bool CCEGLView::m_initializedFunctions = false;
 const GLubyte *CCEGLView::m_extensions = 0;
 
-PFNGLGENERATEMIPMAPOESPROC         CCEGLView::glGenerateMipmapOES = 0;
-PFNGLGENFRAMEBUFFERSOESPROC        CCEGLView::glGenFramebuffersOES = 0;
-PFNGLBINDFRAMEBUFFEROESPROC           CCEGLView::glBindFramebufferOES = 0;
-PFNGLFRAMEBUFFERTEXTURE2DOESPROC   CCEGLView::glFramebufferTexture2DOES = 0;
-PFNGLDELETEFRAMEBUFFERSOESPROC     CCEGLView::glDeleteFramebuffersOES = 0;
-PFNGLCHECKFRAMEBUFFERSTATUSOESPROC CCEGLView::glCheckFramebufferStatusOES = 0;
+//PFNGLGENERATEMIPMAPOESPROC         CCEGLView::glGenerateMipmapOES = 0;
+//PFNGLGENFRAMEBUFFERSOESPROC        CCEGLView::glGenFramebuffersOES = 0;
+//PFNGLBINDFRAMEBUFFEROESPROC           CCEGLView::glBindFramebufferOES = 0;
+//PFNGLFRAMEBUFFERTEXTURE2DOESPROC   CCEGLView::glFramebufferTexture2DOES = 0;
+//PFNGLDELETEFRAMEBUFFERSOESPROC     CCEGLView::glDeleteFramebuffersOES = 0;
+//PFNGLCHECKFRAMEBUFFERSTATUSOESPROC CCEGLView::glCheckFramebufferStatusOES = 0;
+
+enum TouchType
+{
+	CC_TOUCH_TYPE_NONE = 0,
+	CC_TOUCH_TYPE_BEGIN = 1 << 0,
+	CC_TOUCH_TYPE_MOVED = 1 << 1,
+	CC_TOUCH_TYPE_ENDED = 1 << 2,
+	CC_TOUCH_TYPE_CANCEL = 1 << 3,
+};
+
+enum TouchIndex
+{
+	CC_TOUCH_INDEX_BEGIN = 0,
+	CC_TOUCH_INDEX_MOVED,
+	CC_TOUCH_INDEX_ENDED,
+	CC_TOUCH_INDEX_CANCEL,
+	CC_TOUCH_INDEX_MAX
+};
 
 enum Orientation
 {
     PORTRAIT,
     LANDSCAPE,
     AUTO
+};
+
+class CCTouchElement : public CCObject
+{
+public:
+	static CCTouchElement* TouchElementWithType(int type, int id, float x, float y)
+	{
+		CCTouchElement* pRet = new CCTouchElement();
+		if (pRet)
+		{
+			pRet->type = type;
+			pRet->id = id;
+			pRet->x = x;
+			pRet->y = y;
+			pRet->autorelease();
+		}
+		return pRet;
+	}
+	int type;
+	int id;
+	float x;
+	float y;
+
 };
 
 static Orientation orientation = LANDSCAPE;
@@ -79,15 +119,11 @@ static struct {
     EGLint config_id;
 } the_configAttr;
 
-#define MAX_TOUCHES         4
-static CCTouch *s_pTouches[MAX_TOUCHES] = { NULL };
 static CCEGLView* s_pInstance = NULL;
 
 CCEGLView::CCEGLView()
-: m_pDelegate(NULL), m_pEventHandler(NULL),
-  m_fScreenScaleFactor(1.0),
-  m_bNotHVGA(false),
-  m_isWindowActive(false)
+: m_pEventHandler(NULL)
+,  m_isWindowActive(false)
 {
     s_pInstance = this;
     m_eglDisplay = EGL_NO_DISPLAY;
@@ -119,273 +155,33 @@ CCEGLView::CCEGLView()
 
 CCEGLView::~CCEGLView()
 {
-    release();
+    end();
 }
 
 void CCEGLView::initEGLFunctions()
 {
     m_extensions = glGetString(GL_EXTENSIONS);
-
-    glGenerateMipmapOES = 0;
-    glGenFramebuffersOES = 0;
-    glBindFramebufferOES = 0;
-    glFramebufferTexture2DOES = 0;
-    glDeleteFramebuffersOES = 0;
-    glCheckFramebufferStatusOES = 0;
-
-    if (isGLExtension("GL_OES_framebuffer_object"))
-    {
-        glGenerateMipmapOES = (PFNGLGENERATEMIPMAPOESPROC)eglGetProcAddress("glGenerateMipmapOES");
-        glGenFramebuffersOES = (PFNGLGENFRAMEBUFFERSOESPROC)eglGetProcAddress("glGenFramebuffersOES");
-        glBindFramebufferOES = (PFNGLBINDFRAMEBUFFEROESPROC)eglGetProcAddress("glBindFramebufferOES");
-        glFramebufferTexture2DOES = (PFNGLFRAMEBUFFERTEXTURE2DOESPROC)eglGetProcAddress("glFramebufferTexture2DOES");
-        glDeleteFramebuffersOES = (PFNGLDELETEFRAMEBUFFERSOESPROC)eglGetProcAddress("glDeleteFramebuffersOES");
-        glCheckFramebufferStatusOES = (PFNGLCHECKFRAMEBUFFERSTATUSOESPROC)eglGetProcAddress("glCheckFramebufferStatusOES");
-    }
+    CCLog((char*)m_extensions);
+//    glGenerateMipmapOES = 0;
+//    glGenFramebuffersOES = 0;
+//    glBindFramebufferOES = 0;
+//    glFramebufferTexture2DOES = 0;
+//    glDeleteFramebuffersOES = 0;
+//    glCheckFramebufferStatusOES = 0;
+//
+//    if (isGLExtension("GL_OES_framebuffer_object"))
+//    {
+//        glGenerateMipmapOES = (PFNGLGENERATEMIPMAPOESPROC)eglGetProcAddress("glGenerateMipmapOES");
+//        glGenFramebuffersOES = (PFNGLGENFRAMEBUFFERSOESPROC)eglGetProcAddress("glGenFramebuffersOES");
+//        glBindFramebufferOES = (PFNGLBINDFRAMEBUFFEROESPROC)eglGetProcAddress("glBindFramebufferOES");
+//        glFramebufferTexture2DOES = (PFNGLFRAMEBUFFERTEXTURE2DOESPROC)eglGetProcAddress("glFramebufferTexture2DOES");
+//        glDeleteFramebuffersOES = (PFNGLDELETEFRAMEBUFFERSOESPROC)eglGetProcAddress("glDeleteFramebuffersOES");
+//        glCheckFramebufferStatusOES = (PFNGLCHECKFRAMEBUFFERSTATUSOESPROC)eglGetProcAddress("glCheckFramebufferStatusOES");
+//    }
 
     m_initializedFunctions = true;
 }
 
-void CCEGLView::setFrameWidthAndHeight(int width, int height)
-{
-    m_sSizeInPixel.width = width;
-    m_sSizeInPixel.height = height;
-}
-
-bool CCEGLView::Create(int width, int height)
-{
-    if (width == 0 || height == 0)
-    {
-        return false;
-    }
-
-    m_sSizeInPoint.width = width;
-    m_sSizeInPoint.height = height;
-
-    // calculate the factor and the rect of viewport    
-    m_fScreenScaleFactor =  MIN((float)m_sSizeInPixel.width / m_sSizeInPoint.width,
-                                (float)m_sSizeInPixel.height / m_sSizeInPoint.height);
-
-    int viewPortW = (int)(m_sSizeInPoint.width * m_fScreenScaleFactor);
-    int viewPortH = (int)(m_sSizeInPoint.height * m_fScreenScaleFactor);
-
-    m_rcViewPort.origin.x = (m_sSizeInPixel.width - viewPortW) / 2;
-    m_rcViewPort.origin.y = (m_sSizeInPixel.height - viewPortH) / 2;
-    m_rcViewPort.size.width = viewPortW;
-    m_rcViewPort.size.height = viewPortH;
-    
-    m_bNotHVGA = true;
-    
-    return true;
-}
-
-EGLConfig CCEGLView::chooseConfig(const EGLDisplay &eglDisplay, const char* str)
-{
-    EGLConfig   config = (EGLConfig)0;
-    EGLConfig  *configurations;
-    EGLint      egl_num_configs;
-    EGLint      val;
-    EGLBoolean  rc;
-    const char *tok;
-    EGLint      i;
-
-    if (str != NULL)
-    {
-        tok = str;
-        while (*tok == ' ' || *tok == ',')
-            tok++;
-
-        while (*tok != '\0')
-        {
-            if (strncmp(tok, "rgba8888", strlen("rgba8888")) == 0)
-            {
-                the_configAttr.red_size   = 8;
-                the_configAttr.green_size = 8;
-                the_configAttr.blue_size  = 8;
-                the_configAttr.alpha_size = 8;
-                tok += strlen("rgba8888");
-            }
-            else if (strncmp(tok, "rgba5551", strlen("rgba5551")) == 0)
-            {
-                the_configAttr.red_size   = 5;
-                the_configAttr.green_size = 5;
-                the_configAttr.blue_size  = 5;
-                the_configAttr.alpha_size = 1;
-                tok += strlen("rgba5551");
-            }
-            else if (strncmp(tok, "rgba4444", strlen("rgba4444")) == 0)
-            {
-                the_configAttr.red_size   = 4;
-                the_configAttr.green_size = 4;
-                the_configAttr.blue_size  = 4;
-                the_configAttr.alpha_size = 4;
-                tok += strlen("rgba4444");
-            }
-            else if (strncmp(tok, "rgb565", strlen("rgb565")) == 0)
-            {
-                the_configAttr.red_size   = 5;
-                the_configAttr.green_size = 6;
-                the_configAttr.blue_size  = 5;
-                the_configAttr.alpha_size = 0;
-                tok += strlen("rgb565");
-            }
-            else if (isdigit(*tok))
-            {
-                val = atoi(tok);
-                while (isdigit(*(++tok)));
-                if (*tok == 'x')
-                {
-                    the_configAttr.samples = val;
-                    tok++;
-                }
-                else
-                {
-                    the_configAttr.config_id = val;
-                }
-            }
-            else
-            {
-                fprintf(stderr, "invalid configuration specifier: ");
-                while (*tok != ' ' && *tok != ',' && *tok != '\0')
-                    fputc(*tok++, stderr);
-
-                fputc('\n', stderr);
-            }
-
-            while (*tok == ' ' || *tok == ',')
-                tok++;
-        }
-    }
-
-    rc = eglGetConfigs(eglDisplay, NULL, 0, &egl_num_configs);
-    if (rc != EGL_TRUE)
-    {
-        fprintf(stderr, "eglGetConfigs");
-        return config;
-    }
-
-    if (egl_num_configs == 0)
-    {
-        fprintf(stderr, "eglGetConfigs: could not find a configuration\n");
-        return config;
-    }
-
-    configurations = (EGLConfig *)malloc(egl_num_configs * sizeof(*configurations));
-    if (configurations == NULL)
-    {
-        fprintf(stderr, "could not allocate memory for %d EGL configs\n", egl_num_configs);
-        return config;
-    }
-
-    rc = eglGetConfigs(eglDisplay, configurations, egl_num_configs, &egl_num_configs);
-    if (rc != EGL_TRUE)
-    {
-        fprintf(stderr, "eglGetConfigs");
-        free(configurations);
-        return config;
-    }
-
-    for (i = 0; i < egl_num_configs; i++)
-    {
-        if (the_configAttr.config_id != EGL_DONT_CARE)
-        {
-            eglGetConfigAttrib(eglDisplay, configurations[i], EGL_CONFIG_ID, &val);
-            if (val == the_configAttr.config_id)
-            {
-                config = configurations[i];
-                break;
-            }
-            else
-            {
-                continue;
-            }
-        }
-
-        eglGetConfigAttrib(eglDisplay, configurations[i], EGL_SURFACE_TYPE, &val);
-        if ((val & the_configAttr.surface_type) != the_configAttr.surface_type)
-            continue;
-
-        eglGetConfigAttrib(eglDisplay, configurations[i], EGL_RENDERABLE_TYPE, &val);
-        if (!(val & EGL_OPENGL_ES_BIT))
-            continue;
-
-        eglGetConfigAttrib(eglDisplay, configurations[i], EGL_DEPTH_SIZE, &val);
-        if (val == 0)
-            continue;
-
-        if (the_configAttr.red_size != EGL_DONT_CARE)
-        {
-            eglGetConfigAttrib(eglDisplay, configurations[i], EGL_RED_SIZE, &val);
-            if (val != the_configAttr.red_size)
-                continue;
-        }
-
-        if (the_configAttr.green_size != EGL_DONT_CARE)
-        {
-            eglGetConfigAttrib(eglDisplay, configurations[i], EGL_GREEN_SIZE, &val);
-            if (val != the_configAttr.green_size)
-                continue;
-        }
-
-        if (the_configAttr.blue_size != EGL_DONT_CARE)
-        {
-            eglGetConfigAttrib(eglDisplay, configurations[i], EGL_BLUE_SIZE, &val);
-            if (val != the_configAttr.blue_size)
-                continue;
-        }
-
-        if (the_configAttr.alpha_size != EGL_DONT_CARE)
-        {
-            eglGetConfigAttrib(eglDisplay, configurations[i], EGL_ALPHA_SIZE, &val);
-            if (val != the_configAttr.alpha_size)
-                continue;
-        }
-
-        if (the_configAttr.samples != EGL_DONT_CARE)
-        {
-            eglGetConfigAttrib(eglDisplay, configurations[i], EGL_SAMPLES, &val);
-            if (val != the_configAttr.samples)
-                continue;
-        }
-
-        config = configurations[i];
-        break;
-    }
-
-    free(configurations);
-
-    if (config == (EGLConfig)0)
-    {
-        fprintf(stderr, "eglChooseConfig: could not find a matching configuration\n");
-    }
-
-    return config;
-}
-
-int CCEGLView::chooseFormat(const EGLDisplay &eglDisplay, const EGLConfig &config)
-{
-    EGLint buffer_bit_depth, alpha_bit_depth;
-
-    eglGetConfigAttrib(eglDisplay, config, EGL_BUFFER_SIZE, &buffer_bit_depth);
-    eglGetConfigAttrib(eglDisplay, config, EGL_ALPHA_SIZE,  &alpha_bit_depth);
-
-    switch (buffer_bit_depth)
-    {
-        case 32: return SCREEN_FORMAT_RGBA8888;
-        case 24: return SCREEN_FORMAT_RGB888;
-        case 16:
-        {
-            switch (alpha_bit_depth)
-            {
-                case 4:  return SCREEN_FORMAT_RGBA4444;
-                case 1:  return SCREEN_FORMAT_RGBA5551;
-                default: return SCREEN_FORMAT_RGB565;
-            }
-        }
-
-        default:  return 0;
-    }
-}
 
 void CCEGLView::printEGLInfo(const EGLConfig &config) const
 {
@@ -544,17 +340,20 @@ bool CCEGLView::initDriver()
         return false;
     }
 
+    egl_ret = eglBindAPI(EGL_OPENGL_ES_API);
+
     return true;
 }
 
 bool CCEGLView::createNativeWindow(const EGLConfig &config)
 {
-    int     usage = SCREEN_USAGE_OPENGL_ES1;
+    int     usage = SCREEN_USAGE_OPENGL_ES2;
+
     int     transp = SCREEN_TRANSPARENCY_NONE;
     int     pos[2] = { 0, 0 };
     int     nbuffers = 2;
     EGLint     interval = 1;
-    int     format;
+    int     format = SCREEN_FORMAT_RGBX8888;
     EGLint  err;
 
     err = screen_create_context(&m_screenContext, 0);
@@ -577,7 +376,7 @@ err = screen_create_window_group(m_screenWindow, m_window_group_id);
         fprintf(stderr, "screen_create_window_group");
         return false;
     }
-    format = chooseFormat(m_eglDisplay, config);
+
     err = screen_set_window_property_iv(m_screenWindow, SCREEN_PROPERTY_FORMAT, &format);
     if (err)
     {
@@ -697,10 +496,27 @@ bool CCEGLView::initGL()
 {
     EGLConfig             config;
     EGLint                err;
+    int usage = 0;
+    int num_configs = 0;
+    EGLint attrib_list[]= { EGL_RED_SIZE,        8,
+                             EGL_GREEN_SIZE,      8,
+                             EGL_BLUE_SIZE,       8,
+                             EGL_SURFACE_TYPE,    EGL_WINDOW_BIT,
+                             EGL_RENDERABLE_TYPE, 0,
+                             EGL_NONE};
 
+    usage = SCREEN_USAGE_OPENGL_ES2 | SCREEN_USAGE_ROTATION;
+    attrib_list[9] = EGL_OPENGL_ES2_BIT;
+    EGLint attributes[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
+    CCLog("CCEGLView 1");
     initDriver();
+    CCLog("CCEGLView 2");
+    eglChooseConfig(m_eglDisplay, attrib_list, &config, 1, &num_configs);
+    CCLog("CCEGLView 3");
+    //config = chooseConfig(m_eglDisplay, "rgb565");
 
-    config = chooseConfig(m_eglDisplay, "rgb565");
+
+
     if (config == (EGLConfig)0)
     {
         fprintf(stderr, "Failed to find config!" );
@@ -708,7 +524,7 @@ bool CCEGLView::initGL()
     }
 
     // Create EGL rendering context
-    m_eglContext = eglCreateContext( m_eglDisplay, config, EGL_NO_CONTEXT, NULL );
+    m_eglContext = eglCreateContext( m_eglDisplay, config, EGL_NO_CONTEXT, attributes );
     err = eglGetError( );
     if ( m_eglContext == EGL_NO_CONTEXT )
     {
@@ -716,14 +532,14 @@ bool CCEGLView::initGL()
         printEglError( err );
         return false;
     }
-
+    CCLog("CCEGLView 4");
 //    printEGLInfo(config);
 
     if (!createNativeWindow(config))
     {
         fprintf(stderr, "Unable to create a native window\n");
         return false;
-    }
+    }CCLog("CCEGLView 5");
 
     // set up the screen events
     err = screen_create_event(&m_screenEvent);
@@ -732,7 +548,7 @@ bool CCEGLView::initGL()
         fprintf(stderr, "screen_create_event");
         return false;
     }
-
+    CCLog("CCEGLView 6");
 #ifdef BPS_EVENTS
     // Request screen events
     screen_request_events(m_screenContext);
@@ -754,31 +570,16 @@ bool CCEGLView::initGL()
     }
 
     EGLint width, height;
-
+    CCLog("CCEGLView 7");
     if ((m_eglDisplay == EGL_NO_DISPLAY) || (m_eglSurface == EGL_NO_SURFACE) )
         return EXIT_FAILURE;
 
     eglQuerySurface(m_eglDisplay, m_eglSurface, EGL_WIDTH, &width);
     eglQuerySurface(m_eglDisplay, m_eglSurface, EGL_HEIGHT, &height);
 
-    m_sSizeInPixel.width = width;
-    m_sSizeInPixel.height = height;
-
+    setFrameSize(width, height);
+    CCLog("CCEGLView 8");
     return true;
-}
-
-CCSize CCEGLView::getSize()
-{
-    if (m_bNotHVGA)
-    {
-        CCSize size(m_sSizeInPoint.width, m_sSizeInPoint.height);
-        return size;
-    }
-    else
-    {
-        CCSize size(m_sSizeInPixel.width, m_sSizeInPixel.height);
-        return size;
-    }
 }
 
 bool CCEGLView::isOpenGLReady()
@@ -786,12 +587,7 @@ bool CCEGLView::isOpenGLReady()
     return (m_isGLInitialized && m_sSizeInPixel.width != 0 && m_sSizeInPixel.height != 0);
 }
 
-bool CCEGLView::isIpad()
-{
-    return false;
-}
-
-void CCEGLView::release()
+void CCEGLView::end()
 {
     if (!m_eglContext || !m_eglDisplay)
         return;
@@ -828,15 +624,12 @@ const char* CCEGLView::getWindowGroupId() const
 {
     return m_window_group_id;
 }
-void CCEGLView::setTouchDelegate(EGLTouchDelegate * pDelegate)
-{
-    m_pDelegate = pDelegate;
-}
 
-EGLTouchDelegate* CCEGLView::getDelegate(void)
-{
-    return m_pDelegate;
-}
+#define InvalidArray(__array__, __row__, __col__, __type__) \
+	for (int i = 0; i < __row__; ++i) \
+		for (int j = 0; j < __col__; ++j) \
+			__array__[i][j] = (__type__)-1;
+
 
 bool CCEGLView::HandleEvents()
 {
@@ -847,6 +640,22 @@ bool CCEGLView::HandleEvents()
     int                rc = 0;
     int             domain = 0;
     char             buf[4] = {0};
+
+    int nTouchType = CC_TOUCH_TYPE_NONE;
+    int nTouchBeginNum = 0;
+    int nTouchMovedNum = 0;
+    int nTouchEndedNum = 0;
+
+    CCDirector* pDirector = CCDirector::sharedDirector();
+
+    int ids[CC_TOUCH_INDEX_MAX][CC_MAX_TOUCHES];
+    InvalidArray(ids, CC_TOUCH_INDEX_MAX, CC_MAX_TOUCHES, int);
+
+    float xs[CC_TOUCH_INDEX_MAX][CC_MAX_TOUCHES];
+    InvalidArray(xs, CC_TOUCH_INDEX_MAX, CC_MAX_TOUCHES, float);
+
+    float ys[CC_TOUCH_INDEX_MAX][CC_MAX_TOUCHES];
+    InvalidArray(ys, CC_TOUCH_INDEX_MAX, CC_MAX_TOUCHES, float);
 
     for (;;)
     {
@@ -871,7 +680,7 @@ bool CCEGLView::HandleEvents()
             switch (bps_event_get_code(event))
             {
                 case NAVIGATOR_SWIPE_DOWN:
-                    CCKeypadDispatcher::sharedDispatcher()->dispatchKeypadMSG(kTypeMenuClicked);
+                	pDirector->getKeypadDispatcher()->dispatchKeypadMSG(kTypeMenuClicked);
                     break;
 
                 case NAVIGATOR_EXIT:
@@ -947,74 +756,97 @@ bool CCEGLView::HandleEvents()
                     break;
 
                 case SCREEN_EVENT_MTOUCH_RELEASE:
+                {
                     screen_get_mtouch_event(m_screenEvent, &mtouch_event, 0);
                     touch_id = mtouch_event.contact_id;
 
-                    if (m_pDelegate && touch_id < MAX_TOUCHES)
-                    {
-                        CCTouch* touch = s_pTouches[touch_id];
-                        if (touch)
-                        {
-                            CCSet set;
-                            touch->SetTouchInfo(((float)(mtouch_event.x) - m_rcViewPort.origin.x) / m_fScreenScaleFactor,
-                                                   ((float)(mtouch_event.y) - m_rcViewPort.origin.y) / m_fScreenScaleFactor);
-                            set.addObject(touch);
-                            m_pDelegate->touchesEnded(&set, NULL);
+                    nTouchType |= CC_TOUCH_TYPE_ENDED;
 
-                            touch->release();
-                            for (int i = touch_id; i < MAX_TOUCHES; i++)
-                            {
-                                if (i != (MAX_TOUCHES - 1))
-                                {
-                                    s_pTouches[i] = s_pTouches[i + 1];
-                                }
-                                else
-                                {
-                                    s_pTouches[i] = NULL;
-                                }
-                            }
-                        }
+                    for (int i = 0; i < CC_MAX_TOUCHES; i++)
+                    {
+                    	if (ids[CC_TOUCH_INDEX_ENDED][i] < 0)
+                    	{
+                    		ids[CC_TOUCH_INDEX_ENDED][i] = touch_id;
+                    		xs[CC_TOUCH_INDEX_ENDED][i] = (float)(mtouch_event.x);
+                    		ys[CC_TOUCH_INDEX_ENDED][i] = (float)(mtouch_event.y);
+                    		nTouchEndedNum++;
+                    		break;
+                    	}
+                    	else if (ids[CC_TOUCH_INDEX_ENDED][i] == touch_id)
+                    	{
+                    		ids[CC_TOUCH_INDEX_ENDED][i] = touch_id;
+                    		xs[CC_TOUCH_INDEX_ENDED][i] = (float)(mtouch_event.x);
+                    		ys[CC_TOUCH_INDEX_ENDED][i] = (float)(mtouch_event.y);
+                    		break;
+                    	}
                     }
 
+                    CCLog("SCREEN_EVENT_MTOUCH_RELEASE, id = %d", touch_id);
+
+                }
                     break;
 
                 case SCREEN_EVENT_MTOUCH_TOUCH:
+                {
                     screen_get_mtouch_event(m_screenEvent, &mtouch_event, 0);
                     touch_id = mtouch_event.contact_id;
 
-                    if (m_pDelegate && touch_id < MAX_TOUCHES)
+                    nTouchType |= CC_TOUCH_TYPE_BEGIN;
+
+                    for (int i = 0; i < CC_MAX_TOUCHES; i++)
                     {
-                        CCTouch* touch = s_pTouches[touch_id];
-                        if (!touch)
-                            touch = new CCTouch;
-
-                        touch->SetTouchInfo(((float)(mtouch_event.x) - m_rcViewPort.origin.x) / m_fScreenScaleFactor,
-                                               ((float)(mtouch_event.y) - m_rcViewPort.origin.y) / m_fScreenScaleFactor);
-                        s_pTouches[touch_id] = touch;
-
-                        CCSet set;
-                        set.addObject(touch);
-                        m_pDelegate->touchesBegan(&set, NULL);
+                    	if (ids[CC_TOUCH_INDEX_BEGIN][i] < 0)
+                    	{
+                    		ids[CC_TOUCH_INDEX_BEGIN][i] = touch_id;
+                    		xs[CC_TOUCH_INDEX_BEGIN][i] = (float)(mtouch_event.x);
+                    		ys[CC_TOUCH_INDEX_BEGIN][i] = (float)(mtouch_event.y);
+                    		nTouchBeginNum++;
+                    		break;
+                    	}
+                    	else if (ids[CC_TOUCH_INDEX_BEGIN][i] == touch_id)
+                    	{
+                    		ids[CC_TOUCH_INDEX_BEGIN][i] = touch_id;
+                    		xs[CC_TOUCH_INDEX_BEGIN][i] = (float)(mtouch_event.x);
+                    		ys[CC_TOUCH_INDEX_BEGIN][i] = (float)(mtouch_event.y);
+                    		break;
+                    	}
                     }
+
+                    CCLog("SCREEN_EVENT_MTOUCH_TOUCH, id = %d", touch_id);
+
+                }
 
                     break;
 
                 case SCREEN_EVENT_MTOUCH_MOVE:
+                {
                     screen_get_mtouch_event(m_screenEvent, &mtouch_event, 0);
                     touch_id = mtouch_event.contact_id;
 
-                    if (m_pDelegate && touch_id < MAX_TOUCHES)
+                    nTouchType |= CC_TOUCH_TYPE_MOVED;
+
+                    for (int i = 0; i < CC_MAX_TOUCHES; i++)
                     {
-                        CCTouch* touch = s_pTouches[touch_id];
-                        if (touch)
-                        {
-                            CCSet set;
-                            touch->SetTouchInfo(((float)(mtouch_event.x) - m_rcViewPort.origin.x) / m_fScreenScaleFactor,
-                                                   ((float)(mtouch_event.y) - m_rcViewPort.origin.y) / m_fScreenScaleFactor);
-                            set.addObject(touch);
-                            m_pDelegate->touchesMoved(&set, NULL);
-                        }
+                    	if (ids[CC_TOUCH_INDEX_MOVED][i] < 0)
+                    	{
+                    		ids[CC_TOUCH_INDEX_MOVED][i] = touch_id;
+                    		xs[CC_TOUCH_INDEX_MOVED][i] = (float)(mtouch_event.x);
+                    		ys[CC_TOUCH_INDEX_MOVED][i] = (float)(mtouch_event.y);
+                    		nTouchMovedNum++;
+                    		break;
+                    	}
+                    	else if (ids[CC_TOUCH_INDEX_MOVED][i] == touch_id)
+                    	{
+                    		ids[CC_TOUCH_INDEX_MOVED][i] = touch_id;
+                    		xs[CC_TOUCH_INDEX_MOVED][i] = (float)(mtouch_event.x);
+                    		ys[CC_TOUCH_INDEX_MOVED][i] = (float)(mtouch_event.y);
+                    		break;
+                    	}
                     }
+
+                    CCLog("SCREEN_EVENT_MTOUCH_MOVE, id = %d", touch_id);
+
+                }
 
                     break;
 
@@ -1033,71 +865,71 @@ bool CCEGLView::HandleEvents()
                             if (mouse_pressed)
                             {
                                 // Left mouse button was released
-                                if (m_pDelegate && touch_id < MAX_TOUCHES)
-                                {
-                                    CCTouch* touch = s_pTouches[touch_id];
-                                    if (touch)
-                                    {
-                                        CCSet set;
-                                        touch->SetTouchInfo(((float)(pair[0]) - m_rcViewPort.origin.x) / m_fScreenScaleFactor,
-                                                               ((float)(pair[1]) - m_rcViewPort.origin.y) / m_fScreenScaleFactor);
-                                        set.addObject(touch);
-                                        m_pDelegate->touchesMoved(&set, NULL);
-                                    }
-                                }
+//                                if (m_pDelegate && touch_id < MAX_TOUCHES)
+//                                {
+//                                    CCTouch* touch = s_pTouches[touch_id];
+//                                    if (touch)
+//                                    {
+//                                        CCSet set;
+//                                        touch->SetTouchInfo(((float)(pair[0]) - m_rcViewPort.origin.x) / m_fScreenScaleFactor,
+//                                                               ((float)(pair[1]) - m_rcViewPort.origin.y) / m_fScreenScaleFactor);
+//                                        set.addObject(touch);
+//                                        m_pDelegate->touchesMoved(&set, NULL);
+//                                    }
+//                                }
                             }
                             else
                             {
                                 // Left mouse button is pressed
                                 mouse_pressed = true;
-                                if (m_pDelegate && touch_id < MAX_TOUCHES)
-                                {
-                                    CCTouch* touch = s_pTouches[touch_id];
-                                    if (!touch)
-                                        touch = new CCTouch;
-
-                                    touch->SetTouchInfo(((float)(pair[0]) - m_rcViewPort.origin.x) / m_fScreenScaleFactor,
-                                                           ((float)(pair[1]) - m_rcViewPort.origin.y) / m_fScreenScaleFactor);
-                                    s_pTouches[touch_id] = touch;
-
-                                    CCSet set;
-                                    set.addObject(touch);
-                                    m_pDelegate->touchesBegan(&set, NULL);
-                                }
+//                                if (m_pDelegate && touch_id < MAX_TOUCHES)
+//                                {
+//                                    CCTouch* touch = s_pTouches[touch_id];
+//                                    if (!touch)
+//                                        touch = new CCTouch;
+//
+//                                    touch->SetTouchInfo(((float)(pair[0]) - m_rcViewPort.origin.x) / m_fScreenScaleFactor,
+//                                                           ((float)(pair[1]) - m_rcViewPort.origin.y) / m_fScreenScaleFactor);
+//                                    s_pTouches[touch_id] = touch;
+//
+//                                    CCSet set;
+//                                    set.addObject(touch);
+//                                    m_pDelegate->touchesBegan(&set, NULL);
+//                                }
                             }
                         }
                         else
                         {
-                            if (mouse_pressed)
-                            {
-                                if (m_pDelegate && touch_id < MAX_TOUCHES)
-                                {
-                                    mouse_pressed = false;
-
-                                    CCTouch* touch = s_pTouches[touch_id];
-                                    if (touch)
-                                    {
-                                        CCSet set;
-                                        touch->SetTouchInfo(((float)(pair[0]) - m_rcViewPort.origin.x) / m_fScreenScaleFactor,
-                                                               ((float)(pair[1]) - m_rcViewPort.origin.y) / m_fScreenScaleFactor);
-                                        set.addObject(touch);
-                                        m_pDelegate->touchesEnded(&set, NULL);
-
-                                        touch->release();
-                                        for (int i = touch_id; i < MAX_TOUCHES; i++)
-                                        {
-                                            if (i != (MAX_TOUCHES - 1))
-                                            {
-                                                s_pTouches[i] = s_pTouches[i + 1];
-                                            }
-                                            else
-                                            {
-                                                s_pTouches[i] = NULL;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+//                            if (mouse_pressed)
+//                            {
+//                                if (m_pDelegate && touch_id < MAX_TOUCHES)
+//                                {
+//                                    mouse_pressed = false;
+//
+//                                    CCTouch* touch = s_pTouches[touch_id];
+//                                    if (touch)
+//                                    {
+//                                        CCSet set;
+//                                        touch->SetTouchInfo(((float)(pair[0]) - m_rcViewPort.origin.x) / m_fScreenScaleFactor,
+//                                                               ((float)(pair[1]) - m_rcViewPort.origin.y) / m_fScreenScaleFactor);
+//                                        set.addObject(touch);
+//                                        m_pDelegate->touchesEnded(&set, NULL);
+//
+//                                        touch->release();
+//                                        for (int i = touch_id; i < MAX_TOUCHES; i++)
+//                                        {
+//                                            if (i != (MAX_TOUCHES - 1))
+//                                            {
+//                                                s_pTouches[i] = s_pTouches[i + 1];
+//                                            }
+//                                            else
+//                                            {
+//                                                s_pTouches[i] = NULL;
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
                         }
                     }
                     break;
@@ -1142,6 +974,27 @@ bool CCEGLView::HandleEvents()
         }
     }
 
+
+	if (nTouchType & CC_TOUCH_TYPE_BEGIN)
+	{
+		CCLog("nTouchBeginNum = %d", nTouchBeginNum);
+		handleTouchesBegin(nTouchBeginNum, ids[CC_TOUCH_INDEX_BEGIN], xs[CC_TOUCH_INDEX_BEGIN], ys[CC_TOUCH_INDEX_BEGIN]);
+	}
+
+    if (nTouchType & CC_TOUCH_TYPE_MOVED)
+    {
+    	CCLog("nTouchMovedNum = %d", nTouchMovedNum);
+    	handleTouchesMove(nTouchMovedNum, ids[CC_TOUCH_INDEX_MOVED], xs[CC_TOUCH_INDEX_MOVED], ys[CC_TOUCH_INDEX_MOVED]);
+    }
+
+    if (nTouchType & CC_TOUCH_TYPE_ENDED)
+    {
+    	CCLog("nTouchEndedNum = %d", nTouchEndedNum);
+    	handleTouchesEnd(nTouchEndedNum, ids[CC_TOUCH_INDEX_ENDED], xs[CC_TOUCH_INDEX_ENDED], ys[CC_TOUCH_INDEX_ENDED]);
+    }
+
+
+
     return true;
 }
 
@@ -1150,77 +1003,10 @@ void CCEGLView::swapBuffers()
     eglSwapBuffers(m_eglDisplay, m_eglSurface);
 }
 
-bool CCEGLView::canSetContentScaleFactor()
-{
-    // can scale content?
-    return false;
-}
-
-void CCEGLView::setContentScaleFactor(float contentScaleFactor)
-{
-    m_fScreenScaleFactor = contentScaleFactor;
-} 
-
-void CCEGLView::setViewPortInPoints(float x, float y, float w, float h)
-{
-    if (m_bNotHVGA)
-    {
-        float factor = m_fScreenScaleFactor / CC_CONTENT_SCALE_FACTOR();
-        glViewport( (GLint)(x * factor) + m_rcViewPort.origin.x,
-                    (GLint)(y * factor) + m_rcViewPort.origin.y,
-                    (GLint)(w * factor),
-                    (GLint)(h * factor));
-    }
-    else
-    {
-        glViewport( (GLint)x,
-                    (GLint)y,
-                    (GLint)w,
-                    (GLint)h);
-    }        
-}
-
-void CCEGLView::setScissorInPoints(float x, float y, float w, float h)
-{
-    if (m_bNotHVGA)
-    {
-        float factor = m_fScreenScaleFactor / CC_CONTENT_SCALE_FACTOR();
-        glScissor(  (GLint)(x * factor) + m_rcViewPort.origin.x,
-                    (GLint)(y * factor) + m_rcViewPort.origin.y,
-                    (GLint)(w * factor),
-                    (GLint)(h * factor));
-    }
-    else
-    {
-        glScissor(  (GLint)x,
-                    (GLint)y,
-                    (GLint)w,
-                    (GLint)h);
-    }
-}
-
 CCEGLView& CCEGLView::sharedOpenGLView()
 {
     CCAssert(s_pInstance != NULL, "CCEGLView wasn't constructed yet");
     return *s_pInstance;
-}
-
-float CCEGLView::getScreenScaleFactor()
-{
-    return m_fScreenScaleFactor;
-}
-
-CCRect CCEGLView::getViewPort()
-{
-    if (m_bNotHVGA)
-    {
-        return m_rcViewPort;
-    }
-    else
-    {
-        CCRect rect(0, 0, 0, 0);
-        return rect;
-    }
 }
 
 bool CCEGLView::isGLExtension(const char *searchName) const

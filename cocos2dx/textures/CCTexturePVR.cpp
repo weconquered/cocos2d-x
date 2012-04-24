@@ -36,6 +36,8 @@ THE SOFTWARE.
 
 #include <cctype>
 
+using namespace std;
+
 NS_CC_BEGIN
 
 #define PVR_TEXTURE_FLAG_TYPE_MASK    0xff

@@ -148,8 +148,8 @@ extern PFNGLDELETEBUFFERSARBPROC             glDeleteBuffersARB;
 #endif
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_QNX)
-#include <GLES/gl.h>
-#include <GLES/glext.h>
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
 #endif
 
 #endif // __PLATFOMR_CCGL_H__
