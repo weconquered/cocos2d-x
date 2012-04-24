@@ -161,24 +161,6 @@ CCEGLView::~CCEGLView()
 void CCEGLView::initEGLFunctions()
 {
     m_extensions = glGetString(GL_EXTENSIONS);
-    CCLog((char*)m_extensions);
-//    glGenerateMipmapOES = 0;
-//    glGenFramebuffersOES = 0;
-//    glBindFramebufferOES = 0;
-//    glFramebufferTexture2DOES = 0;
-//    glDeleteFramebuffersOES = 0;
-//    glCheckFramebufferStatusOES = 0;
-//
-//    if (isGLExtension("GL_OES_framebuffer_object"))
-//    {
-//        glGenerateMipmapOES = (PFNGLGENERATEMIPMAPOESPROC)eglGetProcAddress("glGenerateMipmapOES");
-//        glGenFramebuffersOES = (PFNGLGENFRAMEBUFFERSOESPROC)eglGetProcAddress("glGenFramebuffersOES");
-//        glBindFramebufferOES = (PFNGLBINDFRAMEBUFFEROESPROC)eglGetProcAddress("glBindFramebufferOES");
-//        glFramebufferTexture2DOES = (PFNGLFRAMEBUFFERTEXTURE2DOESPROC)eglGetProcAddress("glFramebufferTexture2DOES");
-//        glDeleteFramebuffersOES = (PFNGLDELETEFRAMEBUFFERSOESPROC)eglGetProcAddress("glDeleteFramebuffersOES");
-//        glCheckFramebufferStatusOES = (PFNGLCHECKFRAMEBUFFERSTATUSOESPROC)eglGetProcAddress("glCheckFramebufferStatusOES");
-//    }
-
     m_initializedFunctions = true;
 }
 
@@ -508,11 +490,11 @@ bool CCEGLView::initGL()
     usage = SCREEN_USAGE_OPENGL_ES2 | SCREEN_USAGE_ROTATION;
     attrib_list[9] = EGL_OPENGL_ES2_BIT;
     EGLint attributes[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
-    CCLog("CCEGLView 1");
+
     initDriver();
-    CCLog("CCEGLView 2");
+
     eglChooseConfig(m_eglDisplay, attrib_list, &config, 1, &num_configs);
-    CCLog("CCEGLView 3");
+
     //config = chooseConfig(m_eglDisplay, "rgb565");
 
 
@@ -532,14 +514,14 @@ bool CCEGLView::initGL()
         printEglError( err );
         return false;
     }
-    CCLog("CCEGLView 4");
+
 //    printEGLInfo(config);
 
     if (!createNativeWindow(config))
     {
         fprintf(stderr, "Unable to create a native window\n");
         return false;
-    }CCLog("CCEGLView 5");
+    }
 
     // set up the screen events
     err = screen_create_event(&m_screenEvent);
@@ -548,7 +530,7 @@ bool CCEGLView::initGL()
         fprintf(stderr, "screen_create_event");
         return false;
     }
-    CCLog("CCEGLView 6");
+
 #ifdef BPS_EVENTS
     // Request screen events
     screen_request_events(m_screenContext);
@@ -570,7 +552,7 @@ bool CCEGLView::initGL()
     }
 
     EGLint width, height;
-    CCLog("CCEGLView 7");
+
     if ((m_eglDisplay == EGL_NO_DISPLAY) || (m_eglSurface == EGL_NO_SURFACE) )
         return EXIT_FAILURE;
 
@@ -578,7 +560,7 @@ bool CCEGLView::initGL()
     eglQuerySurface(m_eglDisplay, m_eglSurface, EGL_HEIGHT, &height);
 
     setFrameSize(width, height);
-    CCLog("CCEGLView 8");
+
     return true;
 }
 
