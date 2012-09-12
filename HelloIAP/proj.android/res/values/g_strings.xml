@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- Class name of game entry -->
+    <string name="g_class_name">cn.emagsoftware.sdk.example.BillingDemo</string>
+    
+	<!-- Billing -->
+	<string name="gc_billing_islow_version">false</string>
+	<string name="gc_billing_is_no_sound">false</string>
+	<string name="gc_billing_title">中国移动手机游戏</string>
+	<string name="gc_billing_title_2">感谢您支持正版游戏</string>
+	<string name="gc_billing_sending">正在发送激活短信！</string>
+	<string name="gc_billing_info_sms_1">尊敬的客户，您正在使用：</string>
+	<string name="gc_billing_info_sms_2">游戏名称：{0}</string>
+	<string name="gc_billing_info_sms_3">服务提供商：{0}</string>
+	<string name="gc_billing_info_sms_4">客服电话：{0}</string>
+	<string name="gc_billing_info_sms_5">您即将购买：</string>
+	<string name="gc_billing_info_sms_6">“{0}”</string>
+	<string name="gc_billing_info_sms_7">共需花费人民币{1}元（折合{0}点）</string>
+	<string name="gc_billing_info_sms_8">请点击《确定》发送短信确认购买。</string>
+	<string name="gc_billing_info_sms_9">请点击《确定》确认购买。</string>
+	<string name="gc_billing_ok">付费成功！</string>
+	<string name="gc_billing_ok_history">已付费成功！</string>
+	<string name="gc_billing_fail">您的付费操作失败了，请稍后重试！</string>
+	<string name="gc_billing_require">不进行付费，您将无法获得更好的游戏体验，确定要取消吗？</string>
+	<string name="gc_billing_no_simcard">短信激活失败，请检查SIM卡！</string>
+	<string name="gc_billing_simcard_unavailable">没有可用中国移动SIM卡！</string>
+	<string name="gc_billing_check_network">找不到可用网络，请检查您当前的网络设置！</string>
+	<string name="gc_billing_network_airplane">当前设备处于飞行模式，无可用网络！</string>
+	<string name="gc_billing_network_multi">当前设备存在重复网络，无可用网络！</string>
+	<string name="gc_billing_cmgc_game_tag">此游戏没有配置中国移动标识信息，不能继续使用！</string>
+	<string name="gc_billing_dialog_charging">正在处理付费请求...</string>
+	<string name="gc_billing_invalid_china_mobile_card">请输入有效的手机号码！</string>
+	<string name="gc_billing_fail_phone">您的计费请求失败啦，请尝试输入手机号码进行计费！</string>
+	<string name="gc_billing_fail_vericode">短信验证码获取失败</string>
+	<string name="gc_billing_no_charge">未找到计费信息！</string>
+	<string name="gc_billing_no_vericode">请输入您收到的短信验证码！</string>
+	<string name="gc_billing_no_phone_number">未找到手机号码，请重试！</string>
+	<string name="gc_billing_info_title">感谢您支持正版游戏</string>
+	<string name="gc_billing_info_title_2">游戏付费确认</string>
+	<string name="gc_billing_net_prop">您正在玩：{0}，即将购买“{1}”，收费人民币{3}元（折合{2}点）。</string>
+	<string name="gc_billing_net_info">您需要输入手机号码，以获取短信验证码，在进入确认界面输入正确验证码之前，不会产生费用。</string>
+	<string name="gc_billing_net_verifycode">短信验证码：</string>
+	<string name="gc_billing_net_verifycode_1">为保证您的个人手机账户安全，请在确认游戏付费前，正确输入您手机上收到的随机短信验证码（区分大小写）。</string>
+	<string name="gc_billing_net_verifycode_2">短信验证码在5分钟内有效，超过时间内仍未收到验证码，建议您稍后重试。</string>
+	<string name="gc_billing_net_phone">手机号码：（请输入{0}位的{1}）</string>
+	<string name="gc_billing_net_phone_1">11</string>
+	<string name="gc_billing_net_phone_2">移动手机号码</string>
+	<string name="gc_billing_net_provision">中国移动游戏服务条款</string>
+	<string name="gc_billing_net_provision_content">
+　　欢迎您使用中国移动游戏服务，请阅读并严格遵守以下服务条款：{0}{0}
+1. 您正在使用的游戏来自中国移动江苏公司游戏门户网站。中国移动江苏公司通过游戏门户网站不断为广大的中国移动手机客户提供内容丰富游戏产品，这些游戏产品均由中国移动游戏业务合作伙伴提供，所有权归属相应的合作伙伴。本游戏详细的所有权与客服信息，请参见游戏菜单的帮助与关于页面。{0}{0}
+2. 游戏的付费激活{0}
+　　您正在使用的本游戏业务为先免费试玩后付费激活的服务，您需在游戏指定的免费试玩体验时间之后，根据游戏体验与游戏资费提示情况，选择付费激活并继续使用本游戏,或者放弃继续使用本游戏。您如选择放弃继续使用本游戏，只需点击资费页面上的“取消”按钮。您如选择付费激活并继续使用本游戏，游戏资费将由中国移动代为收取。{0}{0}
+3. 输入手机号码并确认付费{0}
+　　您如选择付费激活并继续使用本游戏，需在资费页面输入本人的手机号码进行身份确认后，点击“同意条款并进入确认页面”。您将在所输入的手机号码上收到6位数的短信验证码。 您需在“确认页面”正确输入此短信验证码，并点击“确认”按钮后，方可成功付费并继续使用本游戏。{0}
+　　3.1 您在输入手机号码时，需确认输入的手机号码所对应的手机账户产权为本人所有或经所有权人授权，否则不得使用本服务。一切未经手机账户所有权人许可的输入均视为非法，并将承担一切可能被追诉的法律责任。{0}
+　　3.2 为最大限度的保护用户权益不受侵害，在某些场合，用户还需输入正确的图形验证码。{0}
+　　3.3 游戏资费是以扣取用户中国移动游戏业务点数账户中点数的方式收取，如用户账户点数余额不足，系统将自动以等值话费补足点数后扣取。{0} {0}
+4. 您不得将中国移动江苏公司游戏门户网站提供的在线服务和网络应用项目用于任何非法用途，否则自行承担由此可能造成的一切后果。非法用途包括但不限于：传输任何违反国家法律、法规、地方性法规和国际法律的资料，传输助长国内不利条件和涉及国家安全的资料，传输任何教唆他人构成犯罪行为的资料，传输非法的、骚扰性的、中伤他人的、辱骂性的、 恐吓性的、伤害性的、庸俗的，淫秽等信息资料，干扰或混乱网络服务，发送未经允许的接收人等。当您使用中国移动江苏公司游戏门户网站提供的在线服务和网络应用项目做非法用途时，您的访问记录将作为执法机关可能的执法依据，您不得以此追究中国移动江苏公司的法律责任。{0}{0}
+5. 中国移动江苏公司有权根据移动互联网的发展和中华人民共和国有关法律、法规的变化，不断地完善和修改本服务条款。中国移动江苏公司保留随时修改服务条款的权利，当发生有关争议时，请以最新的服务条款为准。{0}{0}
+6. 您在点击“确定”按钮后，即表示您与中国移动江苏公司达成协议，完全理解并接受本服务条款项下的全部条款内容与付费流程。{0}
+	</string>
+	<string name="gc_billing_net_provision_ok">同意条款并进入确认界面</string>
+	<string name="gc_billing_more_time_error">您的付费请求太频繁,请稍后重试！</string>
+
+	<!-- Dialog -->
+	<string name="gc_billing_dialog_sure_space">　确定　</string>
+	<string name="gc_billing_dialog_clear_space">　取消　</string>
+	<string name="gc_billing_dialog_continue">　继续　</string>
+	<string name="gc_billing_dialog_exit">　退出　</string>
+	<string name="gc_billing_dialog_information">提示</string>
+	<string name="gc_billing_dialog_sure">确定</string>
+	<string name="gc_billing_dialog_clear">取消</string>
+	<string name="gc_billing_dialog_yes">是</string>
+	<string name="gc_billing_dialog_no">否</string>
+	<string name="gc_billing_dialog_positive">继续</string>
+	<string name="gc_billing_dialog_neutral">结束</string>
+	<string name="gc_billing_dialog_cancel">返回</string>
+</resources>
