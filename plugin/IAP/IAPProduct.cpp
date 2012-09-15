@@ -2,13 +2,13 @@
 
 namespace cocos2d { namespace iap {
 
-CCStoreProduct* IAPProduct::productWithId(const char* productIdentifier,
+IAPProduct* IAPProduct::create(const char* productIdentifier,
                                           const char* localizedTitle,
                                           const char* localizedDescription,
                                           float price,
                                           const char* priceLocale)
 {
-    CCStoreProduct* product = new CCStoreProduct();
+    IAPProduct* product = new IAPProduct();
     if (product != NULL && product->init(productIdentifier, localizedTitle, localizedDescription, price, priceLocale))
     {
         product->autorelease();

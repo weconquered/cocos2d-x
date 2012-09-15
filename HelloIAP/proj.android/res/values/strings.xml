@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">HelloIAP</string>
+    <string name="strConnecting">正在连接服务器...</string>
+    <string name="strAlertDialogConfirm">确定</string>
+    <string name="strAlertDialogOK">是的</string>
+    <string name="strAlertDialogCancel">取消</string>
+    <string name="strAlertDialogYes">是</string>
+    <string name="strAlertDialogNo">否</string>
+    <string name="strGiveUp">放弃</string>
+    <string name="strLogining">获取业务信息...</string>
+    <string name="strNetworkUnReachable">网络不可用</string>
+    <string name="strSimUnavailable">sim卡不可用</string>
+    <string name="strUnicomTip">（联通用户需要联网进行支付）</string>
+    <string name="strBusinessUnavailable">短信购买业务暂不可用</string>
+    <string name="strCancelPayment">取消购买</string>
+    <string name="strPaySuccess">购买成功</string>
+    <string name="strCoinUnit">金币</string>
+    <string name="strPurchasing">正在处理中，请稍候……</string>
+    <string name="strFmtIAPNotifyTitle">购买 %1$s</string>
+    <string name="strFmtIAPNotifyMsg">本次需要收费%1$d元，将发送%2$d条短信付费（%3$d元／条不含通信费）。已发送%4$d条短信，还需发送%5$d条短信。是否继续？\n\n欢迎使用\n您将选择使用由指云时代提供的%6$s业务，信息费%3$d元/条，继续&quot;%7$s&quot;开始享受服务，&quot;%8$s&quot;则不扣费。客服电话95105921，信息费由移动运营商代收。</string>
+    <string name="strSendSMSFailed">请在信号良好的情况下付费</string>
+    <string name="strSendConfirmSMSFailed">短信支付业务确认短信发送失败！</string>    
 </resources>

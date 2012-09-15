@@ -1,8 +1,10 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
 
+
 using namespace cocos2d;
 using namespace CocosDenshion;
+using namespace cocos2d::iap;
 
 CCScene* HelloWorld::scene()
 {
@@ -41,10 +43,7 @@ bool HelloWorld::init()
                                         menu_selector(HelloWorld::menuCloseCallback) );
     pCloseItem->setPosition( ccp(CCDirector::sharedDirector()->getWinSize().width - 20, 20) );
 
-    // create menu, it's an autorelease object
-    CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
-    pMenu->setPosition( CCPointZero );
-    this->addChild(pMenu, 1);
+
 
     /////////////////////////////
     // 3. add your codes below...
@@ -71,6 +70,18 @@ bool HelloWorld::init()
     // add the sprite as a child to this layer
     this->addChild(pSprite, 0);
     
+    CCLabelTTF* label = CCLabelTTF::create("CCCrypto", "Arial", 24);
+    CCMenuItemLabel* item1 = CCMenuItemLabel::create(label,
+                                                     this,
+                                                     menu_selector(HelloWorld::testIAP));
+
+    item1->setPosition( ccp(CCDirector::sharedDirector()->getWinSize().width/2, 100) );
+
+    // create menu, it's an autorelease object
+    CCMenu* pMenu = CCMenu::create(pCloseItem, item1, NULL);
+    pMenu->setPosition( CCPointZero );
+    this->addChild(pMenu, 1);
+
     return true;
 }
 
@@ -81,4 +92,45 @@ void HelloWorld::menuCloseCallback(CCObject* pSender)
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     exit(0);
 #endif
+}
+
+void HelloWorld::testIAP(cocos2d::CCObject* pSender)
+{
+    IAP::getInstance()->loadOneProduct("abc", 2, this);
+    IAP::getInstance()->purchaseOneProduct("abc", this);
+}
+
+void HelloWorld::onIAPLoginCompleted()
+{
+    CCLog("HelloWorld::onIAPLoginCompleted");
+}
+
+void HelloWorld::onIAPLoginFailed()
+{
+    CCLog("HelloWorld::onIAPLoginFailed");
+}
+
+void HelloWorld::onIAPRequestProductsCompleted(CCArray* productsId, CCArray* invalidProductsId/* = NULL*/)
+{
+    CCLog("HelloWorld::onIAPRequestProductsCompleted");
+}
+
+void HelloWorld::onIAPRequestProductsFailed(IAPProductsRequestErrorCode errorCode, const char* errorMsg)
+{
+    CCLog("HelloWorld::onIAPRequestProductsFailed");
+}
+
+void HelloWorld::onTransactionFailed(IAPTransaction* pTransaction)
+{
+    CCLog("HelloWorld::onTransactionFailed");
+}
+
+void HelloWorld::onTransactionCompleted(IAPTransaction* pTransaction)
+{
+    CCLog("HelloWorld::onTransactionCompleted");
+}
+
+void HelloWorld::onTransactionRestored(IAPTransaction* pTransaction)
+{
+    CCLog("HelloWorld::onTransactionRestored");
 }

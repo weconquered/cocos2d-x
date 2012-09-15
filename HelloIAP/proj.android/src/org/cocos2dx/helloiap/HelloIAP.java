@@ -23,6 +23,10 @@ THE SOFTWARE.
 ****************************************************************************/
 package org.cocos2dx.helloiap;
 
+import org.cocos2dx.iap.IAPWrapper;
+import org.cocos2dx.iap.Wrapper;
+import org.cocos2dx.iap.ChinaMobile.CMGCBillingAdapter;
+import org.cocos2dx.iap.ChinaTelecom.DXIAPAdapter;
 import org.cocos2dx.lib.Cocos2dxActivity;
 import org.cocos2dx.lib.Cocos2dxEditText;
 import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
@@ -75,6 +79,16 @@ public class HelloIAP extends Cocos2dxActivity{
 
             // Set framelayout as the content view
 			setContentView(framelayout);
+			
+	        Wrapper.setOutputLogEnable(true);
+	        Wrapper.initialize(this, mGLView);
+			////////////////////////////////////////////////////////////////////////
+			// IAP Initialization
+			if (IAPWrapper.enabled()) {
+				CMGCBillingAdapter.initialize();
+				DXIAPAdapter.initialize();
+				//CKIAPAdapter.initialized(strPunchBoxID, strSecretKey);
+			}
 		}
 		else {
 			Log.d("activity", "don't support gles2.0");
