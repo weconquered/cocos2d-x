@@ -20,18 +20,18 @@ public class DXIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
 	private static String mProductIdentifier;
 
     private static void LogD(String msg) {
-		Wrapper.LogD("DXIAPAdapter", msg);
+		Wrapper.LogD("ChinaTelecom-IAPAdapter", msg);
 	}
     
     public static DXIAPAdapter getInstance() {
     	return mAdapter;
     }
 
-    public static void initialize() {
+    public static void initialize(String cFromer) {
 		mAdapter = new DXIAPAdapter();
 		
 		// 初始化SDK，第二个参数是电信提供的渠道来源 
-		EGameFei.init(Wrapper.getActivity(), "90235529"); //cjh 渠道来源必须由配置文件中读取
+		EGameFei.init(Wrapper.getActivity(), cFromer); //cjh 渠道来源必须由配置文件中读取
 		
 		// 爱豆支付的回调
 		EGameFei.setAidouListener(new AiDouListener() {
@@ -91,7 +91,7 @@ public class DXIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
 	@Override
 	public void networkUnReachableNotify() {
 		LogD("networkUnReachableNotify");
-		Wrapper.getCocos2dxGLSurfaceView().post(new Runnable() {
+		Wrapper.postEventToMainThread(new Runnable() {
             @Override
             public void run() {
             	Toast.makeText(Wrapper.getActivity(), R.string.strNetworkUnReachable, Toast.LENGTH_SHORT).show();
@@ -104,7 +104,7 @@ public class DXIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
 		LogD("requestProductData : " + product);
 
 		final String productId = product;
-		Wrapper.getCocos2dxGLSurfaceView().post(new Runnable() {
+		Wrapper.postEventToGLThread(new Runnable() {
             @Override
             public void run() {
         		IAPWrapper.didReceivedProducts(productId);
@@ -117,15 +117,24 @@ public class DXIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
 	public void addPayment(String productIdentifier) {
 		LogD("addPayment : " + productIdentifier);
 		mProductIdentifier = productIdentifier;
-		String smsKey = IAPProducts.getProductDXSMSKey(mProductIdentifier);
+//cjh		final String smsKey = IAPProducts.getProductDXSMSKey(mProductIdentifier);
 		
-		if (smsKey == null || smsKey.length() == 0) {
-			IAPWrapper.didFailedTransaction(mProductIdentifier);
-			return;
-		}
+//cjh		if (smsKey == null || smsKey.length() == 0) {
+//			IAPWrapper.didFailedTransaction(mProductIdentifier);
+//			return;
+//		}
 		
-		// 调用电信支付接口 
-		EGameFei.pay(smsKey);
+		Wrapper.postEventToMainThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				// 调用电信支付接口 
+//cjh				EGameFei.pay(smsKey);
+				EGameFei.pay("43484");
+			}
+		});
+
 	}
 
 	@Override
@@ -136,8 +145,8 @@ public class DXIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
 			// 检查IMSI
 			if (null == mIMSI)
 				break;
-			if (! mIMSI.startsWith("46003"))
-				break;
+//cjh			if (! mIMSI.startsWith("46003"))
+//				break;
 			ret = true;
 		} while (false);
 		return ret;

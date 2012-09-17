@@ -10,6 +10,14 @@ using namespace cocos2d::iap;
 extern "C"
 {
 
+jstring Java_org_cocos2dx_iap_IAPWrapper_nativeGetProductInfo(JNIEnv* env, jobject thiz, jstring text)
+{
+    const char* pszID = env->GetStringUTFChars(text, NULL);
+    return env->NewStringUTF(pszID);
+ //   std::string strRet = ProductInfo::getProductInfo(pszID);
+ //   return env->NewStringUTF(strRet.c_str());
+}
+
 bool Java_org_cocos2dx_iap_IAPWrapper_nativeIAPEnabled(JNIEnv*  env, jobject thiz)
 {
     return true;//cjh (! ModuleCustomConfig::disableIAP);
@@ -156,6 +164,7 @@ bool IAP::purchaseOneProduct(const char* productId, IAPTransactionDelegate* pDel
 {
     if (productId != NULL && strlen(productId) > 0)
     {       
+        m_pTransactionDelegate = pDelegate;
         JniMethodInfo t;
         if (JniHelper::getStaticMethodInfo(t
             , "org/cocos2dx/iap/IAPWrapper"

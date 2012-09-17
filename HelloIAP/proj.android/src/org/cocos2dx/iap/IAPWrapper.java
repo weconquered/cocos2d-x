@@ -94,22 +94,12 @@ public class IAPWrapper {
 	public static void setOtherAdapter(IAPAdapter adapter) {
 		mOtherAdapter = adapter;
 	}
-
-	private static String mSoid;
-	public static void setSoid(String soid) { mSoid = soid; };
-	public static String getSoid() { return mSoid; }
-	
-	private static String mOid;
-	public static void setOid(String oid) { mOid = oid; };
-	public static String getOid() { return mOid; }
 	
 	public static void addPayment(String productIdentifier) {
 		LogD("addPayment:" + productIdentifier);
 		if (null != mCurrentAdapter) {
 			if (enabled()) {
 				mCurrentAdapter.addPayment(productIdentifier);
-				mSoid = "";
-				mOid = "";
 //cjh				DataStat.preparePay(getPrepareParam(productIdentifier));
 			}
 		}
@@ -134,6 +124,7 @@ public class IAPWrapper {
 	
 	private static String mProductWanted = null;
 	public static void requestProductData(String product, int payMode) {
+		
 		// 选择一个支付方式
 		switch (payMode) {
 		case 1:
@@ -161,7 +152,7 @@ public class IAPWrapper {
 		
 		if (null == mCurrentAdapter) {
 			// 只有选择使用短信付费才有可能出现找不到合适 adapter 的情况
-			Wrapper.getCocos2dxGLSurfaceView().post(new Runnable() {
+			Wrapper.postEventToMainThread(new Runnable() {
 	            @Override
 	            public void run() {
 	            	Toast.makeText(Wrapper.getActivity(), R.string.strSimUnavailable, Toast.LENGTH_SHORT).show();
@@ -224,7 +215,7 @@ public class IAPWrapper {
 		LogD("didLoginFailed");
 		if (null == mCurrentAdapter) return;
 		if (false == enabled()) return;
-		Wrapper.getCocos2dxGLSurfaceView().post(new Runnable() {
+		Wrapper.postEventToGLThread(new Runnable() {
    	            @Override
    	            public void run() {
    	            	IAPWrapper.nativeDidLoginFailed();
@@ -236,7 +227,7 @@ public class IAPWrapper {
 		LogD("didLoginSuccess");
 		if (null == mCurrentAdapter) return;
 		if (false == enabled()) return;
-		Wrapper.getCocos2dxGLSurfaceView().post(new Runnable() {
+		Wrapper.postEventToGLThread(new Runnable() {
    	            @Override
    	            public void run() {
    	            	IAPWrapper.nativeDidLoginSuccess();
@@ -248,7 +239,7 @@ public class IAPWrapper {
 		LogD("didReceivedProducts:" + products);
 		if (null == mCurrentAdapter) return;
 		if (false == enabled()) return;
-		Wrapper.getCocos2dxGLSurfaceView().post(new Runnable() {
+		Wrapper.postEventToGLThread(new Runnable() {
    	            @Override
    	            public void run() {
    	            	IAPWrapper.nativeDidReceivedProducts(products);
@@ -259,7 +250,7 @@ public class IAPWrapper {
 	public static void didFailedTransaction(final String productIdentifier) {
 		LogD("didFailedTransaction:" + productIdentifier);
 		if (false == enabled()) return;
-		Wrapper.getCocos2dxGLSurfaceView().post(new Runnable() {
+		Wrapper.postEventToGLThread(new Runnable() {
    	            @Override
    	            public void run() {
    	            	IAPWrapper.nativeDidFailedTransaction(productIdentifier);
@@ -271,7 +262,7 @@ public class IAPWrapper {
 		LogD("didCompleteTransaction:" + productIdentifier);
 		if (null == mCurrentAdapter) return;
 		if (false == enabled()) return;
-		Wrapper.getCocos2dxGLSurfaceView().post(new Runnable() {
+		Wrapper.postEventToGLThread(new Runnable() {
    	            @Override
    	            public void run() {
    	            	IAPWrapper.nativeDidCompleteTransaction(productIdentifier);

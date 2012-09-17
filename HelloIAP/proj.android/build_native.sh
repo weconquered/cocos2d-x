@@ -47,9 +47,9 @@ echo "APP_ROOT = $APP_ROOT"
 echo "APP_ANDROID_ROOT = $APP_ANDROID_ROOT"
 
 # make sure assets is exist
-if [ -d "$APP_ANDROID_ROOT"/assets ]; then
-    rm -rf "$APP_ANDROID_ROOT"/assets
-fi
+#if [ -d "$APP_ANDROID_ROOT"/assets ]; then
+#    rm -rf "$APP_ANDROID_ROOT"/assets
+#fi
 
 mkdir "$APP_ANDROID_ROOT"/assets
 

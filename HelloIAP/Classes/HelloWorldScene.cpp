@@ -96,8 +96,7 @@ void HelloWorld::menuCloseCallback(CCObject* pSender)
 
 void HelloWorld::testIAP(cocos2d::CCObject* pSender)
 {
-    IAP::getInstance()->loadOneProduct("abc", 2, this);
-    IAP::getInstance()->purchaseOneProduct("abc", this);
+    IAP::getInstance()->loadOneProduct("abc", 1, this);
 }
 
 void HelloWorld::onIAPLoginCompleted()
@@ -113,6 +112,7 @@ void HelloWorld::onIAPLoginFailed()
 void HelloWorld::onIAPRequestProductsCompleted(CCArray* productsId, CCArray* invalidProductsId/* = NULL*/)
 {
     CCLog("HelloWorld::onIAPRequestProductsCompleted");
+    IAP::getInstance()->purchaseOneProduct("abc", this);
 }
 
 void HelloWorld::onIAPRequestProductsFailed(IAPProductsRequestErrorCode errorCode, const char* errorMsg)

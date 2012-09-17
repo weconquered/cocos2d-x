@@ -27,10 +27,14 @@ import org.cocos2dx.iap.IAPWrapper;
 import org.cocos2dx.iap.Wrapper;
 import org.cocos2dx.iap.ChinaMobile.CMGCBillingAdapter;
 import org.cocos2dx.iap.ChinaTelecom.DXIAPAdapter;
+import org.cocos2dx.iap.UserCenter.CKIAPAdapter;
 import org.cocos2dx.lib.Cocos2dxActivity;
 import org.cocos2dx.lib.Cocos2dxEditText;
 import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
 import org.cocos2dx.lib.Cocos2dxRenderer;
+
+import cn.emagsoftware.gamebilling.api.GameInterface;
+import cn.emagsoftware.gamebilling.api.GameInterface.GameExitCallback;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -42,6 +46,15 @@ import android.view.ViewGroup;
 
 public class HelloIAP extends Cocos2dxActivity{
 
+	// User Center
+	private final String strPunchBoxID = "buyudaren2test";
+	private final String strSecretKey = "874126E837810FDB112C274D1D7E6FD98";
+	// ChinaTelecom
+	private final String strCFromer = "90235529";
+	// ChinaMobile
+	private final String strCompanyName = "Please replace this";
+	private final String strTelNumber = "010-0000000";
+	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		
@@ -85,9 +98,9 @@ public class HelloIAP extends Cocos2dxActivity{
 			////////////////////////////////////////////////////////////////////////
 			// IAP Initialization
 			if (IAPWrapper.enabled()) {
-				CMGCBillingAdapter.initialize();
-				DXIAPAdapter.initialize();
-				//CKIAPAdapter.initialized(strPunchBoxID, strSecretKey);
+				CMGCBillingAdapter.initialize(strCompanyName, strTelNumber);
+				DXIAPAdapter.initialize(strCFromer);
+				CKIAPAdapter.initialize(strPunchBoxID, strSecretKey);
 			}
 		}
 		else {
@@ -108,6 +121,25 @@ public class HelloIAP extends Cocos2dxActivity{
 	     mGLView.onResume();
 	 }
 	 
+	 protected void onQueryExitGame() {
+		GameInterface.exit(new GameExitCallback() {
+			@Override
+			public void onConfirmExit() {
+				mGLView.post(new Runnable() {
+	   	            @Override
+	   	            public void run() {
+	   	            	//cjh
+	   	            	//FishingJoy2.terminateProcess();
+	   	            }
+				});
+			}
+
+			@Override
+			public void onCancelExit() {
+			}
+		});
+	}	 
+	
 	 private boolean detectOpenGLES20() 
 	 {
 	     ActivityManager am =
@@ -116,6 +148,8 @@ public class HelloIAP extends Cocos2dxActivity{
 	     return (info.reqGlEsVersion >= 0x20000);
 	 }
 	
+
+		
      static {
          System.loadLibrary("game");
      }

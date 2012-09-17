@@ -15,48 +15,78 @@
                   android:screenOrientation="landscape"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
                   android:configChanges="orientation">
+        </activity>
+        
+        <!-- ChinaTelecom Billing activity -->
+        <activity
+            android:name="com.egamefei.sdk.uis.EgamefeeWebActivity"
+            android:configChanges="keyboardHidden"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity
+            android:name="cn.game189.sms.SMS"
+            android:theme="@android:style/Theme.Dialog" >
+        </activity>
+        
+        <!-- ChinaMobile Billing activity -->
+		<activity android:name="org.cocos2dx.iap.ChinaMobile.CMGCInitialization"
+			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+			android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        
-        <!-- ChinaMobile Game Billing -->
-		<activity android:name="cn.emagsoftware.gamebilling.activity.BillingActivity"
-			android:windowSoftInputMode="stateHidden"
-			android:configChanges="orientation|keyboardHidden">
-		</activity>
-		<activity android:name="cn.emagsoftware.gamebilling.activity.GameExitActivity" 
-			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-			android:screenOrientation="landscape">
-		</activity>
-		<activity android:name="cn.emagsoftware.gamebilling.activity.GameOpenActivity"
-			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-			android:screenOrientation="landscape">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
 			<intent-filter>
 				<action android:name="android.intent.action.CHINAMOBILE_OMS_GAME" />
 				<category android:name="android.intent.category.CHINAMOBILE_GAMES" />
 			</intent-filter>
 		</activity>
+
+		<activity android:name="cn.emagsoftware.gamebilling.activity.BillingActivity"
+			android:windowSoftInputMode="stateHidden"
+			android:screenOrientation="landscape"
+			android:configChanges="orientation|keyboardHidden">
+		</activity>
+        
+        <activity android:name="cn.emagsoftware.gamebilling.activity.GameExitActivity" 
+			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+			android:screenOrientation="landscape">
+		</activity>
 		
-	<!-- 游戏id区域 -->
-	<meta-data
-	    android:name="gameId"
-	    android:value="226602" >
-	</meta-data>
-	<meta-data
-	    android:name="toolName_39696"
-	    android:value="原地复活" />
-	<meta-data
-	    android:name="toolPrice_39696"
-	    android:value="1元" />
-	<meta-data
-	    android:name="feeCode_39696"
-	    android:value="0111C001741102210073711102210072550115174000000000000000000000000000" />
+		<activity android:name="cn.emagsoftware.gamebilling.activity.GameExitFinalActivity" 
+			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+			android:screenOrientation="landscape">
+		</activity>
+		
+	<!-- ChinaTelecom product id  -->
+    <meta-data android:name="gameId" android:value="235529" />
+    
+    <meta-data android:name="toolName_43483" android:value="激活正版游戏" />
+    <meta-data android:name="toolPrice_43483" android:value="4元" />
+    <meta-data android:name="feeCode_43483" android:value="0411C110571102215757171102215750180140010059000000000000000000000000" />
+    
+    <meta-data android:name="toolName_43484" android:value="购买120金币" />
+    <meta-data android:name="toolPrice_43484" android:value="3元" />
+    <meta-data android:name="feeCode_43484" android:value="0311C110571102215757171102215750130140010059000000000000000000000000" />
+    
+    <meta-data android:name="toolName_43485" android:value="购买205金币" />
+    <meta-data android:name="toolPrice_43485" android:value="5元" />
+    <meta-data android:name="feeCode_43485" android:value="0511C110571102215757171102215750140140010059000000000000000000000000" />
+    
+    <meta-data android:name="toolName_43486" android:value="购买335金币" />
+    <meta-data android:name="toolPrice_43486" android:value="8元" />
+    <meta-data android:name="feeCode_43486" android:value="0811C110571102215757171102215750150140010059000000000000000000000000" />
+    
+    <meta-data android:name="toolName_43487" android:value="购买425金币" />
+    <meta-data android:name="toolPrice_43487" android:value="10元" />
+    <meta-data android:name="feeCode_43487" android:value="1011C110571102215757171102215750160140010059000000000000000000000000" />
+    
+    <meta-data android:name="toolName_43488" android:value="VIP服务一个月" />
+    <meta-data android:name="toolPrice_43488" android:value="5元" />
+    <meta-data android:name="feeCode_43488" android:value="0511C110571102215757171102215750190140010059000000000000000000000000" />
+        
 
     </application>
     <supports-screens android:largeScreens="true"
@@ -64,21 +94,38 @@
                       android:anyDensity="true"
                       android:normalScreens="true"/>
 
-<uses-permission android:name="android.permission.SEND_SMS" />
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.READ_CONTACTS" />
-<uses-permission android:name="android.permission.READ_PHONE_STATE" />
-<uses-permission android:name="android.permission.CAMERA" />
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-<uses-permission android:name="android.permission.VIBRATE" />
-<uses-permission android:name="android.permission.RECEIVE_SMS" />
-
-<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
-<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"></uses-permission>
-<uses-permission android:name="android.permission.GET_ACCOUNTS" />
-<uses-permission android:name="android.permission.WRITE_APN_SETTINGS"></uses-permission>
+    <!-- ChinaTelecom SDK -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    
+    <!-- User Center IAP SDK -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    
+    <!-- ChinaMoble IAP permission -->
+    <uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+	<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
+	<uses-permission android:name="android.permission.SEND_SMS" />
+	<uses-permission android:name="android.permission.READ_CONTACTS" />
+	<uses-permission android:name="android.permission.VIBRATE"/>
+	<uses-permission android:name="android.permission.READ_PHONE_STATE"/> 
 
 </manifest> 

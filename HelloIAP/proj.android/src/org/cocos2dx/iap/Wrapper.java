@@ -19,7 +19,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 public class Wrapper {
-	private static boolean bDebug = false;
+	private static boolean bDebug = true;//cjh false;
 	public static boolean getOutputLogEnable() { return bDebug; }
 	public static void setOutputLogEnable(boolean enable) {	bDebug = enable;}
 	public static void LogD(String tag, String msg, boolean bFource) { if (bFource || bDebug) Log.d(tag, msg); }
@@ -36,16 +36,26 @@ public class Wrapper {
 	}
 	
 	private static Cocos2dxGLSurfaceView mGLSurfaceView = null;
-	public static Cocos2dxGLSurfaceView getCocos2dxGLSurfaceView() {
+//	public static Cocos2dxGLSurfaceView getCocos2dxGLSurfaceView() {
+//		if (null == mGLSurfaceView) LogD("getCocos2dxGLSurfaceView null!!!");
+//		return mGLSurfaceView;
+//	}
+	
+	public static void postEventToGLThread(Runnable r) {
 		if (null == mGLSurfaceView) LogD("getCocos2dxGLSurfaceView null!!!");
-		return mGLSurfaceView;
+		mGLSurfaceView.queueEvent(r);
+	}
+	
+	public static void postEventToMainThread(Runnable r) {
+		if (null == mHandler) LogD("getUIHandler null !!!");
+		mHandler.post(r);
 	}
 	
 	private static Handler mHandler;
-	public static Handler getUIHandler() {
-		if (null == mHandler) LogD("getUIHandler null !!!");
-		return mHandler;
-	}
+//	public static Handler getUIHandler() {
+//		if (null == mHandler) LogD("getUIHandler null !!!");
+//		return mHandler;
+//	}
 	
 	public static void initialize(Activity activity, Cocos2dxGLSurfaceView view) {
 		mActivity = activity;
@@ -203,7 +213,7 @@ public class Wrapper {
 			if (false == savingLock) {
 				savingLock = true;
 				LogD("saveUserDefaultAsync");
-				getUIHandler().post(new Runnable(){
+				Wrapper.postEventToMainThread(new Runnable(){
 					@Override
 					public void run() {
 						new AsyncTask<String, Integer, Long>() {
@@ -367,6 +377,7 @@ public class Wrapper {
 
 	// Unique Id
 	private static String mDeviceId = null; 
+	@SuppressWarnings("deprecation")
 	public static String getUid() {
 		if (null != mDeviceId) return mDeviceId;	// 已经取过了，直接返回
 		Context context = Wrapper.getActivity();
@@ -418,10 +429,10 @@ public class Wrapper {
 			{
 				LogD("TRYING TO GET SERIAL OF 2.3+ DEVICE...");
 				
-				mDeviceId = android.os.Build.SERIAL;
+				//cjh mDeviceId = android.os.Build.SERIAL;
 				
 				LogD("====================");
-				LogD(" SERIAL: deviceID: [" + mDeviceId + "]");
+				LogD("SERIAL: deviceID: [" + mDeviceId + "]");
 				LogD("====================");
 				
 				//----------------------------------------
