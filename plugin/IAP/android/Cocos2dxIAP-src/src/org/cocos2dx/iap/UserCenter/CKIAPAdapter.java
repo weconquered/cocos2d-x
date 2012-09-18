@@ -85,11 +85,11 @@ public class CKIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
 		Wrapper.postEventToMainThread(new Runnable() {
             @Override
             public void run() {
-            	String tip = Wrapper.getActivity().getResources().getString(R.string.strNetworkUnReachable);
+            	String tip = Wrapper.getActivity().getResources().getString(R.string.ccxiap_strNetworkUnReachable);
             	String imsi = Wrapper.getImsiNumber();
             	if (null != imsi && imsi.startsWith("46001")) {
             		// 是中国联通用户 
-            		tip += Wrapper.getActivity().getResources().getString(R.string.strUnicomTip);
+            		tip += Wrapper.getActivity().getResources().getString(R.string.ccxiap_strUnicomTip);
             	}
             	Toast.makeText(Wrapper.getActivity(), tip, Toast.LENGTH_SHORT).show();
         	}
@@ -128,9 +128,6 @@ public class CKIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
 		Wrapper.postEventToMainThread(new Runnable() {
             @Override
             public void run() {
-            	String tip = Wrapper.getActivity().getResources().getString(R.string.strNetworkUnReachable);
-            	Toast.makeText(Wrapper.getActivity(), tip, Toast.LENGTH_SHORT).show();
-            	
 				ProductInfo productInfo = new ProductInfo("600", "0.01", "600金币");
 				singleGamePay.startNologinPay(productInfo, payResultHandler);
             }

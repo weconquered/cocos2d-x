@@ -18,6 +18,8 @@ enum {
 
 typedef int IAPPlatform;
 
+
+
 /////////////////////////////////////////////////////////////////////////
 //  IAP Login 
 /////////////////////////////////////////////////////////////////////////
@@ -76,7 +78,7 @@ public:
 
 	static IAP* getInstance();
 	
-    void setPlatform(IAPPlatform mode);
+  //  void setPlatform(IAPPlatform mode);
 
 	bool login(IAPLoginDelegete* pDelegate);
 	

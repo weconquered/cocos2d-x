@@ -9,7 +9,7 @@ class IAPTransaction : public CCObject
 {
 public:
     static IAPTransaction* create(const char* productId);
-    const char* getProductId();
+    const char* getProductIdentifier();
 private:
     IAPTransaction();
     bool init(const char* productId);

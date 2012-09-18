@@ -154,7 +154,7 @@ public class IAPWrapper {
 			Wrapper.postEventToMainThread(new Runnable() {
 	            @Override
 	            public void run() {
-	            	Toast.makeText(Wrapper.getActivity(), R.string.strSimUnavailable, Toast.LENGTH_SHORT).show();
+	            	Toast.makeText(Wrapper.getActivity(), R.string.ccxiap_strSimUnavailable, Toast.LENGTH_SHORT).show();
 	        	}
 	        });
 			didFailedTransaction(product);

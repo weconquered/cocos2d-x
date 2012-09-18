@@ -77,7 +77,7 @@ public class CMGCBillingAdapter implements IAPAdapter{
 		Wrapper.postEventToMainThread(new Runnable() {
             @Override
             public void run() {
-            	Toast.makeText(Wrapper.getActivity(), R.string.strSimUnavailable, Toast.LENGTH_SHORT).show();
+            	Toast.makeText(Wrapper.getActivity(), R.string.ccxiap_strSimUnavailable, Toast.LENGTH_SHORT).show();
         	}
         });
     }

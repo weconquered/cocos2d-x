@@ -31,7 +31,7 @@ bool IAPTransaction::init(const char* productId)
     return false;
 }
 
-const char* IAPTransaction::getProductId()
+const char* IAPTransaction::getProductIdentifier()
 {
     return m_productIdentifier.c_str();
 }

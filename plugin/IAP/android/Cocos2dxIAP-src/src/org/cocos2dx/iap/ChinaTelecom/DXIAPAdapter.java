@@ -94,7 +94,7 @@ public class DXIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
 		Wrapper.postEventToMainThread(new Runnable() {
             @Override
             public void run() {
-            	Toast.makeText(Wrapper.getActivity(), R.string.strNetworkUnReachable, Toast.LENGTH_SHORT).show();
+            	Toast.makeText(Wrapper.getActivity(), R.string.ccxiap_strNetworkUnReachable, Toast.LENGTH_SHORT).show();
         	}
         });
 	}

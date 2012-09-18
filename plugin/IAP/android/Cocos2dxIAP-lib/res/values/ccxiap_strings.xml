@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ccxiap_strNetworkUnReachable">网络不可用</string>
+    <string name="ccxiap_strSimUnavailable">sim卡不可用</string>
+    <string name="ccxiap_strUnicomTip">（联通用户需要联网进行支付）</string>
+</resources>
