@@ -1,9 +1,9 @@
 package org.cocos2dx.iap.ChinaMobile;
 
 
-import org.cocos2dx.helloiap.R;
 import org.cocos2dx.iap.IAPWrapper;
 import org.cocos2dx.iap.IAPWrapper.IAPAdapter;
+import org.cocos2dx.iap.R;
 import org.cocos2dx.iap.Wrapper;
 
 import cn.emagsoftware.gamebilling.api.GameInterface;
@@ -13,8 +13,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
-//import android.telephony.PhoneStateListener;
-//import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -42,12 +40,11 @@ public class CMGCBillingAdapter implements IAPAdapter{
     	return mAdapter;
     }
 	
-	public static void initialize(String companyName, String telNumber) {
+	public static void initialize(String appName, String companyName, String telNumber) {
 		mAdapter = new CMGCBillingAdapter();
         
-		// cjh replace company name
 		try {
-			GameInterface.initializeApp(Wrapper.getActivity(), Wrapper.getActivity().getResources().getString(R.string.app_name), companyName, telNumber);
+			GameInterface.initializeApp(Wrapper.getActivity(), appName, companyName, telNumber);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

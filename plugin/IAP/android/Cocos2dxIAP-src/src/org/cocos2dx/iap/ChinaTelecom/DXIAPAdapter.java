@@ -1,8 +1,8 @@
 package org.cocos2dx.iap.ChinaTelecom;
 
-import org.cocos2dx.helloiap.R;
 import org.cocos2dx.iap.IAPProducts;
 import org.cocos2dx.iap.IAPWrapper;
+import org.cocos2dx.iap.R;
 import org.cocos2dx.iap.Wrapper;
 
 import cn.game189.sms.SMSListener;

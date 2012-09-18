@@ -4,8 +4,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.opengl.GLSurfaceView;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
@@ -35,7 +34,7 @@ public class Wrapper {
 		return mActivity;
 	}
 	
-	private static Cocos2dxGLSurfaceView mGLSurfaceView = null;
+	private static GLSurfaceView mGLSurfaceView = null;
 //	public static Cocos2dxGLSurfaceView getCocos2dxGLSurfaceView() {
 //		if (null == mGLSurfaceView) LogD("getCocos2dxGLSurfaceView null!!!");
 //		return mGLSurfaceView;
@@ -57,7 +56,7 @@ public class Wrapper {
 //		return mHandler;
 //	}
 	
-	public static void initialize(Activity activity, Cocos2dxGLSurfaceView view) {
+	public static void initialize(Activity activity, GLSurfaceView view) {
 		mActivity = activity;
 		mGLSurfaceView = view;
 

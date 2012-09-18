@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, MySdkActivity!</string>
+    <string name="app_name">MySdk</string>
+    <string name="egamefei_error_reload">重新加载</string>
+
+</resources>

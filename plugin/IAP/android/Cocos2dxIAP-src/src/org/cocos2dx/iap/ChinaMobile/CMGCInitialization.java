@@ -1,7 +1,5 @@
 package org.cocos2dx.iap.ChinaMobile;
 
-import org.cocos2dx.helloiap.HelloIAP;
-
 import cn.emagsoftware.gamebilling.api.GameInterface.AnimationCompleteCallback;
 import cn.emagsoftware.gamebilling.view.OpeningAnimation;
 import android.app.Activity;
@@ -32,7 +30,7 @@ public class CMGCInitialization extends Activity {
 					//cjh FishingJoyWrapper.setInitalBackgroundMusicVolume(0);
 				}
 				// 游戏开发者需要在此处：实现游戏主界面的展现代码
-				CMGCInitialization.this.startActivity(new Intent(CMGCInitialization.this, HelloIAP.class));
+	//			CMGCInitialization.this.startActivity(new Intent(CMGCInitialization.this, HelloIAP.class));
 				CMGCInitialization.this.finish();
 			}
 		});

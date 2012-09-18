@@ -1,6 +1,5 @@
 package org.cocos2dx.iap;
 
-import org.cocos2dx.helloiap.R;
 import org.cocos2dx.iap.ChinaMobile.CMGCBillingAdapter;
 import org.cocos2dx.iap.ChinaTelecom.DXIAPAdapter;
 

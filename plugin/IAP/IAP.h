@@ -13,7 +13,7 @@ enum {
 	kIAPPlatformAll = 0,      // IAP mode wasn't set, the default value is kIAPModeAll.
 	kIAPPlatformChinaTelecom,
 	kIAPPlatformChinaMobile,
-	kIAPPlatformPunchBox
+	kIAPPlatformUserCenter
 };
 
 typedef int IAPPlatform;

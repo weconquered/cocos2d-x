@@ -54,7 +54,7 @@ public class HelloIAP extends Cocos2dxActivity{
 	// ChinaMobile
 	private final String strCompanyName = "Please replace this";
 	private final String strTelNumber = "010-0000000";
-	
+
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		
@@ -98,7 +98,7 @@ public class HelloIAP extends Cocos2dxActivity{
 			////////////////////////////////////////////////////////////////////////
 			// IAP Initialization
 			if (IAPWrapper.enabled()) {
-				CMGCBillingAdapter.initialize(strCompanyName, strTelNumber);
+				CMGCBillingAdapter.initialize(this.getResources().getString(R.string.app_name), strCompanyName, strTelNumber);
 				DXIAPAdapter.initialize(strCFromer);
 				CKIAPAdapter.initialize(strPunchBoxID, strSecretKey);
 			}

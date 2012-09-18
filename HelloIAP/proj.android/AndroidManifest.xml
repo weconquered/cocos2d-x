@@ -15,6 +15,14 @@
                   android:screenOrientation="landscape"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
                   android:configChanges="orientation">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.CHINAMOBILE_OMS_GAME" />
+				<category android:name="android.intent.category.CHINAMOBILE_GAMES" />
+			</intent-filter>
         </activity>
         
         <!-- ChinaTelecom Billing activity -->
@@ -34,14 +42,7 @@
 		<activity android:name="org.cocos2dx.iap.ChinaMobile.CMGCInitialization"
 			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
 			android:screenOrientation="landscape">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-			<intent-filter>
-				<action android:name="android.intent.action.CHINAMOBILE_OMS_GAME" />
-				<category android:name="android.intent.category.CHINAMOBILE_GAMES" />
-			</intent-filter>
+
 		</activity>
 
 		<activity android:name="cn.emagsoftware.gamebilling.activity.BillingActivity"

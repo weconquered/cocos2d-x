@@ -1,8 +1,8 @@
 package org.cocos2dx.iap.UserCenter;
 
-import org.cocos2dx.helloiap.R;
 import org.cocos2dx.iap.IAPProducts;
 import org.cocos2dx.iap.IAPWrapper;
+import org.cocos2dx.iap.R;
 import org.cocos2dx.iap.Wrapper;
 
 import com.chukong.usercenter.InitHelper;
@@ -128,6 +128,9 @@ public class CKIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
 		Wrapper.postEventToMainThread(new Runnable() {
             @Override
             public void run() {
+            	String tip = Wrapper.getActivity().getResources().getString(R.string.strNetworkUnReachable);
+            	Toast.makeText(Wrapper.getActivity(), tip, Toast.LENGTH_SHORT).show();
+            	
 				ProductInfo productInfo = new ProductInfo("600", "0.01", "600½ð±Ò");
 				singleGamePay.startNologinPay(productInfo, payResultHandler);
             }
