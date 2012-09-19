@@ -96,6 +96,10 @@ public class CKIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
         });
 	}
 
+	public void notifyIAPToExit() {
+		IAPWrapper.nativeNotifyGameExit();
+	}
+	
 	@Override
 	public void requestProductData(String product) {
 		LogD("requestProductData : " + product);
@@ -116,20 +120,21 @@ public class CKIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
 
 		mProductIdentifier = productIdentifier;
 
-//cjh		float fPrice = IAPProducts.getProductPrice(mProductIdentifier);
-//		if (0.0f == fPrice) {
-//			IAPWrapper.didFailedTransaction(productIdentifier);
-//			return;
-//		}
+		final float fPrice = IAPProducts.getProductPrice(mProductIdentifier);
+		if (0.0f == fPrice) {
+			IAPWrapper.didFailedTransaction(productIdentifier);
+			return;
+		}
 		
 		// 调用支付接口 
-//cjh		ProductInfo productInfo = new ProductInfo(""+IAPProducts.getProductCoinNum(mProductIdentifier),
-//				""+fPrice, IAPProducts.getProductName(mProductIdentifier));
+
 		Wrapper.postEventToMainThread(new Runnable() {
             @Override
             public void run() {
-				ProductInfo productInfo = new ProductInfo("600", "0.01", "600金币");
-				singleGamePay.startNologinPay(productInfo, payResultHandler);
+				//ProductInfo productInfo = new ProductInfo("600", "0.01", "600金币");
+            	ProductInfo productInfo = new ProductInfo("123"/*""+IAPProducts.getProductCoinNum(mProductIdentifier)*/,
+				""+fPrice, IAPProducts.getProductName(mProductIdentifier));
+            	singleGamePay.startNologinPay(productInfo, payResultHandler);
             }
 		});
 	}

@@ -9,6 +9,13 @@ public class IAPWrapper {
 
 	//cjh should read it from config file.
 	public static final String PRODUCT_ACTIVATE = "ACTIVATE_PRODUCT";
+	public static final int kIAPPayModeInvalid = -1;
+	public static final int kIAPPayModeAuto = 0;
+	public static final int kIAPPayModeSms = 1;
+	public static final int kIAPPayModeOther = 2;
+	public static final int kIAPPayModeMax = 3;
+	
+	private static int mPayMode = kIAPPayModeInvalid;
 	
 	private static void LogD(String msg) {
 		Wrapper.LogD("IAPWrapper", msg);
@@ -21,6 +28,8 @@ public class IAPWrapper {
 		public void loginAsync();
 
 		public void networkUnReachableNotify();
+		
+		public void notifyIAPToExit();
 		
 		public void requestProductData(String product);
 
@@ -39,7 +48,7 @@ public class IAPWrapper {
 	public static native void nativeDidReceivedProducts(String products);
 	public static native void nativeDidFailedTransaction(String productIdentifier);
 	public static native void nativeDidCompleteTransaction(String productIdentifier);
-	
+	public static native void nativeNotifyGameExit();
 	////////////////////////////////////////////////////////////////////////
 	// IAPProducts
 	public static native String nativeGetProductInfo(String productId);
@@ -96,6 +105,9 @@ public class IAPWrapper {
 	
 	public static void addPayment(String productIdentifier) {
 		LogD("addPayment:" + productIdentifier);
+		if (mPayMode == kIAPPayModeInvalid) {
+			setPayMode(kIAPPayModeOther);
+		}
 		if (null != mCurrentAdapter) {
 			if (enabled()) {
 				mCurrentAdapter.addPayment(productIdentifier);
@@ -121,22 +133,34 @@ public class IAPWrapper {
 		}
 	}
 	
-	private static String mProductWanted = null;
-	public static void requestProductData(String product, int payMode) {
+	public static void notifyIAPToExit() {
+		LogD("notifyIAPToExit");
 		
+		if (mPayMode == kIAPPayModeInvalid) {
+			setPayMode(kIAPPayModeAuto);
+		}
+		
+		if (null != mCurrentAdapter){
+			if (enabled()) mCurrentAdapter.notifyIAPToExit();
+		}
+	}
+	
+	public static void setPayMode(int payMode) {
+		LogD("setPayMode:" + payMode);
+		mPayMode = payMode;
 		// 选择一个支付方式
 		switch (payMode) {
-		case 1:
+		case kIAPPayModeOther:
 			// 其它支付方式 
 			mCurrentAdapter = mOtherAdapter;
 			break;
-		case 2:
+		case kIAPPayModeSms:
 			{
 				// 短信支付方式，需要根据不同的 sim 卡选择不同的短信支付 sdk 
 				mCurrentAdapter = getSMSAdapter();
 			}
 			break;
-		case 3:
+		case kIAPPayModeAuto:
 			{
 				// 自动选择支付方式，先检查短信支付 
 				mCurrentAdapter = getSMSAdapter();
@@ -145,6 +169,19 @@ public class IAPWrapper {
 				}
 			}
 			break;
+		default:
+			{
+				mPayMode = kIAPPayModeInvalid;
+			}
+			break;
+		}
+	}
+	
+	private static String mProductWanted = null;
+	public static void requestProductData(String product) {
+		
+		if (mPayMode == kIAPPayModeInvalid) {
+			setPayMode(kIAPPayModeOther);
 		}
 		
 		LogD("requestProductData" + product);
@@ -189,7 +226,9 @@ public class IAPWrapper {
 				ret = CMGCBillingAdapter.getInstance();
 			}else if(imsi.startsWith("46001")){  
 		        //中国联通  
-		    }else if(imsi.startsWith("46003")){  
+		    }
+			else if(imsi.startsWith("46003"))
+		    {  
 		        //中国电信  
 		    	ret = DXIAPAdapter.getInstance();
 		    }

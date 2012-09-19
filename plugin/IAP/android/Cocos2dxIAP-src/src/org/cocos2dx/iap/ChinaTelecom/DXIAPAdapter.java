@@ -99,6 +99,10 @@ public class DXIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
         });
 	}
 
+	public void notifyIAPToExit() {
+		IAPWrapper.nativeNotifyGameExit();
+	}
+	
 	@Override
 	public void requestProductData(String product) {
 		LogD("requestProductData : " + product);
@@ -117,12 +121,12 @@ public class DXIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
 	public void addPayment(String productIdentifier) {
 		LogD("addPayment : " + productIdentifier);
 		mProductIdentifier = productIdentifier;
-//cjh		final String smsKey = IAPProducts.getProductDXSMSKey(mProductIdentifier);
+		final String smsKey = IAPProducts.getProductDXSMSKey(mProductIdentifier);
 		
-//cjh		if (smsKey == null || smsKey.length() == 0) {
-//			IAPWrapper.didFailedTransaction(mProductIdentifier);
-//			return;
-//		}
+		if (smsKey == null || smsKey.length() == 0) {
+			IAPWrapper.didFailedTransaction(mProductIdentifier);
+			return;
+		}
 		
 		Wrapper.postEventToMainThread(new Runnable() {
 			
@@ -130,8 +134,7 @@ public class DXIAPAdapter implements org.cocos2dx.iap.IAPWrapper.IAPAdapter {
 			public void run() {
 				// TODO Auto-generated method stub
 				// 调用电信支付接口 
-//cjh				EGameFei.pay(smsKey);
-				EGameFei.pay("43484");
+				EGameFei.pay(smsKey);
 			}
 		});
 

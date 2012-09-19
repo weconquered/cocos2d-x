@@ -6,64 +6,52 @@
 
 namespace cocos2d { namespace iap {
 
-/////////////////////////////////////////////////////////////////////////
-//  IAP mode 
-/////////////////////////////////////////////////////////////////////////
-enum {
-	kIAPPlatformAll = 0,      // IAP mode wasn't set, the default value is kIAPModeAll.
-	kIAPPlatformChinaTelecom,
-	kIAPPlatformChinaMobile,
-	kIAPPlatformUserCenter
-};
-
-typedef int IAPPlatform;
-
-
-
-/////////////////////////////////////////////////////////////////////////
-//  IAP Login 
-/////////////////////////////////////////////////////////////////////////
-class IAPLoginDelegete
-{
-public:
-	virtual void onIAPLoginCompleted() = 0;
-	virtual void onIAPLoginFailed() = 0;
-};
-
-/////////////////////////////////////////////////////////////////////////
-//  IAP Request 
-/////////////////////////////////////////////////////////////////////////
-enum {
-    kIAPProductsRequestErrorPreviousRequestNotCompleted = 0,
-    kIAPProductsRequestErrorUserCancel
-};
-
-typedef int IAPProductsRequestErrorCode;
-
-class IAPRequestProductsDelegate
-{
-public:
-    /* @brief Products request completed callback function.
-     * @param productsId        Array of vaild product identifiers, its element type is IAPProduct.
-     * @param invalidProductsId Array of invaild product identifiers, its element type is IAPProduct.
-     */
-	virtual void onIAPRequestProductsCompleted(CCArray* productsId, CCArray* invalidProductsId = NULL) = 0;
-	virtual void onIAPRequestProductsFailed(IAPProductsRequestErrorCode errorCode, const char* errorMsg) = 0;
-};
-
-/////////////////////////////////////////////////////////////////////////
-//  IAP TransactionDelegate 
-/////////////////////////////////////////////////////////////////////////
-class IAPTransactionDelegate
-{
-public:
-     virtual void onTransactionFailed(IAPTransaction* pTransaction) = 0;
-     virtual void onTransactionCompleted(IAPTransaction* pTransaction) = 0;
-     virtual void onTransactionRestored(IAPTransaction* pTransaction) = 0;
-};
 
 enum {
-    kIAPPayModeDefault = 0,
+    kResultSuccess = 0,
+    kResultFail,
+};
+
+typedef int Result;
+
+enum {
+    kErrorNone = 0,
+    kErrorUnknown,
+    kErrorServiceNotReachable,
+    kErrorPreviousRequestNotCompleted,
+    kErrorUserCancel,
+};
+
+typedef int ErrorCode;
+
+struct ReturnVal {
+    Result result;
+    ErrorCode errorCode;
+
+    ReturnVal(Result ret, ErrorCode err) {
+        this->result = ret;
+        this->errorCode = err;
+    }
+
+    bool isSucceed() {
+        return this->result == kResultSuccess ? true : false;
+    }
+};
+
+
+class IAPDelegate
+{
+public:
+    virtual void onLoginFinished(ReturnVal r) = 0;
+    virtual void onLoadProductsFinished(ReturnVal r, CCArray* productsId, CCArray* invalidProductsId = NULL) = 0;
+    virtual void onTransactionFinished(ReturnVal r, IAPTransaction* pTransaction) = 0;
+    /** User need to release game resources in this delegate method */
+    virtual void onNotifyGameExit() = 0;
+};
+
+
+enum {
+    kIAPPayModeAuto = 0,
     kIAPPayModeSms,
     kIAPPayModeOther,
     kIAPPayModeMax
@@ -78,47 +66,55 @@ public:
 
 	static IAP* getInstance();
 	
-  //  void setPlatform(IAPPlatform mode);
+    bool initWithProductArray(CCArray* pArray);
 
-	bool login(IAPLoginDelegete* pDelegate);
+    void setDelegate(IAPDelegate* pDelegate);
+    IAPDelegate* getDelegate();
+
+    void setPayMode(IAPPayMode payMode);
+
+	bool login();
 	
-    /** Load products */
-    bool loadOneProduct(const char* productId, IAPPayMode payMode, IAPRequestProductsDelegate* pDelegate);
-    bool loadProducts(CCArray* productsId, IAPPayMode payMode, IAPRequestProductsDelegate* pDelegate);
+    /** Load one product */
+    bool loadProduct(const char* productId);
+
+    /** load some products */
+    bool loadSomeProducts(CCArray* productsId);
     
     /** Cancel Load products operation */
     void cancelLoadProducts();
 
     /** @brief purchase just one product
-     *  @param 
+     *  @param productId Product identifier string.
      */
-    bool purchaseOneProduct(const char* productId, IAPTransactionDelegate* pDelegate);
+    bool purchaseProduct(const char* productId);
     
-    /** @brief purchase more than one product.
+    /** @brief purchase some products.
      *  @param productIds an Array of CCString which stores the name of product.
      */
-    bool purchaseProducts(CCArray* productIds, IAPTransactionDelegate* pDelegate);
+    bool purchaseSomeProducts(CCArray* productIds);
 
-    /** Check whether the network is ready for being used */
-    bool isNetworkReachable();
+    /** Check whether the iap service is ready for use */
+    bool isServiceReachable();
     
-    /** @brief The default notification when network is unreachable, this method is often invoked after isNetworkReachable.
-     *   On android, it shows a tocast view to notify user that network wasn't connected. 
+    /** @brief The default notification when iap service is unreachable, this method is often invoked after isServiceReachable.
+     *   On android, it shows a tocast view to notify user that iap service wasn't connected. 
      *   If user wants to customize the notification, just ignores this method.
      */
-    void networkUnReachableNotify();
+    void notifyServiceUnReachable();
 
-    /** internal functions */
-    IAPLoginDelegete* getLoginDelegate();
-    IAPRequestProductsDelegate* getRequestProductsDelegate();
-    IAPTransactionDelegate* getTransactionDelegate();
+    /** @brief Notify iap platform to exit.
+        
+    */
+    void notifyIAPToExit();
+
+    /** internal function */
+    CCArray* getProductsArray();
 private:
 	IAP();
 
-    IAPPlatform m_platform;
-    IAPLoginDelegete* m_pLoginDelegate;
-    IAPRequestProductsDelegate* m_pRequestProductsDelegate;
-    IAPTransactionDelegate* m_pTransactionDelegate;
+    IAPDelegate* m_pDelegate;
+    CCArray* m_pProductsArray;
 };
 
 }}

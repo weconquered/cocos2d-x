@@ -34,16 +34,16 @@ public class IAPProducts {
 		
 		float fRet = 0.0f;
 		try {
-			String value = productInfo.getString("goodPrice_cn");
+			String value = productInfo.getString("productPrice");
 			fRet = Float.parseFloat(value);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Log.d("IAPProducts", "product " + productIdentifier + "goodPrice_cn is wrong!");
+			Log.d("IAPProducts", "product " + productIdentifier + "productPrice is wrong!");
 		}
 
 		return fRet;
 	}
-
+	/*
 	public static int getProductCoinNum(String productIdentifier) {
 		JSONObject productInfo = getProductInfo(productIdentifier);
 		
@@ -58,7 +58,8 @@ public class IAPProducts {
 
 		return iRet;
 	}
-	
+	*/
+	/*
 	public static String getProductGid(String productIdentifier) {
 		JSONObject productInfo = getProductInfo(productIdentifier);
 		
@@ -72,7 +73,7 @@ public class IAPProducts {
 
 		return strRet;
 	}
-
+	*/
 	public static String getProductDXSMSKey(String productIdentifier) {
 		JSONObject productInfo = getProductInfo(productIdentifier);
 		

@@ -1,6 +1,7 @@
 #include "IAP.h"
 #include <android/log.h>
 #include "jni/JniHelper.h"
+#include "json/json.h"
 //  IAPWrapper.java methods
 
 using namespace cocos2d;
@@ -10,13 +11,6 @@ using namespace cocos2d::iap;
 extern "C"
 {
 
-jstring Java_org_cocos2dx_iap_IAPWrapper_nativeGetProductInfo(JNIEnv* env, jobject thiz, jstring text)
-{
-    const char* pszID = env->GetStringUTFChars(text, NULL);
-    return env->NewStringUTF(pszID);
- //   std::string strRet = ProductInfo::getProductInfo(pszID);
- //   return env->NewStringUTF(strRet.c_str());
-}
 
 bool Java_org_cocos2dx_iap_IAPWrapper_nativeIAPEnabled(JNIEnv*  env, jobject thiz)
 {
@@ -25,31 +19,19 @@ bool Java_org_cocos2dx_iap_IAPWrapper_nativeIAPEnabled(JNIEnv*  env, jobject thi
 
 void Java_org_cocos2dx_iap_IAPWrapper_nativeDidLoginFailed(JNIEnv*  env, jobject thiz)
 {
-    if (! IAP::getInstance()->getLoginDelegate())
-    {
-        CCLog("Havn't set IAPLoginDelegate yet!!!!!!!!!");
-        return;
-    }
-    IAP::getInstance()->getLoginDelegate()->onIAPLoginFailed();
+    CCAssert(IAP::getInstance()->getDelegate() != NULL, "IAP Delegate wasn't set");
+    IAP::getInstance()->getDelegate()->onLoginFinished(ReturnVal(kResultFail, kErrorUnknown));
 }
 
 void Java_org_cocos2dx_iap_IAPWrapper_nativeDidLoginSuccess(JNIEnv*  env, jobject thiz)
 {
-    if (! IAP::getInstance()->getLoginDelegate())
-    {
-        CCLog("Havn't set IAPLoginDelegate yet!!!!!!!!!");
-        return;
-    }
-    IAP::getInstance()->getLoginDelegate()->onIAPLoginCompleted();
+    CCAssert(IAP::getInstance()->getDelegate() != NULL, "IAP Delegate wasn't set");
+    IAP::getInstance()->getDelegate()->onLoginFinished(ReturnVal(kResultSuccess, kErrorNone));
 }
 
 void Java_org_cocos2dx_iap_IAPWrapper_nativeDidReceivedProducts(JNIEnv*  env, jobject thiz, jstring products)
 {
-    if (! IAP::getInstance()->getRequestProductsDelegate())
-    {
-        CCLog("Havn't set IAPRequestProductsDelegate yet!!!!!!!!!");
-        return;
-    }
+    CCAssert(IAP::getInstance()->getDelegate() != NULL, "IAP Delegate wasn't set");
 
     static CCString pStr;
     static CCArray items;
@@ -60,33 +42,85 @@ void Java_org_cocos2dx_iap_IAPWrapper_nativeDidReceivedProducts(JNIEnv*  env, jo
     pStr.m_sString = cocos2d::JniHelper::jstring2string(products);
     CCLog("Java_org_cocos2dx_iap_IAPWrapper_nativeDidReceivedProducts : %s", pStr.m_sString.c_str());
 
-    IAP::getInstance()->getRequestProductsDelegate()->onIAPRequestProductsCompleted(&items);
+    IAP::getInstance()->getDelegate()->onLoadProductsFinished(ReturnVal(kResultSuccess, kErrorNone), &items);
     items.removeAllObjects();
     pStr.m_sString = "";
 }
 
 void Java_org_cocos2dx_iap_IAPWrapper_nativeDidCompleteTransaction(JNIEnv*  env, jobject thiz, jstring productIdentifier)
 {
-    if (! IAP::getInstance()->getTransactionDelegate())
-    {
-        CCLog("Havn't set IAPTransactionDelegate yet!!!!!!!!!");
-        return;
-    }
+    CCAssert(IAP::getInstance()->getDelegate() != NULL, "IAP Delegate wasn't set");
 
     std::string item = cocos2d::JniHelper::jstring2string(productIdentifier);
-    IAP::getInstance()->getTransactionDelegate()->onTransactionCompleted(IAPTransaction::create(item.c_str()));
+    IAP::getInstance()->getDelegate()->onTransactionFinished(ReturnVal(kResultSuccess, kErrorNone), IAPTransaction::create(item.c_str()));
 }
 
 void Java_org_cocos2dx_iap_IAPWrapper_nativeDidFailedTransaction(JNIEnv*  env, jobject thiz, jstring productIdentifier)
 {
-    if (! IAP::getInstance()->getTransactionDelegate())
-    {
-        CCLog("Havn't set IAPTransactionDelegate yet!!!!!!!!!");
-        return;
-    }
+    CCAssert(IAP::getInstance()->getDelegate() != NULL, "IAP Delegate wasn't set");
 
     std::string item = cocos2d::JniHelper::jstring2string(productIdentifier);
-    IAP::getInstance()->getTransactionDelegate()->onTransactionFailed(IAPTransaction::create(item.c_str()));
+    IAP::getInstance()->getDelegate()->onTransactionFinished(ReturnVal(kResultFail, kErrorUnknown), IAPTransaction::create(item.c_str()));
+}
+
+void Java_org_cocos2dx_iap_IAPWrapper_nativeNotifyGameExit(JNIEnv*  env, jobject thiz)
+{
+    CCAssert(IAP::getInstance()->getDelegate() != NULL, "IAP Delegate wasn't set");
+    IAP::getInstance()->getDelegate()->onNotifyGameExit();
+}
+
+static CCDictionary* findItemFromProductArray(CCArray* pArray, const char* productId)
+{
+    CCDictionary* pRet = NULL;
+    CCObject* pObj = NULL;
+    CCDictionary* pDict = NULL;
+    CCString* pstrProductId = NULL;
+    CCARRAY_FOREACH(pArray, pObj)
+    {
+        pDict = (CCDictionary*)pObj;
+        pstrProductId = (CCString*)pDict->objectForKey("productId");
+
+        if (0 == strcmp(productId, pstrProductId->getCString()))
+        {
+            pRet = pDict;
+            break;
+        }
+    }
+    return pRet;
+}
+
+static std::string getProductInfo(const char* productId)
+{
+    CCAssert(productId != NULL && strlen(productId) > 0, "invalid product id");
+    
+    CCArray* productArray = IAP::getInstance()->getProductsArray();
+    CCAssert(productArray != NULL, "products array wasn't set");
+
+    CCDictionary* goodInfo = findItemFromProductArray(productArray, productId);
+    CCAssert(goodInfo != NULL, "goodInfo must not be NULL!");
+
+    CCArray* pKeys = goodInfo->allKeys();
+    CCObject* pObj = NULL;
+
+    Json::Value retValue;
+    CCARRAY_FOREACH(pKeys, pObj)
+    {
+        CCString* pKey = (CCString*) pObj;
+        CCString* pValue = (CCString*)(goodInfo->objectForKey(pKey->m_sString));
+
+        retValue[pKey->m_sString.c_str()] = pValue->m_sString;
+    }
+
+    CCLog("---- ret : %s ----", retValue.toStyledString().c_str());
+    return retValue.toStyledString();
+}
+
+
+jstring Java_org_cocos2dx_iap_IAPWrapper_nativeGetProductInfo(JNIEnv* env, jobject thiz, jstring text)
+{
+    const char* pszID = env->GetStringUTFChars(text, NULL);
+    std::string strRet = getProductInfo(pszID);
+    return env->NewStringUTF(strRet.c_str());
 }
 
 } // extern "C"
@@ -100,34 +134,66 @@ IAP* IAP::getInstance()
     return &s_iapInstance;
 }
 
+
 IAP::IAP()
+: m_pDelegate(NULL)
+, m_pProductsArray(NULL)
 {
 
 }
 
 IAP::~IAP()
 {
-
+    CC_SAFE_RELEASE(m_pProductsArray);
 }
 
-void IAP::setPlatform(IAPPlatform platform)
+bool IAP::initWithProductArray(CCArray* pArray)
 {
-    m_platform = platform;
-}
-
-bool IAP::login(IAPLoginDelegete* pDelegate)
-{
-
-    m_pLoginDelegate = pDelegate;
+    m_pProductsArray = (CCArray*)pArray->copy();
     return true;
 }
 
-bool IAP::loadOneProduct(const char* productId, IAPPayMode payMode, IAPRequestProductsDelegate* pDelegate)
+CCArray* IAP::getProductsArray()
 {
-    m_pRequestProductsDelegate = pDelegate;
-    if (productId == NULL || strlen(productId) <= 0 || pDelegate == NULL || payMode < kIAPPayModeDefault || payMode >= kIAPPayModeMax)
+    return m_pProductsArray;
+}
+
+IAPDelegate* IAP::getDelegate()
+{
+    return m_pDelegate;
+}
+
+void IAP::setDelegate(IAPDelegate* pDelegate)
+{
+    m_pDelegate = pDelegate;
+}
+
+void IAP::setPayMode(IAPPayMode payMode)
+{
+    CCAssert(payMode >= kIAPPayModeAuto && payMode <= kIAPPayModeMax, "invalid paymode parameter!");
+    JniMethodInfo t;
+    if (JniHelper::getStaticMethodInfo(t
+        , "org/cocos2dx/iap/IAPWrapper"
+        , "setPayMode"
+        , "(I)V"))
     {
-        CCLog("loadOneProduct: invaild parameters!");
+        t.env->CallStaticVoidMethod(t.classID, t.methodID, payMode);
+        // t.env->DeleteLocalRef(t.classID);
+    }
+}
+
+bool IAP::login()
+{
+    CCAssert(m_pDelegate != NULL, "IAP Delegate wasn't set");
+    m_pDelegate->onLoginFinished(ReturnVal(kResultSuccess, kErrorNone));
+    return true;
+}
+
+bool IAP::loadProduct(const char* productId)
+{
+    if (productId == NULL || strlen(productId) <= 0 )
+    {
+        CCLog("loadProduct: invaild parameters!");
         return false;
     }
 
@@ -135,36 +201,30 @@ bool IAP::loadOneProduct(const char* productId, IAPPayMode payMode, IAPRequestPr
     if (JniHelper::getStaticMethodInfo(t
         , "org/cocos2dx/iap/IAPWrapper"
         , "requestProductData"
-        , "(Ljava/lang/String;I)V"))
+        , "(Ljava/lang/String;)V"))
     {
         jstring stringProduct = t.env->NewStringUTF(productId);
-        t.env->CallStaticVoidMethod(t.classID, t.methodID, stringProduct, payMode);
+        t.env->CallStaticVoidMethod(t.classID, t.methodID, stringProduct);
         // t.env->DeleteLocalRef(t.classID);
     }
     return true;
 }
 
-/** Load products */
-bool IAP::loadProducts(CCArray* productsId, IAPPayMode payMode, IAPRequestProductsDelegate* pDelegate)
+bool IAP::loadSomeProducts(CCArray* productsId)
 {
     CCAssert(0, "not implement!");
     return false;
 }
 
-/** Cancel Load products operation */
 void IAP::cancelLoadProducts()
 {
 
 }
 
-/** @brief purchase just one product
- *  @param 
- */
-bool IAP::purchaseOneProduct(const char* productId, IAPTransactionDelegate* pDelegate)
+bool IAP::purchaseProduct(const char* productId)
 {
     if (productId != NULL && strlen(productId) > 0)
     {       
-        m_pTransactionDelegate = pDelegate;
         JniMethodInfo t;
         if (JniHelper::getStaticMethodInfo(t
             , "org/cocos2dx/iap/IAPWrapper"
@@ -182,23 +242,18 @@ bool IAP::purchaseOneProduct(const char* productId, IAPTransactionDelegate* pDel
     return false;
 }
 
-/** @brief purchase more than one product.
- *  @param productIds an Array of CCString which stores the name of product.
- */
-bool IAP::purchaseProducts(CCArray* productIds, IAPTransactionDelegate* pDelegate)
+bool IAP::purchaseSomeProducts(CCArray* productIds)
 {
     CCAssert(0, "not implement!");
     if (productIds != NULL && productIds->count() > 0)
     {
-        m_pTransactionDelegate = pDelegate;
         return true;
     }
     CCLog("Invaild parameters in purchaseProducts");
     return false;
 }
 
-/** Check whether the network is ready for being used */
-bool IAP::isNetworkReachable()
+bool IAP::isServiceReachable()
 {
     JniMethodInfo t;
     if (JniHelper::getStaticMethodInfo(t
@@ -213,11 +268,7 @@ bool IAP::isNetworkReachable()
     return false;
 }
 
-/** @brief The default notification when network is unreachable, this method is often invoked after isNetworkReachable.
- *   On android, it shows a tocast view to notify user that network wasn't connected. 
- *   If user wants to customize the notification, just ignores this method.
- */
-void IAP::networkUnReachableNotify()
+void IAP::notifyServiceUnReachable()
 {
     JniMethodInfo t;
     if (JniHelper::getStaticMethodInfo(t
@@ -230,19 +281,17 @@ void IAP::networkUnReachableNotify()
     }
 }
 
-IAPLoginDelegete* IAP::getLoginDelegate()
+void IAP::notifyIAPToExit()
 {
-    return m_pLoginDelegate;
-}
-
-IAPRequestProductsDelegate* IAP::getRequestProductsDelegate()
-{
-    return m_pRequestProductsDelegate;
-}
-
-IAPTransactionDelegate* IAP::getTransactionDelegate()
-{
-    return m_pTransactionDelegate;
+    JniMethodInfo t;
+    if (JniHelper::getStaticMethodInfo(t
+        , "org/cocos2dx/iap/IAPWrapper"
+        , "notifyIAPToExit"
+        , "()V"))
+    {
+        t.env->CallStaticVoidMethod(t.classID, t.methodID);
+        // t.env->DeleteLocalRef(t.classID);
+    }
 }
 
 }}

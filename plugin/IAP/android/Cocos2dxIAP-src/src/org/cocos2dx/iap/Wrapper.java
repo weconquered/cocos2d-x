@@ -376,7 +376,7 @@ public class Wrapper {
 
 	// Unique Id
 	private static String mDeviceId = null; 
-	@SuppressWarnings("deprecation")
+
 	public static String getUid() {
 		if (null != mDeviceId) return mDeviceId;	// 已经取过了，直接返回
 		Context context = Wrapper.getActivity();

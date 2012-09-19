@@ -82,55 +82,50 @@ bool HelloWorld::init()
     pMenu->setPosition( CCPointZero );
     this->addChild(pMenu, 1);
 
+    CCArray* productArray = CCArray::createWithContentsOfFile("products.plist");
+    IAP::getInstance()->initWithProductArray(productArray);
+    IAP::getInstance()->setDelegate(this);
+
     return true;
 }
 
 void HelloWorld::menuCloseCallback(CCObject* pSender)
 {
-    CCDirector::sharedDirector()->end();
+    IAP::getInstance()->notifyIAPToExit();
+//     CCDirector::sharedDirector()->end();
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-    exit(0);
-#endif
+// #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+//     exit(0);
+// #endif
 }
 
 void HelloWorld::testIAP(cocos2d::CCObject* pSender)
 {
-    IAP::getInstance()->loadOneProduct("abc", 1, this);
+    IAP::getInstance()->loadProduct("coin100");
 }
 
-void HelloWorld::onIAPLoginCompleted()
+void HelloWorld::onLoginFinished(ReturnVal r)
 {
-    CCLog("HelloWorld::onIAPLoginCompleted");
+    CCLog("HelloWorld::onIAPLoginFinished, r = %d", r.result);
 }
 
-void HelloWorld::onIAPLoginFailed()
+void HelloWorld::onLoadProductsFinished(ReturnVal r, CCArray* productsId, CCArray* invalidProductsId/* = NULL */)
 {
-    CCLog("HelloWorld::onIAPLoginFailed");
+    CCLog("HelloWorld::onIAPLoadProductsFinished, r = %d", r.result);
+    IAP::getInstance()->purchaseProduct("coin100");
 }
 
-void HelloWorld::onIAPRequestProductsCompleted(CCArray* productsId, CCArray* invalidProductsId/* = NULL*/)
+void HelloWorld::onTransactionFinished(ReturnVal r, IAPTransaction* pTransaction)
 {
-    CCLog("HelloWorld::onIAPRequestProductsCompleted");
-    IAP::getInstance()->purchaseOneProduct("abc", this);
+    CCLog("HelloWorld::onIAPTransactionFinished, r = %d", r.result);
 }
 
-void HelloWorld::onIAPRequestProductsFailed(IAPProductsRequestErrorCode errorCode, const char* errorMsg)
+void HelloWorld::onNotifyGameExit()
 {
-    CCLog("HelloWorld::onIAPRequestProductsFailed");
+    /** **/
+    CCDirector::sharedDirector()->end();
+ #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+     exit(0);
+ #endif
 }
 
-void HelloWorld::onTransactionFailed(IAPTransaction* pTransaction)
-{
-    CCLog("HelloWorld::onTransactionFailed");
-}
-
-void HelloWorld::onTransactionCompleted(IAPTransaction* pTransaction)
-{
-    CCLog("HelloWorld::onTransactionCompleted");
-}
-
-void HelloWorld::onTransactionRestored(IAPTransaction* pTransaction)
-{
-    CCLog("HelloWorld::onTransactionRestored");
-}

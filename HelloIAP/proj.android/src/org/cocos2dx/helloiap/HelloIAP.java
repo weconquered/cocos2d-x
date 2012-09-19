@@ -120,25 +120,6 @@ public class HelloIAP extends Cocos2dxActivity{
 	     super.onResume();
 	     mGLView.onResume();
 	 }
-	 
-	 protected void onQueryExitGame() {
-		GameInterface.exit(new GameExitCallback() {
-			@Override
-			public void onConfirmExit() {
-				mGLView.post(new Runnable() {
-	   	            @Override
-	   	            public void run() {
-	   	            	//cjh
-	   	            	//FishingJoy2.terminateProcess();
-	   	            }
-				});
-			}
-
-			@Override
-			public void onCancelExit() {
-			}
-		});
-	}	 
 	
 	 private boolean detectOpenGLES20() 
 	 {
