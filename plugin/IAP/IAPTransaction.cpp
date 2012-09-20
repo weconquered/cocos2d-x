@@ -1,6 +1,6 @@
 #include "IAPTransaction.h"
 
-namespace cocos2d { namespace iap {
+namespace cocos2d { namespace plugin {
 
 IAPTransaction* IAPTransaction::create(const char* productId)
 {

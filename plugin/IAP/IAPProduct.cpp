@@ -1,6 +1,6 @@
 #include "IAPProduct.h"
 
-namespace cocos2d { namespace iap {
+namespace cocos2d { namespace plugin {
 
 IAPProduct* IAPProduct::create(const char* productIdentifier,
                                           const char* localizedTitle,

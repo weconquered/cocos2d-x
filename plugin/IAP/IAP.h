@@ -4,119 +4,102 @@
 #include "IAPProduct.h"
 #include "IAPTransaction.h"
 
-namespace cocos2d { namespace iap {
+namespace cocos2d { namespace plugin {
 
 
-enum {
-    kResultSuccess = 0,
-    kResultFail,
-};
-
-typedef int Result;
-
-enum {
+enum ErrorCode {
     kErrorNone = 0,
     kErrorUnknown,
-    kErrorServiceNotReachable,
-    kErrorPreviousRequestNotCompleted,
-    kErrorUserCancel,
+    kErrorServiceInvalid,
+    kErrorPreviousRequestUncompleted,
+    kErrorUserCancelled,
+    kErrorTimeout,
+    kErrorProductIdInvalid,
+    kErrorProductPriceInvalid,
+    kErrorPurchaseFailed,
+    kErrorSmsKeyInvalid
 };
 
-typedef int ErrorCode;
-
 struct ReturnVal {
-    Result result;
+    bool isSucceed;
     ErrorCode errorCode;
-
-    ReturnVal(Result ret, ErrorCode err) {
-        this->result = ret;
-        this->errorCode = err;
-    }
-
-    bool isSucceed() {
-        return this->result == kResultSuccess ? true : false;
-    }
 };
 
 
 class IAPDelegate
 {
 public:
-    virtual void onLoginFinished(ReturnVal r) = 0;
+    virtual void onLogonFinished(ReturnVal r) = 0;
     virtual void onLoadProductsFinished(ReturnVal r, CCArray* productsId, CCArray* invalidProductsId = NULL) = 0;
     virtual void onTransactionFinished(ReturnVal r, IAPTransaction* pTransaction) = 0;
-    /** User need to release game resources in this delegate method */
+    /** User needs to release game resources in this delegate method */
     virtual void onNotifyGameExit() = 0;
 };
 
-
-enum {
-    kIAPPayModeAuto = 0,
-    kIAPPayModeSms,
-    kIAPPayModeOther,
-    kIAPPayModeMax
-};
-
-typedef int IAPPayMode;
-
-class IAP
+class IAPProtocol
 {
 public:
-    ~IAP();
+    virtual ~IAPProtocol();
 
-	static IAP* getInstance();
+    /** Set IAP delegate, it must be invoked before you call other methods */
+    virtual void setDelegate(IAPDelegate* pDelegate);
+
+    /** Get IAP delegate */
+    virtual IAPDelegate* getDelegate();
+
+    /** Check whether user needs to login IAP platform. It return false by default. */
+    virtual bool isLogonNeeded();
+
+    /** Login IAP platform */
+	virtual void login();
 	
-    bool initWithProductArray(CCArray* pArray);
-
-    void setDelegate(IAPDelegate* pDelegate);
-    IAPDelegate* getDelegate();
-
-    void setPayMode(IAPPayMode payMode);
-
-	bool login();
-	
-    /** Load one product */
-    bool loadProduct(const char* productId);
+    /** @brief Load one product. It return false by default.
+     *  If the new IAP system support this feature, this method needs to be overrided.
+     */
+    virtual bool loadProduct(const char* productId);
 
     /** load some products */
-    bool loadSomeProducts(CCArray* productsId);
+    virtual bool loadSomeProducts(CCArray* productsId);
     
     /** Cancel Load products operation */
-    void cancelLoadProducts();
+    virtual void cancelLoadProducts();
 
     /** @brief purchase just one product
      *  @param productId Product identifier string.
      */
-    bool purchaseProduct(const char* productId);
+    virtual bool purchaseProduct(const char* productId);
     
-    /** @brief purchase some products.
+    /** @brief purchase some products. It return false by default.
+     *         If the new IAP system support this feature, this method needs to be overrided.
      *  @param productIds an Array of CCString which stores the name of product.
      */
-    bool purchaseSomeProducts(CCArray* productIds);
+    virtual bool purchaseSomeProducts(CCArray* productIds);
 
     /** Check whether the iap service is ready for use */
-    bool isServiceReachable();
-    
-    /** @brief The default notification when iap service is unreachable, this method is often invoked after isServiceReachable.
-     *   On android, it shows a tocast view to notify user that iap service wasn't connected. 
-     *   If user wants to customize the notification, just ignores this method.
+    virtual bool isServiceValid();
+
+    /** Notify iap platform to exit.
+     *  On CMCC's IAP system, the exit activity which belongs to sdk will be shown.
+     *  If you want to put your games to CMGC store, you should invoke this method when 'exit' button was clicked.
      */
-    void notifyServiceUnReachable();
+    virtual void notifyIAPToExit();
 
-    /** @brief Notify iap platform to exit.
-        
-    */
-    void notifyIAPToExit();
+    /** Internal functions */
+    virtual CCArray* getProductsArray();
 
-    /** internal function */
-    CCArray* getProductsArray();
-private:
-	IAP();
+    /** For porting to a new android iap platform, override them if you want to custom these methods. */
+    virtual void onLoginFinishedJNI(ReturnVal r);
+    virtual void onLoadProductsFinishedJNI(ReturnVal r, CCArray* productsId, CCArray* invalidProductsId = NULL);
+    virtual void onTransactionFinishedJNI(ReturnVal r, IAPTransaction* pTransaction);
+    virtual void onNotifyGameExitJNI();
 
+protected:
+	IAPProtocol();
+    bool initWithProductArray(CCArray* pArray);
     IAPDelegate* m_pDelegate;
     CCArray* m_pProductsArray;
 };
 
-}}
+}} // namespace cocos2d { namespace plugin {
 
 #endif /* __IAP_H__ */

@@ -1,10 +1,17 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
-
+#include "AppDelegate.h"
 
 using namespace cocos2d;
 using namespace CocosDenshion;
-using namespace cocos2d::iap;
+using namespace cocos2d::plugin;
+
+enum {
+    kTag100Coins = 0,
+    kTag200Coins,
+    kTag300Coins,
+    kTag400Coins
+};
 
 CCScene* HelloWorld::scene()
 {
@@ -70,59 +77,103 @@ bool HelloWorld::init()
     // add the sprite as a child to this layer
     this->addChild(pSprite, 0);
     
-    CCLabelTTF* label = CCLabelTTF::create("CCCrypto", "Arial", 24);
-    CCMenuItemLabel* item1 = CCMenuItemLabel::create(label,
-                                                     this,
-                                                     menu_selector(HelloWorld::testIAP));
-
-    item1->setPosition( ccp(CCDirector::sharedDirector()->getWinSize().width/2, 100) );
-
     // create menu, it's an autorelease object
-    CCMenu* pMenu = CCMenu::create(pCloseItem, item1, NULL);
+    CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
     pMenu->setPosition( CCPointZero );
     this->addChild(pMenu, 1);
 
-    CCArray* productArray = CCArray::createWithContentsOfFile("products.plist");
-    IAP::getInstance()->initWithProductArray(productArray);
-    IAP::getInstance()->setDelegate(this);
+    for (int i = 0; i < 4; i++)
+    {
+        char szProductName[100] = {0};
+        sprintf(szProductName, "%d00 coins", i+1);
+        CCLabelTTF* label = CCLabelTTF::create(szProductName, "Arial", 24);
+        CCMenuItemLabel* item = CCMenuItemLabel::create(label,
+                                                         this,
+                                                         menu_selector(HelloWorld::testIAP));
+
+        item->setPosition( ccp(size.width/2, size.height / 5 * (4-i)) );
+        item->setTag(kTag100Coins + i);
+        pMenu->addChild(item);
+    }
+
+    AppDelegate::getIAP()->setDelegate(this);
 
     return true;
 }
 
 void HelloWorld::menuCloseCallback(CCObject* pSender)
 {
-    IAP::getInstance()->notifyIAPToExit();
-//     CCDirector::sharedDirector()->end();
-
-// #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-//     exit(0);
-// #endif
+    AppDelegate::getIAP()->notifyIAPToExit();
 }
 
 void HelloWorld::testIAP(cocos2d::CCObject* pSender)
 {
-    IAP::getInstance()->loadProduct("coin100");
+    CCNode* pNode = (CCNode*) pSender;
+    switch (pNode->getTag())
+    {
+        case kTag100Coins:
+            AppDelegate::getIAP()->loadProduct("coin100");
+            break;
+        case kTag200Coins:
+            AppDelegate::getIAP()->loadProduct("coin200");
+            break;
+        case kTag300Coins:
+            AppDelegate::getIAP()->loadProduct("coin300");
+            break;
+        case kTag400Coins:
+            AppDelegate::getIAP()->loadProduct("coin400");
+            break;
+        default:
+            break;
+    }
+    
 }
 
-void HelloWorld::onLoginFinished(ReturnVal r)
+void HelloWorld::onLogonFinished(ReturnVal r)
 {
-    CCLog("HelloWorld::onIAPLoginFinished, r = %d", r.result);
+    CCLog("HelloWorld::onIAPLogonFinished, r = %d", r.isSucceed);
 }
 
 void HelloWorld::onLoadProductsFinished(ReturnVal r, CCArray* productsId, CCArray* invalidProductsId/* = NULL */)
 {
-    CCLog("HelloWorld::onIAPLoadProductsFinished, r = %d", r.result);
-    IAP::getInstance()->purchaseProduct("coin100");
+    CCLog("HelloWorld::onIAPLoadProductsFinished, r = %d", r.isSucceed);
+    if (r.isSucceed)
+    {
+        if (productsId != NULL)
+        {
+            if (productsId->count() == 1)
+            {
+                CCString* pProductId = (CCString*)productsId->objectAtIndex(0);
+                CCLog("HelloWorld::onLoadProductsFinished = %s", pProductId->getCString());
+                AppDelegate::getIAP()->purchaseProduct(pProductId->getCString());
+            }
+        }
+        else
+        {
+            // Please invoke 'purchaseSomeProduct'
+        }
+    }
+    else
+    {
+        CCMessageBox("Failure", "Load Product fails");
+    }
 }
 
 void HelloWorld::onTransactionFinished(ReturnVal r, IAPTransaction* pTransaction)
 {
-    CCLog("HelloWorld::onIAPTransactionFinished, r = %d", r.result);
+    CCLog("HelloWorld::onIAPTransactionFinished, r = %d", r.isSucceed);
+    if (r.isSucceed)
+    {
+        CCMessageBox("Success", "Transaction succeed.");
+    }
+    else
+    {
+        CCMessageBox("Failure", "Transaction fails,");
+    }
 }
 
 void HelloWorld::onNotifyGameExit()
 {
-    /** **/
     CCDirector::sharedDirector()->end();
  #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
      exit(0);

@@ -3,7 +3,20 @@
 #include "cocos2d.h"
 #include "HelloWorldScene.h"
 
+#include "IAPCMGC.h"
+#include "IAPChinaTelecom.h"
+#include "IAPUserCenter.h"
+
+using namespace cocos2d::plugin;
+
 USING_NS_CC;
+
+IAPProtocol* AppDelegate::s_pIAP = NULL;
+
+IAPProtocol* AppDelegate::getIAP()
+{
+    return s_pIAP;
+}
 
 AppDelegate::AppDelegate()
 {
@@ -16,6 +29,12 @@ AppDelegate::~AppDelegate()
 
 bool AppDelegate::applicationDidFinishLaunching()
 {
+    CCArray* productArray = CCArray::createWithContentsOfFile("products.plist");
+    //s_pIAP = IAPChinaMobile::create(productArray, "HelloIAP", "CompanyName", "telephoneNumber");
+    //s_pIAP = IAPChinaTelecom::create(productArray, "90235529");
+    s_pIAP = IAPUserCenter::create(productArray, "buyudaren2test", "874126E837810FDB112C274D1D7E6FD98");
+
+
     // initialize director
     CCDirector *pDirector = CCDirector::sharedDirector();
     pDirector->setOpenGLView(CCEGLView::sharedOpenGLView());

@@ -6,7 +6,7 @@
 
 class HelloWorld
  : public cocos2d::CCLayer
- , public cocos2d::iap::IAPDelegate
+ , public cocos2d::plugin::IAPDelegate
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
@@ -22,9 +22,9 @@ public:
     // implement the "static node()" method manually
     CREATE_FUNC(HelloWorld);
 
-    virtual void onLoginFinished(cocos2d::iap::ReturnVal r);
-    virtual void onLoadProductsFinished(cocos2d::iap::ReturnVal r, cocos2d::CCArray* productsId, cocos2d::CCArray* invalidProductsId = NULL);
-    virtual void onTransactionFinished(cocos2d::iap::ReturnVal r, cocos2d::iap::IAPTransaction* pTransaction);
+    virtual void onLogonFinished(cocos2d::plugin::ReturnVal r);
+    virtual void onLoadProductsFinished(cocos2d::plugin::ReturnVal r, cocos2d::CCArray* productsId, cocos2d::CCArray* invalidProductsId = NULL);
+    virtual void onTransactionFinished(cocos2d::plugin::ReturnVal r, cocos2d::plugin::IAPTransaction* pTransaction);
     virtual void onNotifyGameExit();
 };
 

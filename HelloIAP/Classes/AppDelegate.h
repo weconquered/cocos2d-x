@@ -2,7 +2,7 @@
 #define  _APP_DELEGATE_H_
 
 #include "CCApplication.h"
-
+#include "IAP.h"
 /**
 @brief    The cocos2d Application.
 
@@ -32,6 +32,11 @@ public:
     @param  the pointer of the application
     */
     virtual void applicationWillEnterForeground();
+
+    static cocos2d::plugin::IAPProtocol* getIAP();
+
+private:
+    static cocos2d::plugin::IAPProtocol* s_pIAP;
 };
 
 #endif // _APP_DELEGATE_H_

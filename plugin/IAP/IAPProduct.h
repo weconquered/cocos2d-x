@@ -3,7 +3,7 @@
 
 #include "cocos2d.h"
 
-namespace cocos2d { namespace iap {
+namespace cocos2d { namespace plugin {
 
 class IAPProduct : public CCObject
 {
@@ -35,7 +35,6 @@ private:
     std::string m_priceLocale;
 };
 
-
-}}
+}} // namespace cocos2d { namespace plugin {
 
 #endif /* __IAPPRODUCT_H__ */

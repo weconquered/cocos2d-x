@@ -23,18 +23,12 @@ THE SOFTWARE.
 ****************************************************************************/
 package org.cocos2dx.helloiap;
 
-import org.cocos2dx.iap.IAPWrapper;
 import org.cocos2dx.iap.Wrapper;
-import org.cocos2dx.iap.ChinaMobile.CMGCBillingAdapter;
-import org.cocos2dx.iap.ChinaTelecom.DXIAPAdapter;
-import org.cocos2dx.iap.UserCenter.CKIAPAdapter;
+
 import org.cocos2dx.lib.Cocos2dxActivity;
 import org.cocos2dx.lib.Cocos2dxEditText;
 import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
 import org.cocos2dx.lib.Cocos2dxRenderer;
-
-import cn.emagsoftware.gamebilling.api.GameInterface;
-import cn.emagsoftware.gamebilling.api.GameInterface.GameExitCallback;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -46,19 +40,12 @@ import android.view.ViewGroup;
 
 public class HelloIAP extends Cocos2dxActivity{
 
-	// User Center
-	private final String strPunchBoxID = "buyudaren2test";
-	private final String strSecretKey = "874126E837810FDB112C274D1D7E6FD98";
-	// ChinaTelecom
-	private final String strCFromer = "90235529";
-	// ChinaMobile
-	private final String strCompanyName = "Please replace this";
-	private final String strTelNumber = "010-0000000";
-
 	protected void onCreate(Bundle savedInstanceState){
+		Log.d("HelloIAP", "onCreate 01");
 		super.onCreate(savedInstanceState);
-		
+		Log.d("HelloIAP", "onCreate 02");
 		if (detectOpenGLES20()) {
+			Log.d("HelloIAP", "onCreate 03");
 			// get the packageName,it's used to set the resource path
 			String packageName = getApplication().getPackageName();
 			super.setPackageName(packageName);
@@ -92,16 +79,17 @@ public class HelloIAP extends Cocos2dxActivity{
 
             // Set framelayout as the content view
 			setContentView(framelayout);
-			
+			Log.d("HelloIAP", "onCreate 04");
 	        Wrapper.setOutputLogEnable(true);
 	        Wrapper.initialize(this, mGLView);
+	        Log.d("HelloIAP", "onCreate 05");
 			////////////////////////////////////////////////////////////////////////
 			// IAP Initialization
-			if (IAPWrapper.enabled()) {
-				CMGCBillingAdapter.initialize(this.getResources().getString(R.string.app_name), strCompanyName, strTelNumber);
-				DXIAPAdapter.initialize(strCFromer);
-				CKIAPAdapter.initialize(strPunchBoxID, strSecretKey);
-			}
+//			if (IAPWrapper.enabled()) {
+//				CMGCBillingAdapter.initialize(this.getResources().getString(R.string.app_name), strCompanyName, strTelNumber);
+//				DXIAPAdapter.initialize(strCFromer);
+//				CKIAPAdapter.initialize(strPunchBoxID, strSecretKey);
+//			}
 		}
 		else {
 			Log.d("activity", "don't support gles2.0");

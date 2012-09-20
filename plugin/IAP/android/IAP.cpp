@@ -5,68 +5,73 @@
 //  IAPWrapper.java methods
 
 using namespace cocos2d;
-using namespace cocos2d::iap;
+using namespace cocos2d::plugin;
 
+static IAPProtocol* s_pIAPInstance = NULL;
 
 extern "C"
 {
 
-
-bool Java_org_cocos2dx_iap_IAPWrapper_nativeIAPEnabled(JNIEnv*  env, jobject thiz)
+void Java_org_cocos2dx_iap_IAPWrapper_nativeFinishLogon(JNIEnv*  env, jobject thiz, jboolean isSucceed, jint errorCode)
 {
-    return true;//cjh (! ModuleCustomConfig::disableIAP);
+    CCAssert(s_pIAPInstance->getDelegate() != NULL, "IAP Delegate wasn't set");
+    ReturnVal r;
+    r.isSucceed = isSucceed;
+    r.errorCode = (ErrorCode)errorCode;
+    s_pIAPInstance->onLoginFinishedJNI(r);
 }
 
-void Java_org_cocos2dx_iap_IAPWrapper_nativeDidLoginFailed(JNIEnv*  env, jobject thiz)
+void Java_org_cocos2dx_iap_IAPWrapper_nativeFinishLoadProducts(JNIEnv*  env, jobject thiz, jobjectArray products, jboolean isSucceed, jint errorCode)
 {
-    CCAssert(IAP::getInstance()->getDelegate() != NULL, "IAP Delegate wasn't set");
-    IAP::getInstance()->getDelegate()->onLoginFinished(ReturnVal(kResultFail, kErrorUnknown));
-}
+    CCAssert(s_pIAPInstance->getDelegate() != NULL, "IAP Delegate wasn't set");
 
-void Java_org_cocos2dx_iap_IAPWrapper_nativeDidLoginSuccess(JNIEnv*  env, jobject thiz)
-{
-    CCAssert(IAP::getInstance()->getDelegate() != NULL, "IAP Delegate wasn't set");
-    IAP::getInstance()->getDelegate()->onLoginFinished(ReturnVal(kResultSuccess, kErrorNone));
-}
+    ReturnVal r;
+    r.isSucceed = isSucceed;
+    r.errorCode = (ErrorCode)errorCode;
 
-void Java_org_cocos2dx_iap_IAPWrapper_nativeDidReceivedProducts(JNIEnv*  env, jobject thiz, jstring products)
-{
-    CCAssert(IAP::getInstance()->getDelegate() != NULL, "IAP Delegate wasn't set");
-
-    static CCString pStr;
-    static CCArray items;
-    if (items.count() == 0)
+    CCArray* pProductIdArray = NULL;
+    do 
     {
-        items.addObject(&pStr);
-    }
-    pStr.m_sString = cocos2d::JniHelper::jstring2string(products);
-    CCLog("Java_org_cocos2dx_iap_IAPWrapper_nativeDidReceivedProducts : %s", pStr.m_sString.c_str());
+        if (isSucceed)
+        {
+            int len = env->GetArrayLength(products);
 
-    IAP::getInstance()->getDelegate()->onLoadProductsFinished(ReturnVal(kResultSuccess, kErrorNone), &items);
-    items.removeAllObjects();
-    pStr.m_sString = "";
+            if (len <= 0) 
+            {
+                CCLog("productIds didn't contain any string");
+                r.isSucceed = false;
+                r.errorCode = kErrorUnknown;
+                break;
+            }
+            pProductIdArray = CCArray::create();
+            for (int i = 0; i < len; ++i)
+            {
+                jstring str = (jstring)env->GetObjectArrayElement(products, i);
+                CCString* pStr = CCString::create(cocos2d::JniHelper::jstring2string(str));
+                CCLog("Java_org_cocos2dx_iap_IAPWrapper_nativeDidReceivedProducts : %s", pStr->getCString());
+                pProductIdArray->addObject(pStr);
+            }
+        }
+    } while (false);
+
+    s_pIAPInstance->onLoadProductsFinishedJNI(r, pProductIdArray);
 }
 
-void Java_org_cocos2dx_iap_IAPWrapper_nativeDidCompleteTransaction(JNIEnv*  env, jobject thiz, jstring productIdentifier)
+void Java_org_cocos2dx_iap_IAPWrapper_nativeFinishTransaction(JNIEnv*  env, jobject thiz, jstring productId, jboolean isSucceed, jint errorCode)
 {
-    CCAssert(IAP::getInstance()->getDelegate() != NULL, "IAP Delegate wasn't set");
+    CCAssert(s_pIAPInstance->getDelegate() != NULL, "IAP Delegate wasn't set");
 
-    std::string item = cocos2d::JniHelper::jstring2string(productIdentifier);
-    IAP::getInstance()->getDelegate()->onTransactionFinished(ReturnVal(kResultSuccess, kErrorNone), IAPTransaction::create(item.c_str()));
-}
-
-void Java_org_cocos2dx_iap_IAPWrapper_nativeDidFailedTransaction(JNIEnv*  env, jobject thiz, jstring productIdentifier)
-{
-    CCAssert(IAP::getInstance()->getDelegate() != NULL, "IAP Delegate wasn't set");
-
-    std::string item = cocos2d::JniHelper::jstring2string(productIdentifier);
-    IAP::getInstance()->getDelegate()->onTransactionFinished(ReturnVal(kResultFail, kErrorUnknown), IAPTransaction::create(item.c_str()));
+    std::string item = cocos2d::JniHelper::jstring2string(productId);
+    ReturnVal r;
+    r.isSucceed = isSucceed;
+    r.errorCode = (ErrorCode)errorCode;
+    s_pIAPInstance->onTransactionFinishedJNI(r, IAPTransaction::create(item.c_str()));
 }
 
 void Java_org_cocos2dx_iap_IAPWrapper_nativeNotifyGameExit(JNIEnv*  env, jobject thiz)
 {
-    CCAssert(IAP::getInstance()->getDelegate() != NULL, "IAP Delegate wasn't set");
-    IAP::getInstance()->getDelegate()->onNotifyGameExit();
+    CCAssert(s_pIAPInstance->getDelegate() != NULL, "IAP Delegate wasn't set");
+    s_pIAPInstance->onNotifyGameExitJNI();
 }
 
 static CCDictionary* findItemFromProductArray(CCArray* pArray, const char* productId)
@@ -93,7 +98,7 @@ static std::string getProductInfo(const char* productId)
 {
     CCAssert(productId != NULL && strlen(productId) > 0, "invalid product id");
     
-    CCArray* productArray = IAP::getInstance()->getProductsArray();
+    CCArray* productArray = s_pIAPInstance->getProductsArray();
     CCAssert(productArray != NULL, "products array wasn't set");
 
     CCDictionary* goodInfo = findItemFromProductArray(productArray, productId);
@@ -111,12 +116,12 @@ static std::string getProductInfo(const char* productId)
         retValue[pKey->m_sString.c_str()] = pValue->m_sString;
     }
 
-    CCLog("---- ret : %s ----", retValue.toStyledString().c_str());
+    CCLOG("---- ret : %s ----", retValue.toStyledString().c_str());
     return retValue.toStyledString();
 }
 
 
-jstring Java_org_cocos2dx_iap_IAPWrapper_nativeGetProductInfo(JNIEnv* env, jobject thiz, jstring text)
+jstring Java_org_cocos2dx_iap_IAPProducts_nativeGetProductInfo(JNIEnv* env, jobject thiz, jstring text)
 {
     const char* pszID = env->GetStringUTFChars(text, NULL);
     std::string strRet = getProductInfo(pszID);
@@ -126,70 +131,56 @@ jstring Java_org_cocos2dx_iap_IAPWrapper_nativeGetProductInfo(JNIEnv* env, jobje
 } // extern "C"
 
 
-namespace cocos2d { namespace iap {
+namespace cocos2d { namespace plugin {
 
-IAP* IAP::getInstance()
-{
-    static IAP s_iapInstance;
-    return &s_iapInstance;
-}
-
-
-IAP::IAP()
+IAPProtocol::IAPProtocol()
 : m_pDelegate(NULL)
 , m_pProductsArray(NULL)
 {
-
+    s_pIAPInstance = this;
 }
 
-IAP::~IAP()
+IAPProtocol::~IAPProtocol()
 {
     CC_SAFE_RELEASE(m_pProductsArray);
 }
 
-bool IAP::initWithProductArray(CCArray* pArray)
+bool IAPProtocol::initWithProductArray(CCArray* pArray)
 {
+    bool bRet = false;
     m_pProductsArray = (CCArray*)pArray->copy();
-    return true;
+    if (m_pProductsArray != NULL && m_pProductsArray->count() > 0)
+    {
+        bRet = true;
+    }
+    return bRet;
 }
 
-CCArray* IAP::getProductsArray()
+CCArray* IAPProtocol::getProductsArray()
 {
     return m_pProductsArray;
 }
 
-IAPDelegate* IAP::getDelegate()
+IAPDelegate* IAPProtocol::getDelegate()
 {
     return m_pDelegate;
 }
 
-void IAP::setDelegate(IAPDelegate* pDelegate)
+void IAPProtocol::setDelegate(IAPDelegate* pDelegate)
 {
     m_pDelegate = pDelegate;
 }
 
-void IAP::setPayMode(IAPPayMode payMode)
+bool IAPProtocol::isLogonNeeded()
 {
-    CCAssert(payMode >= kIAPPayModeAuto && payMode <= kIAPPayModeMax, "invalid paymode parameter!");
-    JniMethodInfo t;
-    if (JniHelper::getStaticMethodInfo(t
-        , "org/cocos2dx/iap/IAPWrapper"
-        , "setPayMode"
-        , "(I)V"))
-    {
-        t.env->CallStaticVoidMethod(t.classID, t.methodID, payMode);
-        // t.env->DeleteLocalRef(t.classID);
-    }
+    return false;
 }
 
-bool IAP::login()
+void IAPProtocol::login()
 {
-    CCAssert(m_pDelegate != NULL, "IAP Delegate wasn't set");
-    m_pDelegate->onLoginFinished(ReturnVal(kResultSuccess, kErrorNone));
-    return true;
 }
 
-bool IAP::loadProduct(const char* productId)
+bool IAPProtocol::loadProduct(const char* productId)
 {
     if (productId == NULL || strlen(productId) <= 0 )
     {
@@ -200,7 +191,7 @@ bool IAP::loadProduct(const char* productId)
     JniMethodInfo t;
     if (JniHelper::getStaticMethodInfo(t
         , "org/cocos2dx/iap/IAPWrapper"
-        , "requestProductData"
+        , "loadProduct"
         , "(Ljava/lang/String;)V"))
     {
         jstring stringProduct = t.env->NewStringUTF(productId);
@@ -210,25 +201,25 @@ bool IAP::loadProduct(const char* productId)
     return true;
 }
 
-bool IAP::loadSomeProducts(CCArray* productsId)
+bool IAPProtocol::loadSomeProducts(CCArray* productsId)
 {
-    CCAssert(0, "not implement!");
+    CCLOG("IAPProtocol::loadSomeProducts shouldn't be invoked! ");
     return false;
 }
 
-void IAP::cancelLoadProducts()
+void IAPProtocol::cancelLoadProducts()
 {
 
 }
 
-bool IAP::purchaseProduct(const char* productId)
+bool IAPProtocol::purchaseProduct(const char* productId)
 {
     if (productId != NULL && strlen(productId) > 0)
     {       
         JniMethodInfo t;
         if (JniHelper::getStaticMethodInfo(t
             , "org/cocos2dx/iap/IAPWrapper"
-            , "addPayment"
+            , "purchaseProduct"
             , "(Ljava/lang/String;)V"))
         {
             jstring stringProduct = t.env->NewStringUTF(productId);
@@ -242,23 +233,18 @@ bool IAP::purchaseProduct(const char* productId)
     return false;
 }
 
-bool IAP::purchaseSomeProducts(CCArray* productIds)
+bool IAPProtocol::purchaseSomeProducts(CCArray* productIds)
 {
-    CCAssert(0, "not implement!");
-    if (productIds != NULL && productIds->count() > 0)
-    {
-        return true;
-    }
-    CCLog("Invaild parameters in purchaseProducts");
+    CCLOG("IAPProtocol::purchaseSomeProducts shouldn't be invoked! ");
     return false;
 }
 
-bool IAP::isServiceReachable()
+bool IAPProtocol::isServiceValid()
 {
     JniMethodInfo t;
     if (JniHelper::getStaticMethodInfo(t
         , "org/cocos2dx/iap/IAPWrapper"
-        , "networkReachable"
+        , "isServiceValid"
         , "()Z"))
     {
         bool ret = t.env->CallStaticBooleanMethod(t.classID, t.methodID);
@@ -268,20 +254,25 @@ bool IAP::isServiceReachable()
     return false;
 }
 
-void IAP::notifyServiceUnReachable()
-{
-    JniMethodInfo t;
-    if (JniHelper::getStaticMethodInfo(t
-        , "org/cocos2dx/iap/IAPWrapper"
-        , "networkUnReachableNotify"
-        , "()V"))
-    {
-        t.env->CallStaticVoidMethod(t.classID, t.methodID);
-        // t.env->DeleteLocalRef(t.classID);
-    }
-}
+/** @brief The default notification when iap service is invalid, 
+ *         this method is often invoked after isServiceReachable.
+ *   On android, it shows a tocast view to notify user that iap service wasn't connected. 
+ *   If you want to customize the notification, just ignores this method.
+ */
+// void IAPProtocol::notifyServiceInvaild()
+// {
+//     JniMethodInfo t;
+//     if (JniHelper::getStaticMethodInfo(t
+//         , "org/cocos2dx/iap/IAPWrapper"
+//         , "notifyServiceInvaild"
+//         , "()V"))
+//     {
+//         t.env->CallStaticVoidMethod(t.classID, t.methodID);
+//         // t.env->DeleteLocalRef(t.classID);
+//     }
+// }
 
-void IAP::notifyIAPToExit()
+void IAPProtocol::notifyIAPToExit()
 {
     JniMethodInfo t;
     if (JniHelper::getStaticMethodInfo(t
@@ -294,4 +285,28 @@ void IAP::notifyIAPToExit()
     }
 }
 
-}}
+void IAPProtocol::onLoginFinishedJNI(ReturnVal r)
+{
+    CCAssert(m_pDelegate != NULL, "IAP delegate was NULL");
+    m_pDelegate->onLogonFinished(r);
+}
+
+void IAPProtocol::onLoadProductsFinishedJNI(ReturnVal r, CCArray* productsId, CCArray* invalidProductsId/* = NULL */)
+{
+    CCAssert(m_pDelegate != NULL, "IAP delegate was NULL");
+    m_pDelegate->onLoadProductsFinished(r, productsId, invalidProductsId);
+}
+
+void IAPProtocol::onTransactionFinishedJNI(ReturnVal r, IAPTransaction* pTransaction)
+{
+    CCAssert(m_pDelegate != NULL, "IAP delegate was NULL");
+    m_pDelegate->onTransactionFinished(r, pTransaction);
+}
+
+void IAPProtocol::onNotifyGameExitJNI()
+{
+    CCAssert(m_pDelegate != NULL, "IAP delegate was NULL");
+    m_pDelegate->onNotifyGameExit();
+}
+
+}} // namespace cocos2d { namespace plugin {

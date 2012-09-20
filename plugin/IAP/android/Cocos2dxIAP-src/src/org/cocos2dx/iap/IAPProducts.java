@@ -8,6 +8,10 @@ import android.util.Log;
 
 public class IAPProducts {
 
+	////////////////////////////////////////////////////////////////////////
+	// IAPProducts
+	private static native String nativeGetProductInfo(String productId);
+	
 	private static Hashtable<String, JSONObject> mProducts = null;
 
 	private static JSONObject getProductInfo(String productIdentifier) {
@@ -18,7 +22,7 @@ public class IAPProducts {
 		
 		if (null == ret) {
 			try {
-				String strInfo = IAPWrapper.nativeGetProductInfo(productIdentifier);
+				String strInfo = nativeGetProductInfo(productIdentifier);
 				ret = new JSONObject(strInfo);
 			} catch(Exception e) {
 				e.printStackTrace();
@@ -43,64 +47,34 @@ public class IAPProducts {
 
 		return fRet;
 	}
-	/*
-	public static int getProductCoinNum(String productIdentifier) {
-		JSONObject productInfo = getProductInfo(productIdentifier);
-		
-		int iRet = 0;
-		try {
-			String value = productInfo.getString("goodNum");
-			iRet = Integer.parseInt(value);
-		} catch (Exception e) {
-			e.printStackTrace();
-			Log.d("IAPProducts", "product " + productIdentifier + "goodNum is wrong!");
-		}
 
-		return iRet;
-	}
-	*/
-	/*
-	public static String getProductGid(String productIdentifier) {
-		JSONObject productInfo = getProductInfo(productIdentifier);
-		
-		String strRet = "";
-		try {
-			strRet = productInfo.getString("gid");
-		} catch (Exception e) {
-			e.printStackTrace();
-			Log.d("IAPProducts", "product " + productIdentifier + "gid is wrong!");
-		}
-
-		return strRet;
-	}
-	*/
-	public static String getProductDXSMSKey(String productIdentifier) {
-		JSONObject productInfo = getProductInfo(productIdentifier);
-		
-		String strRet = "";
-		try {
-			strRet = productInfo.getString("DXSMSKey");
-		} catch (Exception e) {
-			e.printStackTrace();
-			Log.d("IAPProducts", "product " + productIdentifier + "DXSMSKey is wrong!");
-		}
-
-		return strRet;
-	}
+//	public static String getProductDXSMSKey(String productIdentifier) {
+//		JSONObject productInfo = getProductInfo(productIdentifier);
+//		
+//		String strRet = "";
+//		try {
+//			strRet = productInfo.getString("DXSMSKey");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			Log.d("IAPProducts", "product " + productIdentifier + "DXSMSKey is wrong!");
+//		}
+//
+//		return strRet;
+//	}
 	
-	public static String getProductCMGCSMSKey(String productIdentifier) {
-		JSONObject productInfo = getProductInfo(productIdentifier);
-		
-		String strRet = "";
-		try {
-			strRet = productInfo.getString("CMGCSMSKey");
-		} catch (Exception e) {
-			e.printStackTrace();
-			Log.d("IAPProducts", "product " + productIdentifier + "CMGCSMSKey is wrong!");
-		}
-
-		return strRet;
-	}
+//	public static String getProductCMGCSMSKey(String productIdentifier) {
+//		JSONObject productInfo = getProductInfo(productIdentifier);
+//		
+//		String strRet = "";
+//		try {
+//			strRet = productInfo.getString("CMGCSMSKey");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			Log.d("IAPProducts", "product " + productIdentifier + "CMGCSMSKey is wrong!");
+//		}
+//
+//		return strRet;
+//	}
 
 	public static String getProductInfoByKey(String productIdentifier, String key) {
 		JSONObject productInfo = getProductInfo(productIdentifier);
@@ -121,7 +95,7 @@ public class IAPProducts {
 
 		String strRet = "";
 		try {
-			strRet = productInfo.getString("ProductName");
+			strRet = productInfo.getString("productName");
 		} catch (Exception e) {
 			e.printStackTrace();
 			Log.d("IAPProducts", "product " + productIdentifier + "ProductName is wrong!");

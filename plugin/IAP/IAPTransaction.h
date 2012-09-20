@@ -3,7 +3,7 @@
 
 #include "cocos2d.h"
 
-namespace cocos2d { namespace iap {
+namespace cocos2d { namespace plugin {
 
 class IAPTransaction : public CCObject
 {
@@ -16,6 +16,6 @@ private:
     std::string m_productIdentifier;
 };
 
-}}
+}} // namespace cocos2d { namespace plugin {
 
 #endif /* __IAPTRANSACTION_H__ */
