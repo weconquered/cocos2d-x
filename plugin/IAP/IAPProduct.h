@@ -8,31 +8,19 @@ namespace cocos2d { namespace plugin {
 class IAPProduct : public CCObject
 {
 public:
-    static IAPProduct* create(const char* productIdentifier,
-                             const char* localizedTitle,
-                             const char* localizedDescription,
-                             float price,
-                             const char* priceLocale);
+    virtual ~IAPProduct();
+    static IAPProduct* create(CCDictionary* pProductInfoTable);
     
-    const std::string& getProductIdentifier(void);
-    const std::string& getLocalizedTitle(void);
-    const std::string& getLocalizedDescription(void);
-    float getPrice(void);
-    const std::string& getPriceLocale(void);
-    
+    const char* getProductId();
+    float getPrice();
+
+    CCDictionary* getProductInfoTable();
+
 private:
-    IAPProduct(void) {}
-    bool init(const char* productIdentifier,
-                    const char* localizedTitle,
-                    const char* localizedDescription,
-                    float price,
-                    const char* priceLocale);
+    IAPProduct();
+    bool init(CCDictionary* pProductInfoTable);
     
-    std::string m_productIdentifier;
-    std::string m_localizedTitle;
-    std::string m_localizedDescription;
-    float       m_price;
-    std::string m_priceLocale;
+    CCDictionary* m_pProductInfoTable;
 };
 
 }} // namespace cocos2d { namespace plugin {

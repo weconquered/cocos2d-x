@@ -23,7 +23,7 @@ public class IAPWrapper {
 	// IAPWrapper
 	private static native void nativeFinishLogon(boolean isSucceed, int errorCode);
 	private static native void nativeFinishLoadProducts(String[] products, boolean isSucceed, int errorCode);
-	private static native void nativeFinishTransaction(String productId, boolean isSucceed, int errorCode);
+	private static native void nativeFinishTransaction(TransactionInfo info, boolean isSucceed, int errorCode);
 	private static native void nativeNotifyGameExit();
 
 	public static void setPreviousRequestCompleted(boolean isCompleted) {
@@ -40,24 +40,24 @@ public class IAPWrapper {
 		mCurrentAdapter = adapter;
 	}
 	
-	public static void purchaseProduct(String productIdentifier) {
+	public static void purchaseProduct(String productId) {
 		if (!isPreviousRequestCompleted()) {
-			LogD("purchaseProduct, PreviousRequestUncompleted" + productIdentifier);
+			LogD("purchaseProduct, PreviousRequestUncompleted" + productId);
 			//nativeFinishTransaction(productIdentifier, false, kErrorPreviousRequestUncompleted);
 			return;
 		}
 		setPreviousRequestCompleted(false);
 		
-		LogD("purchaseProduct:" + productIdentifier);
+		LogD("purchaseProduct:" + productId);
 
 		if (!isServiceValid()) {
 			setPreviousRequestCompleted(true);
-			nativeFinishTransaction(productIdentifier, false, kErrorServiceInvalid);
+			nativeFinishTransaction(new TransactionInfo(productId), false, kErrorServiceInvalid);
 			return;
 		}
 		
 		if (null != mCurrentAdapter) {
-			mCurrentAdapter.purchaseProduct(productIdentifier);
+			mCurrentAdapter.purchaseProduct(productId);
 		}
 	}
 
@@ -84,16 +84,15 @@ public class IAPWrapper {
 		}
 	}
 
-	public static void loadProduct(String product) {
+	public static void loadProducts(String[] productIds) {
 		if (!isPreviousRequestCompleted()) {
-			LogD("loadProduct, PreviousRequestUncompleted" + product);
+			LogD("loadProduct, PreviousRequestUncompleted" + productIds);
 			//nativeFinishLoadProducts(null, false, kErrorPreviousRequestUncompleted);
 			return;
 		}
 		setPreviousRequestCompleted(false);
 		
-		LogD("loadProduct" + product);
-		String[] productIds = {product};
+		LogD("loadProducts" + productIds);
 		
 		if (null == mCurrentAdapter) {
 			setPreviousRequestCompleted(true);
@@ -101,7 +100,7 @@ public class IAPWrapper {
 			return;
 		}
 		
-		mCurrentAdapter.loadProduct(product);
+		mCurrentAdapter.loadProducts(productIds);
 	}
 	
 	public static void finishLogon(final boolean isSucceed, final int errorCode) {
@@ -140,8 +139,8 @@ public class IAPWrapper {
 		});
 	}
 	
-	public static void finishTransaction(final String productIdentifier, final boolean isSucceed, final int errorCode) {
-		LogD("finishTransaction:" + productIdentifier + ";isSucceed:" + isSucceed + ";errorCode:"+errorCode);
+	public static void finishTransaction(final TransactionInfo info, final boolean isSucceed, final int errorCode) {
+		LogD("finishTransaction:" + info.mProductId + ";isSucceed:" + isSucceed + ";errorCode:"+errorCode);
 
 		Wrapper.postEventToGLThread(new Runnable() {
    	            @Override
@@ -149,10 +148,10 @@ public class IAPWrapper {
    	            	setPreviousRequestCompleted(true);
    	            	if (null == mCurrentAdapter) {
    	            		LogD("finishTransaction, kErrorServiceInvalid");
-   	            		nativeFinishTransaction(productIdentifier, false, kErrorServiceInvalid);
+   	            		nativeFinishTransaction(info, false, kErrorServiceInvalid);
    	            	}
    	            	else {
-   	            		nativeFinishTransaction(productIdentifier, isSucceed, errorCode);
+   	            		nativeFinishTransaction(info, isSucceed, errorCode);
    	            	}
    	            }
 		});

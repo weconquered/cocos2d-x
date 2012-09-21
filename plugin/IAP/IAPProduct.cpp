@@ -2,14 +2,20 @@
 
 namespace cocos2d { namespace plugin {
 
-IAPProduct* IAPProduct::create(const char* productIdentifier,
-                                          const char* localizedTitle,
-                                          const char* localizedDescription,
-                                          float price,
-                                          const char* priceLocale)
+IAPProduct::IAPProduct()
+{
+
+}
+
+IAPProduct::~IAPProduct()
+{
+    CC_SAFE_RELEASE(m_pProductInfoTable);
+}
+
+IAPProduct* IAPProduct::create(CCDictionary* pProductInfoTable)
 {
     IAPProduct* product = new IAPProduct();
-    if (product != NULL && product->init(productIdentifier, localizedTitle, localizedDescription, price, priceLocale))
+    if (product != NULL && product->init(pProductInfoTable))
     {
         product->autorelease();
     }
@@ -20,44 +26,38 @@ IAPProduct* IAPProduct::create(const char* productIdentifier,
     return product;
 }
 
-bool IAPProduct::init(const char* productIdentifier,
-                    const char* localizedTitle,
-                    const char* localizedDescription,
-                    float price,
-                    const char* priceLocale)
+bool IAPProduct::init(CCDictionary* pProductInfoTable)
 {
-    m_productIdentifier = productIdentifier ? productIdentifier : "";
-    m_localizedTitle = localizedTitle ? localizedTitle : "";
-    m_localizedDescription = localizedDescription ? localizedDescription : "";
-    m_price = price;
-    m_priceLocale = priceLocale ? priceLocale : "";
+    m_pProductInfoTable = pProductInfoTable;
+    CC_SAFE_RETAIN(m_pProductInfoTable);
+
     return true;
 }
 
 
-const std::string& IAPProduct::getProductIdentifier(void)
+const char* IAPProduct::getProductId(void)
 {
-    return m_productIdentifier;
-}
-
-const std::string& IAPProduct::getLocalizedTitle(void)
-{
-    return m_localizedTitle;
-}
-
-const std::string& IAPProduct::getLocalizedDescription(void)
-{
-    return m_localizedDescription;
+    if (m_pProductInfoTable != NULL)
+    {
+        CCString* pId = (CCString*)m_pProductInfoTable->objectForKey("productId");
+        return (pId != NULL ? pId->getCString() : NULL);
+    }
+    return NULL;
 }
 
 float IAPProduct::getPrice(void)
 {
-    return m_price;
+    if (m_pProductInfoTable != NULL)
+    {
+        CCString* pId = (CCString*)m_pProductInfoTable->objectForKey("productPrice");
+        return (pId != NULL ? atof(pId->getCString()) : 0.0f);
+    }
+    return 0.0f;
 }
 
-const std::string& IAPProduct::getPriceLocale(void)
+CCDictionary* IAPProduct::getProductInfoTable()
 {
-    return m_priceLocale;
+    return m_pProductInfoTable;
 }
 
 }}

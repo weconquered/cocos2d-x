@@ -16,16 +16,24 @@ public:
     static cocos2d::CCScene* scene();
     
     // a selector callback
-    void menuCloseCallback(CCObject* pSender);
-    void testIAP(cocos2d::CCObject* pSender);
+    void menuCloseCallback(cocos2d::CCObject* pSender);
+    void menuCallbackReset(cocos2d::CCObject* pSender);
+    void menuCallbackLoadProducts(cocos2d::CCObject* pSender);
+    void menuCallbackPurchaseProduct(cocos2d::CCObject* pSender);
 
     // implement the "static node()" method manually
     CREATE_FUNC(HelloWorld);
 
     virtual void onLogonFinished(cocos2d::plugin::ReturnVal r);
-    virtual void onLoadProductsFinished(cocos2d::plugin::ReturnVal r, cocos2d::CCArray* productsId, cocos2d::CCArray* invalidProductsId = NULL);
+    virtual void onLoadProductsFinished(cocos2d::plugin::ReturnVal r, cocos2d::CCArray* pProductArray);
     virtual void onTransactionFinished(cocos2d::plugin::ReturnVal r, cocos2d::plugin::IAPTransaction* pTransaction);
     virtual void onNotifyGameExit();
+
+private:
+    cocos2d::CCMenu* m_pMenu1;
+    cocos2d::CCMenu* m_pMenu2;
+    cocos2d::CCMenuItemLabel* m_pLoadItem;
+    cocos2d::CCMenuItemLabel* m_pResetItem;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

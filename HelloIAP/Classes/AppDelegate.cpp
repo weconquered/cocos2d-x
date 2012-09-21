@@ -30,9 +30,9 @@ AppDelegate::~AppDelegate()
 bool AppDelegate::applicationDidFinishLaunching()
 {
     CCArray* productArray = CCArray::createWithContentsOfFile("products.plist");
-    s_pIAP = IAPCMGC::create(productArray, "HelloIAP", "CompanyName", "telephoneNumber");
+    //s_pIAP = IAPCMGC::create(productArray, "HelloIAP", "CompanyName", "telephoneNumber");
     //s_pIAP = IAPChinaTelecom::create(productArray, "90235529");
-    //s_pIAP = IAPUserCenter::create(productArray, "buyudaren2test", "874126E837810FDB112C274D1D7E6FD98");
+    s_pIAP = IAPUserCenter::create(productArray, "buyudaren2test", "874126E837810FDB112C274D1D7E6FD98");
 
 
     // initialize director

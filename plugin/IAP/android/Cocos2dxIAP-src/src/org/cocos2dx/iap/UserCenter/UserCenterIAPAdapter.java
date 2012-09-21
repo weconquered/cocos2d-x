@@ -2,6 +2,7 @@ package org.cocos2dx.iap.UserCenter;
 
 import org.cocos2dx.iap.IAPProducts;
 import org.cocos2dx.iap.IAPWrapper;
+import org.cocos2dx.iap.TransactionInfo;
 import org.cocos2dx.iap.Wrapper;
 
 import com.chukong.usercenter.InitHelper;
@@ -56,15 +57,15 @@ public class UserCenterIAPAdapter implements org.cocos2dx.iap.IAPAdapter {
 				    	public void handleMessage(android.os.Message msg) {
 				    		switch (msg.what) {
 				    		case ResultFlag.RQF_PAY_SUCCEED:
-				    			IAPWrapper.finishTransaction(mProductIdentifier, true, IAPWrapper.kErrorNone);
+				    			IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), true, IAPWrapper.kErrorNone);
 				    			break;
 				    		case ResultFlag.RQF_PAY_CANCLE:
-				    			IAPWrapper.finishTransaction(mProductIdentifier, false, IAPWrapper.kErrorUserCancelled);
+				    			IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), false, IAPWrapper.kErrorUserCancelled);
 				    			break;
 				    		case ResultFlag.RQF_PAY_FAILED:
 				    		case ResultFlag.RQF_PAY_KEEP:
 				    		default:
-				    			IAPWrapper.finishTransaction(mProductIdentifier, false, IAPWrapper.kErrorPurchaseFailed);
+				    			IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), false, IAPWrapper.kErrorPurchaseFailed);
 				    			break;
 				    		}
 				    	}	
@@ -106,16 +107,9 @@ public class UserCenterIAPAdapter implements org.cocos2dx.iap.IAPAdapter {
 	}
 	
 	@Override
-	public void loadProduct(String product) {
-		LogD("loadProduct : " + product);
-
-		final String[] productIds = {product};
-		Wrapper.postEventToGLThread(new Runnable() {
-            @Override
-            public void run() {
-            	IAPWrapper.finishLoadProducts(productIds, true, IAPWrapper.kErrorNone);
-        	}
-        });
+	public void loadProducts(String[] productIds) {
+		LogD("loadProducts : " + productIds);
+        IAPWrapper.finishLoadProducts(productIds, true, IAPWrapper.kErrorNone);
 	}
  
 
@@ -127,23 +121,23 @@ public class UserCenterIAPAdapter implements org.cocos2dx.iap.IAPAdapter {
 
 		final float fPrice = IAPProducts.getProductPrice(mProductIdentifier);
 		if (0.0f == fPrice) {
-			IAPWrapper.finishTransaction(productIdentifier, false, IAPWrapper.kErrorProductPriceInvalid);
+			IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), false, IAPWrapper.kErrorProductPriceInvalid);
 			return;
 		}
 		
-		// 调用支付接口 
+		final String productName = IAPProducts.getProductName(mProductIdentifier);
 
 		Wrapper.postEventToMainThread(new Runnable() {
             @Override
             public void run() {
 				//ProductInfo productInfo = new ProductInfo("600", "0.01", "600金币");
             	// LogD("product price = " + fPrice + ",name="+IAPProducts.getProductName(mProductIdentifier));
-            	ProductInfo productInfo = new ProductInfo("", ""+fPrice, IAPProducts.getProductName(mProductIdentifier));
+            	ProductInfo productInfo = new ProductInfo("", ""+fPrice, productName);
             	if (mSingleGamePay != null) {
             		mSingleGamePay.startNologinPay(productInfo, mPayResultHandler);
             	}
             	else {
-            		IAPWrapper.finishTransaction(mProductIdentifier, false, IAPWrapper.kErrorServiceInvalid);
+            		IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), false, IAPWrapper.kErrorServiceInvalid);
             	}
             }
 		});

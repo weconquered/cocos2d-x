@@ -2,6 +2,7 @@ package org.cocos2dx.iap.ChinaTelecom;
 
 import org.cocos2dx.iap.IAPProducts;
 import org.cocos2dx.iap.IAPWrapper;
+import org.cocos2dx.iap.TransactionInfo;
 import org.cocos2dx.iap.Wrapper;
 import cn.game189.sms.SMSListener;
 import com.egamefei.sdk.control.AiDouListener;
@@ -45,12 +46,12 @@ public class ChinaTelecomIAPAdapter implements org.cocos2dx.iap.IAPAdapter {
 					    	{
 					    	case 0:
 					    		// 成功 
-					    		IAPWrapper.finishTransaction(mProductIdentifier, true, IAPWrapper.kErrorNone);
+					    		IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), true, IAPWrapper.kErrorNone);
 					    		break;
 					    	case 1:
 					    	default:
 					    		// 失败 
-					    		IAPWrapper.finishTransaction(mProductIdentifier, false, IAPWrapper.kErrorPurchaseFailed);
+					    		IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), false, IAPWrapper.kErrorPurchaseFailed);
 					    		break;
 					    	}
 					    }
@@ -60,19 +61,19 @@ public class ChinaTelecomIAPAdapter implements org.cocos2dx.iap.IAPAdapter {
 						@Override
 						public void smsOK(String feeName, String toolKey) {
 							//feeName 计费点标识,toolKey 道具id
-							IAPWrapper.finishTransaction(mProductIdentifier, true, IAPWrapper.kErrorNone);
+							IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), true, IAPWrapper.kErrorNone);
 						}
 				
 						@Override
 						public void smsFail(String feeName, int errorCode, String toolKey)  {
 							//feeName 计费点标识,errorCode 错误码,toolKey 道具id
-							IAPWrapper.finishTransaction(mProductIdentifier, false, IAPWrapper.kErrorPurchaseFailed);
+							IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), false, IAPWrapper.kErrorPurchaseFailed);
 						}
 				
 						@Override
 						public void smsCancel(String feeName, int errorCode, String toolKey)  {
 							//feeName 计费点标识,errorCode 错误码,toolKey 道具id
-							IAPWrapper.finishTransaction(mProductIdentifier, false, IAPWrapper.kErrorUserCancelled);
+							IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), false, IAPWrapper.kErrorUserCancelled);
 						}
 					});
 			
@@ -104,9 +105,8 @@ public class ChinaTelecomIAPAdapter implements org.cocos2dx.iap.IAPAdapter {
 	}
 	
 	@Override
-	public void loadProduct(String product) {
-		LogD("loadProduct : " + product);
-		final String[] productIds = {product};
+	public void loadProducts(String[] productIds) {
+		LogD("loadProducts : " + productIds);
         IAPWrapper.finishLoadProducts(productIds, true, IAPWrapper.kErrorNone);
 	}
  
@@ -118,7 +118,7 @@ public class ChinaTelecomIAPAdapter implements org.cocos2dx.iap.IAPAdapter {
 		final String smsKey = IAPProducts.getProductInfoByKey(mProductIdentifier, "DXSMSKey");
 		
 		if (smsKey == null || smsKey.length() == 0) {
-			IAPWrapper.finishTransaction(mProductIdentifier, false, IAPWrapper.kErrorSmsKeyInvalid);
+			IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), false, IAPWrapper.kErrorSmsKeyInvalid);
 			return;
 		}
 		

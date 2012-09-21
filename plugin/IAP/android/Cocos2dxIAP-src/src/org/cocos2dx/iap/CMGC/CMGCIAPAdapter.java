@@ -2,6 +2,7 @@ package org.cocos2dx.iap.CMGC;
 
 import org.cocos2dx.iap.IAPWrapper;
 import org.cocos2dx.iap.IAPProducts;
+import org.cocos2dx.iap.TransactionInfo;
 import org.cocos2dx.iap.Wrapper;
 import cn.emagsoftware.gamebilling.api.GameInterface;
 import cn.emagsoftware.gamebilling.api.GameInterface.BillingCallback;
@@ -45,9 +46,8 @@ public class CMGCIAPAdapter implements org.cocos2dx.iap.IAPAdapter{
 	}
 
 	@Override
-	public void loadProduct(String product) {
-		LogD("loadProduct : " + product);
-		final String[] productIds = {product};
+	public void loadProducts(String[] productIds) {
+		LogD("loadProduct : " + productIds);
         IAPWrapper.finishLoadProducts(productIds, true, IAPWrapper.kErrorNone);
 	}
 	
@@ -55,10 +55,12 @@ public class CMGCIAPAdapter implements org.cocos2dx.iap.IAPAdapter{
 	public void purchaseProduct(String productIdentifier) {
 		LogD("purchaseProduct:" + productIdentifier);
 		if (null == productIdentifier || null == Wrapper.getActivity()) {
-			IAPWrapper.finishTransaction(productIdentifier, false, IAPWrapper.kErrorProductIdInvalid);
+			IAPWrapper.finishTransaction(new TransactionInfo(productIdentifier), false, IAPWrapper.kErrorProductIdInvalid);
 			return;
 		}
 		mProductIdentifier = productIdentifier;
+		final String smsKey = IAPProducts.getProductInfoByKey(mProductIdentifier, "CMGCSMSKey");
+		
 		Wrapper.postEventToMainThread(new Runnable() {
             @Override
             public void run() {
@@ -67,12 +69,12 @@ public class CMGCIAPAdapter implements org.cocos2dx.iap.IAPAdapter{
         			public void onUserOperCancel() {
         				// User cancels operation.
         				if (null == mProductIdentifier) {
-        					IAPWrapper.finishTransaction(mProductIdentifier, false, IAPWrapper.kErrorProductIdInvalid);
+        					IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), false, IAPWrapper.kErrorProductIdInvalid);
         					return;
         				}
         				LogD("onUserOperCancel" + mProductIdentifier);
         				
-        				IAPWrapper.finishTransaction(mProductIdentifier, false, IAPWrapper.kErrorUserCancelled);
+        				IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), false, IAPWrapper.kErrorUserCancelled);
         				mProductIdentifier = null;	
         			}
         			
@@ -81,7 +83,7 @@ public class CMGCIAPAdapter implements org.cocos2dx.iap.IAPAdapter{
         				// Purchase succeed.
         				if (null == mProductIdentifier) return;
         				LogD("onBillingSuccess" + mProductIdentifier);
-        				IAPWrapper.finishTransaction(mProductIdentifier, true, IAPWrapper.kErrorNone);
+        				IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), true, IAPWrapper.kErrorNone);
 		        		mProductIdentifier = null;
         			}
         			
@@ -90,12 +92,13 @@ public class CMGCIAPAdapter implements org.cocos2dx.iap.IAPAdapter{
         				// Purchase fails.
         				if (null == mProductIdentifier) return;
         				LogD("onBillingFail" + mProductIdentifier);
-        				IAPWrapper.finishTransaction(mProductIdentifier, false, IAPWrapper.kErrorPurchaseFailed);
+        				IAPWrapper.finishTransaction(new TransactionInfo(mProductIdentifier), false, IAPWrapper.kErrorPurchaseFailed);
 		        		mProductIdentifier = null;
         			}
         		};
-        		LogD("before doBilling");
-        		GameInterface.doBilling(true, true, IAPProducts.getProductInfoByKey(mProductIdentifier, "CMGCSMSKey"), callback);
+        		LogD("before doBilling, mProductIdentifier = " + mProductIdentifier);
+        		LogD("smskey= "+smsKey);
+        		GameInterface.doBilling(true, true, smsKey, callback);
         		LogD("after doBilling");
             }
         });

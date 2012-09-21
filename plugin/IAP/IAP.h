@@ -30,7 +30,10 @@ class IAPDelegate
 {
 public:
     virtual void onLogonFinished(ReturnVal r) = 0;
-    virtual void onLoadProductsFinished(ReturnVal r, CCArray* productsId, CCArray* invalidProductsId = NULL) = 0;
+    /** The callback function of finishing loading products
+     * @param productArray Its element type is 'IAPProduct*'.
+     */
+    virtual void onLoadProductsFinished(ReturnVal r, CCArray* productArray) = 0;
     virtual void onTransactionFinished(ReturnVal r, IAPTransaction* pTransaction) = 0;
     /** User needs to release game resources in this delegate method */
     virtual void onNotifyGameExit() = 0;
@@ -52,14 +55,9 @@ public:
 
     /** Login IAP platform */
 	virtual void login();
-	
-    /** @brief Load one product. It return false by default.
-     *  If the new IAP system support this feature, this method needs to be overrided.
-     */
-    virtual bool loadProduct(const char* productId);
 
     /** load some products */
-    virtual bool loadSomeProducts(CCArray* productsId);
+    virtual bool loadProducts(CCArray* productIds);
     
     /** Cancel Load products operation */
     virtual void cancelLoadProducts();
@@ -89,7 +87,11 @@ public:
 
     /** For porting to a new android iap platform, override them if you want to custom these methods. */
     virtual void onLoginFinishedJNI(ReturnVal r);
-    virtual void onLoadProductsFinishedJNI(ReturnVal r, CCArray* productsId, CCArray* invalidProductsId = NULL);
+
+    /** The callback function of finishing loading products from JNI.
+     * @param productArray Its element type is 'IAPProduct*'.
+     */
+    virtual void onLoadProductsFinishedJNI(ReturnVal r, CCArray* productArray);
     virtual void onTransactionFinishedJNI(ReturnVal r, IAPTransaction* pTransaction);
     virtual void onNotifyGameExitJNI();
 

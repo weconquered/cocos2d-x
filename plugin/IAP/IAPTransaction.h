@@ -9,11 +9,11 @@ class IAPTransaction : public CCObject
 {
 public:
     static IAPTransaction* create(const char* productId);
-    const char* getProductIdentifier();
+    const char* getProductId();
 private:
     IAPTransaction();
     bool init(const char* productId);
-    std::string m_productIdentifier;
+    std::string m_productId;
 };
 
 }} // namespace cocos2d { namespace plugin {

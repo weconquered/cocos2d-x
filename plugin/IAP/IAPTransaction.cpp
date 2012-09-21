@@ -25,15 +25,15 @@ bool IAPTransaction::init(const char* productId)
 {
     if (productId != NULL && strlen(productId) > 0)
     {
-        m_productIdentifier = productId;
+        m_productId = productId;
         return true;
     }
     return false;
 }
 
-const char* IAPTransaction::getProductIdentifier()
+const char* IAPTransaction::getProductId()
 {
-    return m_productIdentifier.c_str();
+    return m_productId.c_str();
 }
 
 }}

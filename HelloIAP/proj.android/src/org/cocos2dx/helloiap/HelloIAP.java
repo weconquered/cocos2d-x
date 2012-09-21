@@ -41,11 +41,10 @@ import android.view.ViewGroup;
 public class HelloIAP extends Cocos2dxActivity{
 
 	protected void onCreate(Bundle savedInstanceState){
-		Log.d("HelloIAP", "onCreate 01");
 		super.onCreate(savedInstanceState);
-		Log.d("HelloIAP", "onCreate 02");
+
 		if (detectOpenGLES20()) {
-			Log.d("HelloIAP", "onCreate 03");
+
 			// get the packageName,it's used to set the resource path
 			String packageName = getApplication().getPackageName();
 			super.setPackageName(packageName);
@@ -79,10 +78,10 @@ public class HelloIAP extends Cocos2dxActivity{
 
             // Set framelayout as the content view
 			setContentView(framelayout);
-			Log.d("HelloIAP", "onCreate 04");
+
 	        Wrapper.setOutputLogEnable(true);
 	        Wrapper.initialize(this, mGLView);
-	        Log.d("HelloIAP", "onCreate 05");
+
 			////////////////////////////////////////////////////////////////////////
 			// IAP Initialization
 //			if (IAPWrapper.enabled()) {
