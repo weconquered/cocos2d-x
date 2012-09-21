@@ -106,14 +106,8 @@ public class ChinaTelecomIAPAdapter implements org.cocos2dx.iap.IAPAdapter {
 	@Override
 	public void loadProduct(String product) {
 		LogD("loadProduct : " + product);
-
 		final String[] productIds = {product};
-		Wrapper.postEventToGLThread(new Runnable() {
-            @Override
-            public void run() {
-        		IAPWrapper.finishLoadProducts(productIds, true, IAPWrapper.kErrorNone);
-        	}
-        });
+        IAPWrapper.finishLoadProducts(productIds, true, IAPWrapper.kErrorNone);
 	}
  
 

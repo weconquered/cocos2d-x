@@ -13,6 +13,8 @@ public class IAPWrapper {
 	public static final int kErrorPurchaseFailed = 8;
 	public static final int kErrorSmsKeyInvalid = 9;
 	
+	private static boolean mIsPreviousRequestCompleted = true;
+	
 	private static void LogD(String msg) {
 		Wrapper.LogD("IAPWrapper", msg);
 	}
@@ -24,9 +26,12 @@ public class IAPWrapper {
 	private static native void nativeFinishTransaction(String productId, boolean isSucceed, int errorCode);
 	private static native void nativeNotifyGameExit();
 
+	public static void setPreviousRequestCompleted(boolean isCompleted) {
+		mIsPreviousRequestCompleted = isCompleted;
+	}
 
-	public static boolean enabled() {
-		return true;
+	public static boolean isPreviousRequestCompleted() {
+		return mIsPreviousRequestCompleted;
 	}
 
 	private static IAPAdapter mCurrentAdapter = null;
@@ -36,26 +41,30 @@ public class IAPWrapper {
 	}
 	
 	public static void purchaseProduct(String productIdentifier) {
+		if (!isPreviousRequestCompleted()) {
+			LogD("purchaseProduct, PreviousRequestUncompleted" + productIdentifier);
+			//nativeFinishTransaction(productIdentifier, false, kErrorPreviousRequestUncompleted);
+			return;
+		}
+		setPreviousRequestCompleted(false);
+		
 		LogD("purchaseProduct:" + productIdentifier);
 
 		if (!isServiceValid()) {
+			setPreviousRequestCompleted(true);
 			nativeFinishTransaction(productIdentifier, false, kErrorServiceInvalid);
 			return;
 		}
 		
 		if (null != mCurrentAdapter) {
-			if (enabled()) {
-				mCurrentAdapter.purchaseProduct(productIdentifier);
-			}
+			mCurrentAdapter.purchaseProduct(productIdentifier);
 		}
 	}
 
 	public static boolean isServiceValid() {
 		LogD("isServiceVaild");
 		if (null != mCurrentAdapter) {
-			if (enabled()) {
-				return mCurrentAdapter.isServiceValid();
-			}
+			return mCurrentAdapter.isServiceValid();
 		}
 		return false;
 	}
@@ -71,57 +80,80 @@ public class IAPWrapper {
 		LogD("notifyIAPToExit");
 		
 		if (null != mCurrentAdapter){
-			if (enabled()) mCurrentAdapter.notifyIAPToExit();
+			mCurrentAdapter.notifyIAPToExit();
 		}
 	}
 
 	public static void loadProduct(String product) {
+		if (!isPreviousRequestCompleted()) {
+			LogD("loadProduct, PreviousRequestUncompleted" + product);
+			//nativeFinishLoadProducts(null, false, kErrorPreviousRequestUncompleted);
+			return;
+		}
+		setPreviousRequestCompleted(false);
 		
 		LogD("loadProduct" + product);
 		String[] productIds = {product};
 		
 		if (null == mCurrentAdapter) {
+			setPreviousRequestCompleted(true);
 			nativeFinishLoadProducts(productIds, false, kErrorServiceInvalid);
 			return;
 		}
-		
-		if (false == enabled()) return;
 		
 		mCurrentAdapter.loadProduct(product);
 	}
 	
 	public static void finishLogon(final boolean isSucceed, final int errorCode) {
 		LogD("finishLogon");
-		if (null == mCurrentAdapter) return;
-		if (false == enabled()) return;
+
 		Wrapper.postEventToGLThread(new Runnable() {
    	            @Override
    	            public void run() {
-   	            	nativeFinishLogon(isSucceed, errorCode);
+   	            	setPreviousRequestCompleted(true);
+	   	     		if (null == mCurrentAdapter) {
+	   	     			LogD("finishLogon, kErrorServiceInvalid!");
+	   	     			nativeFinishLogon(false, kErrorServiceInvalid);
+	   	     		}
+	   	     		else {
+	   	     			nativeFinishLogon(isSucceed, errorCode);
+	   	     		}
    	            }
 		});
 	}
 	
 	public static void finishLoadProducts(final String[] products, final boolean isSucceed, final int errorCode) {
 		LogD("finishLoadProducts:" + products + ";isSucceed:" + isSucceed + ";errorCode:"+errorCode);
-		if (null == mCurrentAdapter) return;
-		if (false == enabled()) return;
+		
 		Wrapper.postEventToGLThread(new Runnable() {
    	            @Override
    	            public void run() {
-   	            	nativeFinishLoadProducts(products, isSucceed, errorCode);
+   	            	setPreviousRequestCompleted(true);
+   	            	if (null == mCurrentAdapter) {
+   	            		LogD("finishLoadProducts, kErrorServiceInvalid");
+   	            		nativeFinishLoadProducts(products, false, kErrorServiceInvalid);
+   	            	}
+   	            	else {
+   	            		nativeFinishLoadProducts(products, isSucceed, errorCode);
+   	            	}
    	            }
 		});
 	}
 	
 	public static void finishTransaction(final String productIdentifier, final boolean isSucceed, final int errorCode) {
 		LogD("finishTransaction:" + productIdentifier + ";isSucceed:" + isSucceed + ";errorCode:"+errorCode);
-		if (false == enabled()) return;
+
 		Wrapper.postEventToGLThread(new Runnable() {
    	            @Override
    	            public void run() {
-   	            	LogD("GL finishTransaction:" + productIdentifier + ";isSucceed:" + isSucceed + ";errorCode:"+errorCode);
-   	            	nativeFinishTransaction(productIdentifier, isSucceed, errorCode);
+   	            	setPreviousRequestCompleted(true);
+   	            	if (null == mCurrentAdapter) {
+   	            		LogD("finishTransaction, kErrorServiceInvalid");
+   	            		nativeFinishTransaction(productIdentifier, false, kErrorServiceInvalid);
+   	            	}
+   	            	else {
+   	            		nativeFinishTransaction(productIdentifier, isSucceed, errorCode);
+   	            	}
    	            }
 		});
 	}

@@ -155,7 +155,14 @@ void HelloWorld::onLoadProductsFinished(ReturnVal r, CCArray* productsId, CCArra
     }
     else
     {
-        CCMessageBox("Failure", "Load Product fails");
+        if (r.errorCode != kErrorPreviousRequestUncompleted)
+        {
+            CCMessageBox("Failure", "Load Product fails");
+        }
+        else
+        {
+            CCLog("HelloWorld::onLoadProductsFinished,kErrorPreviousRequestUncompleted");
+        }
     }
 }
 

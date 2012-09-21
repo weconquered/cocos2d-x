@@ -47,19 +47,12 @@ public class CMGCIAPAdapter implements org.cocos2dx.iap.IAPAdapter{
 	@Override
 	public void loadProduct(String product) {
 		LogD("loadProduct : " + product);
-
 		final String[] productIds = {product};
-		Wrapper.postEventToGLThread(new Runnable() {
-            @Override
-            public void run() {
-        		IAPWrapper.finishLoadProducts(productIds, true, IAPWrapper.kErrorNone);
-        	}
-        });
+        IAPWrapper.finishLoadProducts(productIds, true, IAPWrapper.kErrorNone);
 	}
 	
 	@Override
 	public void purchaseProduct(String productIdentifier) {
-
 		LogD("purchaseProduct:" + productIdentifier);
 		if (null == productIdentifier || null == Wrapper.getActivity()) {
 			IAPWrapper.finishTransaction(productIdentifier, false, IAPWrapper.kErrorProductIdInvalid);
@@ -101,8 +94,9 @@ public class CMGCIAPAdapter implements org.cocos2dx.iap.IAPAdapter{
 		        		mProductIdentifier = null;
         			}
         		};
-        		
+        		LogD("before doBilling");
         		GameInterface.doBilling(true, true, IAPProducts.getProductInfoByKey(mProductIdentifier, "CMGCSMSKey"), callback);
+        		LogD("after doBilling");
             }
         });
 	}
