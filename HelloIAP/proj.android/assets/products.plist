@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>productId</key>
+		<string>invaild</string>
+		<key>productPrice</key>
+		<integer>0</integer>
+		<key>productName</key>
+		<string>无效</string>
+		<key>DXSMSKey</key>
+		<string></string>
+		<key>CMGCSMSKey</key>
+		<string></string>
+	</dict>
+	<dict>
+		<key>productId</key>
+		<string>coin100</string>
+		<key>productPrice</key>
+		<real>0.01</real>
+		<key>productName</key>
+		<string>100金币</string>
+		<key>DXSMSKey</key>
+		<string>43484</string>
+		<key>CMGCSMSKey</key>
+		<string>007</string>
+	</dict>
+	<dict>
+		<key>productId</key>
+		<string>coin200</string>
+		<key>productPrice</key>
+		<real>0.02</real>
+		<key>productName</key>
+		<string>200金币</string>
+		<key>DXSMSKey</key>
+		<string>43484</string>
+		<key>CMGCSMSKey</key>
+		<string>013</string>
+	</dict>
+	<dict>
+		<key>productId</key>
+		<string>coin300</string>
+		<key>productPrice</key>
+		<real>0.03</real>
+		<key>productName</key>
+		<string>300金币</string>
+		<key>DXSMSKey</key>
+		<string>43484</string>
+		<key>CMGCSMSKey</key>
+		<string>014</string>
+	</dict>
+	<dict>
+		<key>productId</key>
+		<string>coin400</string>
+		<key>productPrice</key>
+		<real>0.04</real>
+		<key>productName</key>
+		<string>400金币</string>
+		<key>DXSMSKey</key>
+		<string>43484</string>
+		<key>CMGCSMSKey</key>
+		<string>016</string>
+	</dict>
+</array>
+</plist>
