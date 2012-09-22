@@ -11,7 +11,7 @@
 #pragma warning( disable : 4996 )   // disable warning about strdup being deprecated.
 #endif
 
-namespace Json {
+namespace CCXIAP_Json {
 
 // Implementation of class Features
 // ////////////////////////////////
@@ -874,7 +874,7 @@ Reader::getFormatedErrorMessages() const
 
 std::istream& operator>>( std::istream &sin, Value &root )
 {
-    Json::Reader reader;
+    CCXIAP_Json::Reader reader;
     bool ok = reader.parse(sin, root, true);
     //JSON_ASSERT( ok );
     //zhanghh if (!ok) throw std::runtime_error(reader.getFormatedErrorMessages());
@@ -882,4 +882,4 @@ std::istream& operator>>( std::istream &sin, Value &root )
 }
 
 
-} // namespace Json
+} // namespace CCXIAP_Json

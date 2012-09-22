@@ -16,7 +16,7 @@
 
 /** \brief JSON (JavaScript Object Notation).
  */
-namespace Json {
+namespace CCXIAP_Json {
 
    /** \brief Type of the value held by a Value object.
     */
@@ -53,8 +53,8 @@ namespace Json {
     *
     * Example of usage:
     * \code
-    * Json::Value aValue( StaticString("some text") );
-    * Json::Value object;
+    * CCXIAP_Json::Value aValue( StaticString("some text") );
+    * CCXIAP_Json::Value object;
     * static const StaticString code("code");
     * object[code] = 1234;
     * \endcode
@@ -119,8 +119,8 @@ namespace Json {
       typedef std::vector<std::string> Members;
       typedef ValueIterator iterator;
       typedef ValueConstIterator const_iterator;
-      typedef Json::UInt UInt;
-      typedef Json::Int Int;
+      typedef CCXIAP_Json::UInt UInt;
+      typedef CCXIAP_Json::Int Int;
       typedef UInt ArrayIndex;
 
       static const Value null;
@@ -176,9 +176,9 @@ namespace Json {
 
         Examples:
 	\code
-	Json::Value null_value; // null
-	Json::Value arr_value(Json::arrayValue); // []
-	Json::Value obj_value(Json::objectValue); // {}
+	CCXIAP_Json::Value null_value; // null
+	CCXIAP_Json::Value arr_value(CCXIAP_Json::arrayValue); // []
+	CCXIAP_Json::Value obj_value(CCXIAP_Json::objectValue); // {}
 	\endcode
       */
       Value( ValueType type = nullValue );
@@ -194,7 +194,7 @@ namespace Json {
        * constructor.
        * Example of usage:
        * \code
-       * Json::Value aValue( StaticString("some text") );
+       * CCXIAP_Json::Value aValue( StaticString("some text") );
        * \endcode
        */
       Value( const StaticString &value );
@@ -304,7 +304,7 @@ namespace Json {
        * the new entry is not duplicated.
        * Example of use:
        * \code
-       * Json::Value object;
+       * CCXIAP_Json::Value object;
        * static const StaticString code("code");
        * object[code] = 1234;
        * \endcode
@@ -516,9 +516,9 @@ namespace Json {
    /** \brief Experimental do not use: Allocator to customize member name and string value memory management done by Value.
     *
     * - makeMemberName() and releaseMemberName() are called to respectively duplicate and
-    *   free an Json::objectValue member name.
+    *   free an CCXIAP_Json::objectValue member name.
     * - duplicateStringValue() and releaseStringValue() are called similarly to
-    *   duplicate and free a Json::stringValue value.
+    *   duplicate and free a CCXIAP_Json::stringValue value.
     */
    class ValueAllocator
    {
@@ -1063,7 +1063,7 @@ public: // overridden from ValueArrayAllocator
    };
 
 
-} // namespace Json
+} // namespace CCXIAP_Json
 
 
 #endif // CPPTL_JSON_H_INCLUDED

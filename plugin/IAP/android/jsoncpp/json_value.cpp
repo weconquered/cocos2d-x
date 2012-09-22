@@ -17,7 +17,7 @@
 #define JSON_ASSERT( condition ) assert( condition );  // @todo <= change this into an exception throw
 #define JSON_ASSERT_MESSAGE( condition, message ) if (!( condition )) throw std::runtime_error( message );
 
-namespace Json {
+namespace CCXIAP_Json {
 
 const Value Value::null;
 const Int Value::minInt = Int( ~(UInt(-1)/2) );
@@ -628,7 +628,7 @@ Value::operator ==( const Value &other ) const
 {
    //if ( type_ != other.type_ )
    // GCC 2.95.3 says:
-   // attempt to take address of bit-field structure member `Json::Value::type_'
+   // attempt to take address of bit-field structure member `CCXIAP_Json::Value::type_'
    // Beats me, but a temp solves the problem.
    int temp = other.type_;
    if ( type_ != temp )
@@ -1715,4 +1715,4 @@ Path::make( Value &root ) const
 }
 
 
-} // namespace Json
+} // namespace CCXIAP_Json

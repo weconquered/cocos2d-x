@@ -3,7 +3,7 @@
 
 # include "forwards.h"
 
-namespace Json {
+namespace CCXIAP_Json {
 
    /** \brief Configuration passed to reader and writer.
     * This configuration object can be used to force the Reader or Writer
@@ -37,6 +37,6 @@ namespace Json {
       bool strictRoot_;
    };
 
-} // namespace Json
+} // namespace CCXIAP_Json
 
 #endif // CPPTL_JSON_FEATURES_H_INCLUDED

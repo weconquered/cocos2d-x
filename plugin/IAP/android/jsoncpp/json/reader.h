@@ -8,7 +8,7 @@
 # include <string>
 # include <iostream>
 
-namespace Json {
+namespace CCXIAP_Json {
 
    /** \brief Unserialize a <a HREF="http://www.json.org">JSON</a> document into a Value.
     *
@@ -58,7 +58,7 @@ namespace Json {
                   bool collectComments = true );
 
       /// \brief Parse from input stream.
-      /// \see Json::operator>>(std::istream&, Json::Value&).
+      /// \see CCXIAP_Json::operator>>(std::istream&, CCXIAP_Json::Value&).
       bool parse( std::istream &is,
                   Value &root,
                   bool collectComments = true );
@@ -172,7 +172,7 @@ namespace Json {
     This can be used to read a file into a particular sub-object.
     For example:
     \code
-    Json::Value root;
+    CCXIAP_Json::Value root;
     cin >> root["dir"]["file"];
     cout << root;
     \endcode
@@ -187,10 +187,10 @@ namespace Json {
     }
     \endverbatim
     \throw std::exception on parse error.
-    \see Json::operator<<()
+    \see CCXIAP_Json::operator<<()
    */
    std::istream& operator>>( std::istream&, Value& );
 
-} // namespace Json
+} // namespace CCXIAP_Json
 
 #endif // CPPTL_JSON_READER_H_INCLUDED

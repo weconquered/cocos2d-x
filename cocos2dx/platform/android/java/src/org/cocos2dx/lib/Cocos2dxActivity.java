@@ -146,6 +146,9 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     	return new Cocos2dxGLSurfaceView(this);
     }
 
+    public Cocos2dxGLSurfaceView getCocos2dxGLSurfaceView() {
+    	return mGLSurefaceView;
+    }
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================

@@ -1,6 +1,6 @@
 #include "IAPCMGC.h"
 #include "jni/JniHelper.h"
-#include "jni/MessageJni.h"
+#include "jni/Java_org_cocos2dx_lib_Cocos2dxHelper.h"
 
 namespace cocos2d { namespace plugin {
 

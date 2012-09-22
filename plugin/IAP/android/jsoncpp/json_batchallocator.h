@@ -6,7 +6,7 @@
 
 # ifndef JSONCPP_DOC_EXCLUDE_IMPLEMENTATION
 
-namespace Json {
+namespace CCXIAP_Json {
 
 /* Fast memory allocator.
  *
@@ -117,7 +117,7 @@ private:
 };
 
 
-} // namespace Json
+} // namespace CCXIAP_Json
 
 # endif // ifndef JSONCPP_DOC_INCLUDE_IMPLEMENTATION
 

@@ -42,7 +42,7 @@ static std::string getProductInfo(const char* productId)
     CCArray* pKeys = goodInfo->allKeys();
     CCObject* pObj = NULL;
 
-    Json::Value retValue;
+    CCXIAP_Json::Value retValue;
     CCARRAY_FOREACH(pKeys, pObj)
     {
         CCString* pKey = (CCString*) pObj;

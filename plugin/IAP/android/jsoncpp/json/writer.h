@@ -6,7 +6,7 @@
 # include <string>
 # include <iostream>
 
-namespace Json {
+namespace CCXIAP_Json {
 
    class Value;
 
@@ -164,10 +164,10 @@ namespace Json {
    std::string JSON_API valueToQuotedString( const char *value );
 
    /// \brief Output using the StyledStreamWriter.
-   /// \see Json::operator>>()
+   /// \see CCXIAP_Json::operator>>()
    std::ostream& operator<<( std::ostream&, const Value &root );
 
-} // namespace Json
+} // namespace CCXIAP_Json
 
 
 
