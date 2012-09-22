@@ -19,4 +19,4 @@ include $(BUILD_SHARED_LIBRARY)
 $(call import-module,CocosDenshion/android) \
 $(call import-module,cocos2dx) \
 $(call import-module,extensions) \
-$(call import-module,plugin/IAP)
+$(call import-module,plugin/IAP/android)
