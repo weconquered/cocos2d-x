@@ -13,6 +13,7 @@
 		15426A5B15B5722100712A7F /* CocosDenshion.m in Sources */ = {isa = PBXBuildFile; fileRef = 15426A4815B5722100712A7F /* CocosDenshion.m */; };
 		15426A5C15B5722100712A7F /* SimpleAudioEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = 15426A4915B5722100712A7F /* SimpleAudioEngine.mm */; };
 		15426A5D15B5722100712A7F /* SimpleAudioEngine_objc.m in Sources */ = {isa = PBXBuildFile; fileRef = 15426A4B15B5722100712A7F /* SimpleAudioEngine_objc.m */; };
+		1ADACCE31616A33000D150BB /* learninglua.lua in Resources */ = {isa = PBXBuildFile; fileRef = 1ADACCE21616A33000D150BB /* learninglua.lua */; };
 		506EDB88102F4C4000A389B3 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 506EDB87102F4C4000A389B3 /* libz.dylib */; };
 		506EDBA5102F4C9F00A389B3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 506EDBA4102F4C9F00A389B3 /* AVFoundation.framework */; };
 		78947C6D14EBB9B100DBD5A6 /* background.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 78947C5E14EBB9B000DBD5A6 /* background.mp3 */; };
@@ -119,6 +120,7 @@
 		15426A4915B5722100712A7F /* SimpleAudioEngine.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SimpleAudioEngine.mm; sourceTree = "<group>"; };
 		15426A4A15B5722100712A7F /* SimpleAudioEngine_objc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleAudioEngine_objc.h; sourceTree = "<group>"; };
 		15426A4B15B5722100712A7F /* SimpleAudioEngine_objc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleAudioEngine_objc.m; sourceTree = "<group>"; };
+		1ADACCE21616A33000D150BB /* learninglua.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = learninglua.lua; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* HelloLua.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloLua.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		506EDB87102F4C4000A389B3 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		506EDBA4102F4C9F00A389B3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -350,6 +352,7 @@
 		78947C5C14EBB9B000DBD5A6 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				1ADACCE21616A33000D150BB /* learninglua.lua */,
 				D4EF94DC15BD312100D803EB /* Icon-144.png */,
 				D4EF94DA15BD311E00D803EB /* Icon-72.png */,
 				D4EF94D815BD311A00D803EB /* Icon-114.png */,
@@ -596,6 +599,7 @@
 				D4EF94DD15BD312100D803EB /* Icon-144.png in Resources */,
 				D41A0AA2160F13F8004552AE /* Default-568h@2x.png in Resources */,
 				D446FD3B16102085000ADA7B /* Default@2x.png in Resources */,
+				1ADACCE31616A33000D150BB /* learninglua.lua in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

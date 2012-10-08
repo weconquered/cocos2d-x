@@ -1,3 +1,5 @@
+require "learninglua"
+
 
 -- for CCLuaEngine traceback
 function __G__TRACKBACK__(msg)
