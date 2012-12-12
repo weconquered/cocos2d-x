@@ -114,18 +114,8 @@ static void unRootObject(JSContext *cx, JSObject *obj) {
 }
 
 static void getJSTouchObject(JSContext *cx, CCTouch *x, jsval &jsret) {
-    js_type_class_t *classType;
-    TypeTest<cocos2d::CCTouch> t;
-    uint32_t typeId = t.s_id();
-    HASH_FIND_INT(_js_global_type_ht, &typeId, classType);
-    assert(classType);
-    JSObject *_tmp = JS_NewObject(cx, classType->jsclass, classType->proto, classType->parentProto);
-    js_proxy_t *proxy, *nproxy;
-    JS_NEW_PROXY(proxy, x, _tmp);
-    void *ptr = x;
-    JS_GET_PROXY(nproxy, ptr);
-    JS_AddNamedObjectRoot(cx, &nproxy->obj, "CCTouch");
-    jsret = OBJECT_TO_JSVAL(_tmp);
+    js_proxy_t *proxy = js_get_or_create_proxy<cocos2d::CCTouch>(cx, x);
+    jsret = OBJECT_TO_JSVAL(proxy->obj);
 }
 
 static void removeJSTouchObject(JSContext *cx, CCTouch *x, jsval &jsret) {
