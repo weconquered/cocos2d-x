@@ -538,6 +538,7 @@ JSBool js_cocos2dx_JSTouchDelegate_registerStandardDelegate(JSContext *cx, uint3
 		jsval *argv = JS_ARGV(cx, vp);
         
         JSTouchDelegate *touch = new JSTouchDelegate();
+        touch->autorelease();
         touch->registerStandardDelegate();
         touch->setJSObject((argc == 1 ? JSVAL_TO_OBJECT(argv[0]) : JSVAL_TO_OBJECT(JSVAL_VOID)));
         
@@ -552,6 +553,7 @@ JSBool js_cocos2dx_JSTouchDelegate_registerTargettedDelegate(JSContext *cx, uint
 		jsval *argv = JS_ARGV(cx, vp);
         
         JSTouchDelegate *touch = new JSTouchDelegate();
+        touch->autorelease();
         touch->registerTargettedDelegate((argc >= 1 ? JSVAL_TO_INT(argv[0]) : 0), (argc >= 2 ? JSVAL_TO_BOOLEAN(argv[1]) : true));
         touch->setJSObject((argc == 3 ? JSVAL_TO_OBJECT(argv[2]) : JSVAL_TO_OBJECT(JSVAL_VOID)));
         
