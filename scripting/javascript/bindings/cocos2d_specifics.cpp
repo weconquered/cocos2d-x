@@ -977,7 +977,7 @@ void JSScheduleWrapper::removeTargetForNativeNode(CCNode* pNode, JSScheduleWrapp
         {
             removed->targets->release();
             HASH_DEL(_schedFunc_target_ht, removed);
-            free(current);
+            free(removed);
         }  
     }
     dump();
