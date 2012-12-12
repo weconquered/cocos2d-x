@@ -272,6 +272,33 @@ cc.rectIntersection = function (rectA, rectB) {
 //
 // Array: for cocos2d-html5 compatibility
 //
+
+/**
+ * Returns index of first occurence of object, -1 if value not found.
+ * @function
+ * @param {Array} arr Source Array
+ * @param {*} findObj find object
+ * @return {Number} index of first occurence of value
+ */
+cc.ArrayGetIndexOfObject = function (arr, findObj) {
+    for (var i = 0; i < arr.length; i++) {
+        if (arr[i] == findObj)
+            return i;
+    }
+    return -1;
+};
+
+/**
+ * Returns a Boolean value that indicates whether value is present in the array.
+ * @function
+ * @param {Array} arr
+ * @param {*} findObj
+ * @return {Boolean}
+ */
+cc.ArrayContainsObject = function (arr, findObj) {
+    return cc.ArrayGetIndexOfObject(arr, findObj) != -1;
+};
+
 cc.ArrayRemoveObject = function (arr, delObj) {
     for (var i = 0; i < arr.length; i++) {
         if (arr[i] == delObj) {

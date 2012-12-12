@@ -45,6 +45,8 @@ public:
 
     virtual ccScriptType getScriptType() { return kScriptTypeJavascript; };
     
+    static JSBool dumpProxyTable(JSContext *cx, uint32_t argc, jsval *vp);
+
     /**
      @brief Remove CCObject from lua state
      @param object to remove

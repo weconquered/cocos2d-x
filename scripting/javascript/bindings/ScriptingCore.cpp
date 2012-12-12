@@ -131,11 +131,11 @@ static void getJSTouchObject(JSContext *cx, CCTouch *x, jsval &jsret) {
 static void removeJSTouchObject(JSContext *cx, CCTouch *x, jsval &jsret) {
     js_proxy_t* nproxy;
     js_proxy_t* jsproxy;
-    void *ptr = x;
+    void *ptr = (void*)x;
     JS_GET_PROXY(nproxy, ptr);
     if (nproxy) {
-        JS_RemoveObjectRoot(cx, &nproxy->obj);
         JS_GET_NATIVE_PROXY(jsproxy, nproxy->obj);
+        JS_RemoveObjectRoot(cx, &jsproxy->obj);
         JS_REMOVE_PROXY(nproxy, jsproxy);
     }
 }
@@ -282,9 +282,10 @@ void registerDefaultClasses(JSContext* cx, JSObject* global) {
     JSObject *jsc = JS_NewObject(cx, NULL, NULL, NULL);
     jsval jscVal = OBJECT_TO_JSVAL(jsc);
     JS_SetProperty(cx, global, "__jsc__", &jscVal);
-
+    
     JS_DefineFunction(cx, jsc, "garbageCollect", ScriptingCore::forceGC, 0, JSPROP_READONLY | JSPROP_PERMANENT | JSPROP_ENUMERATE );
     JS_DefineFunction(cx, jsc, "dumpRoot", ScriptingCore::dumpRoot, 0, JSPROP_READONLY | JSPROP_PERMANENT | JSPROP_ENUMERATE );
+    JS_DefineFunction(cx, jsc, "dumpProxyTable", ScriptingCore::dumpProxyTable, 0, JSPROP_READONLY | JSPROP_PERMANENT | JSPROP_ENUMERATE );
     JS_DefineFunction(cx, jsc, "addGCRootObject", ScriptingCore::addRootJS, 1, JSPROP_READONLY | JSPROP_PERMANENT | JSPROP_ENUMERATE );
     JS_DefineFunction(cx, jsc, "removeGCRootObject", ScriptingCore::removeRootJS, 1, JSPROP_READONLY | JSPROP_PERMANENT | JSPROP_ENUMERATE );
     JS_DefineFunction(cx, jsc, "executeScript", ScriptingCore::executeScript, 1, JSPROP_READONLY | JSPROP_PERMANENT | JSPROP_ENUMERATE );
@@ -391,6 +392,12 @@ void ScriptingCore::removeAllRoots(JSContext *cx) {
         HASH_DEL(_native_js_global_ht, current);
         free(current);
     }
+    dumpProxyTable(cx, 0, NULL);
+    dumpRoot(cx, 0, NULL);
+    CCLOG("before dumpRoot");
+    forceGC(cx, 0, NULL);
+    CCLOG("after force gc");
+    dumpRoot(cx, 0, NULL);
     HASH_CLEAR(hh, _js_native_global_ht);
     HASH_CLEAR(hh, _native_js_global_ht);
 }
@@ -412,7 +419,7 @@ void ScriptingCore::createGlobalContext() {
     JS_SetOptions(this->cx_, JS_GetOptions(this->cx_) & ~JSOPTION_METHODJIT_ALWAYS);
     JS_SetErrorReporter(this->cx_, ScriptingCore::reportError);
 #if defined(JS_GC_ZEAL) && defined(DEBUG)
-    //JS_SetGCZeal(this->cx_, 2, JS_DEFAULT_ZEAL_FREQ);
+    JS_SetGCZeal(this->cx_, 2, JS_DEFAULT_ZEAL_FREQ);
 #endif
     this->global_ = NewGlobalObject(cx_);
     for (std::vector<sc_register_sth>::iterator it = registrationList.begin(); it != registrationList.end(); it++) {
@@ -508,6 +515,20 @@ JSBool ScriptingCore::log(JSContext* cx, uint32_t argc, jsval *vp)
     return JS_TRUE;
 }
 
+JSBool ScriptingCore::dumpProxyTable(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    js_proxy_t *current, *tmp;
+    CCLOG("---------\n_js_native_global_ht----------------\n");
+    HASH_ITER(hh, _js_native_global_ht, current, tmp) {
+        CCLOG("JS,dumpProxy: jsobj( %p ), native( %s )", current->obj, typeid(*((CCObject*)current->ptr)).name());
+    }
+    CCLOG("---------\n_native_js_global_ht----------------\n");
+    HASH_ITER(hh, _native_js_global_ht, current, tmp) {
+        CCLOG("JS,dumpProxy: jsobj( %p ), native( %s )", current->obj, typeid(*((CCObject*)current->ptr)).name());
+    }
+    CCLOG("---------------end --------------\n");
+    return JS_TRUE;
+}
 
 void ScriptingCore::removeScriptObjectByCCObject(CCObject* pObj)
 {
@@ -572,9 +593,9 @@ JSBool ScriptingCore::dumpRoot(JSContext *cx, uint32_t argc, jsval *vp)
     // JS_DumpNamedRoots is only available on DEBUG versions of SpiderMonkey.
     // Mac and Simulator versions were compiled with DEBUG.
 #if DEBUG
-//    JSContext *_cx = ScriptingCore::getInstance()->getGlobalContext();
-//    JSRuntime *rt = JS_GetRuntime(_cx);
-//    JS_DumpNamedRoots(rt, dumpNamedRoot, NULL);
+   JSContext *_cx = ScriptingCore::getInstance()->getGlobalContext();
+   JSRuntime *rt = JS_GetRuntime(_cx);
+   JS_DumpNamedRoots(rt, dumpNamedRoot, NULL);
 #endif
     return JS_TRUE;
 }
@@ -856,6 +877,8 @@ int ScriptingCore::executeCustomTouchEvent(int eventType,
     getJSTouchObject(this->cx_, pTouch, jsTouch);
 
     executeJSFunctionWithName(this->cx_, obj, funcName.c_str(), jsTouch, retval);
+
+    removeJSTouchObject(this->cx_, pTouch, jsTouch);
     return 1;
 
 }
@@ -872,6 +895,9 @@ int ScriptingCore::executeCustomTouchEvent(int eventType,
     getJSTouchObject(this->cx_, pTouch, jsTouch);
 
     executeJSFunctionWithName(this->cx_, obj, funcName.c_str(), jsTouch, retval);
+
+    removeJSTouchObject(this->cx_, pTouch, jsTouch);
+
     return 1;
 
 }

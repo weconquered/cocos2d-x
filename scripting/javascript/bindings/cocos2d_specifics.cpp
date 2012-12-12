@@ -5,6 +5,7 @@
 schedFunc_proxy_t *_schedFunc_target_ht = NULL;
 schedTarget_proxy_t *_schedTarget_native_ht = NULL;
 callfuncTarget_proxy_t *_callfuncTarget_native_ht = NULL;
+static bool s_bDumpProxy = false;
 
 void JSTouchDelegate::setJSObject(JSObject *obj) {
     _mObj = obj;
@@ -21,6 +22,75 @@ void JSTouchDelegate::registerTargettedDelegate(int priority, bool swallowsTouch
                                                          priority,
                                                          swallowsTouches);
 
+}
+
+bool JSTouchDelegate::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
+    CC_UNUSED_PARAM(pTouch); 
+    CC_UNUSED_PARAM(pEvent); 
+    jsval retval;
+    bool bRet = false;
+    //JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+    //JS_AddValueRoot(cx, &retval);
+    
+    ScriptingCore::getInstance()->executeCustomTouchEvent(CCTOUCHBEGAN, 
+        pTouch, _mObj, retval);
+    if(JSVAL_IS_BOOLEAN(retval)) {
+        bRet = JSVAL_TO_BOOLEAN(retval);
+    } 
+    //JS_RemoveValueRoot(cx, &retval);
+    s_bDumpProxy = true;
+    return bRet;
+};
+// optional
+
+void JSTouchDelegate::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent) {
+    CC_UNUSED_PARAM(pTouch); 
+    CC_UNUSED_PARAM(pEvent);
+    //jsval retval;
+    ScriptingCore::getInstance()->executeCustomTouchEvent(CCTOUCHMOVED, 
+        pTouch, _mObj);
+}
+
+void JSTouchDelegate::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent) {
+    CC_UNUSED_PARAM(pTouch); 
+    CC_UNUSED_PARAM(pEvent);
+
+    ScriptingCore::getInstance()->executeCustomTouchEvent(CCTOUCHENDED, 
+        pTouch, _mObj);
+}
+
+void JSTouchDelegate::ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent) {
+    CC_UNUSED_PARAM(pTouch); 
+    CC_UNUSED_PARAM(pEvent);
+    ScriptingCore::getInstance()->executeCustomTouchEvent(CCTOUCHCANCELLED, 
+        pTouch, _mObj);
+}
+
+// optional
+void JSTouchDelegate::ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent) {
+    CC_UNUSED_PARAM(pTouches); 
+    CC_UNUSED_PARAM(pEvent);
+    ScriptingCore::getInstance()->executeCustomTouchesEvent(CCTOUCHBEGAN, 
+        pTouches, _mObj);
+}
+
+void JSTouchDelegate::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent) {
+    CC_UNUSED_PARAM(pTouches); 
+    CC_UNUSED_PARAM(pEvent);
+    ScriptingCore::getInstance()->executeCustomTouchesEvent(CCTOUCHMOVED, 
+        pTouches, _mObj);        
+}
+void JSTouchDelegate::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent) {
+    CC_UNUSED_PARAM(pTouches); 
+    CC_UNUSED_PARAM(pEvent);
+    ScriptingCore::getInstance()->executeCustomTouchesEvent(CCTOUCHENDED, 
+        pTouches, _mObj);
+}
+void JSTouchDelegate::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent) {
+    CC_UNUSED_PARAM(pTouches); 
+    CC_UNUSED_PARAM(pEvent);
+    ScriptingCore::getInstance()->executeCustomTouchesEvent(CCTOUCHCANCELLED, 
+        pTouches, _mObj);
 }
 
 static void addCallBackAndThis(JSObject *obj, jsval callback, jsval &thisObj) {
@@ -47,7 +117,7 @@ JSObject* bind_menu_item(JSContext *cx, T* nativeObj, jsval callback, jsval this
 		// bind nativeObj <-> JSObject
 		js_proxy_t *proxy;
 		JS_NEW_PROXY(proxy, nativeObj, tmp);
-		JS_AddNamedObjectRoot(cx, &proxy->obj, "MenuItem");        
+		JS_AddNamedObjectRoot(cx, &proxy->obj, typeid(*nativeObj).name());        
 		addCallBackAndThis(tmp, callback, thisObj);
 
 		return tmp;
@@ -910,7 +980,6 @@ void JSScheduleWrapper::scheduleFunc(float dt) const
 
     if(!jsCallback.isNullOrUndefined() || !jsThisObj.isNullOrUndefined()) {
         JSAutoCompartment ac(cx, JSVAL_TO_OBJECT(jsThisObj));
-                
         JS_CallFunctionValue(cx, JSVAL_TO_OBJECT(jsThisObj), jsCallback, 1, &data, &retval);
     }
 
@@ -1253,7 +1322,7 @@ JSBool js_CCScheduler_schedule(JSContext *cx, uint32_t argc, jsval *vp)
         }
         
         sched->scheduleSelector(schedule_selector(JSScheduleWrapper::scheduleFunc), tmpCobj, interval, repeat, delay, paused);
-                
+
         JS_SET_RVAL(cx, vp, JSVAL_VOID);
     }
     return JS_TRUE;

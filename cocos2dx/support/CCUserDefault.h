@@ -24,6 +24,7 @@ THE SOFTWARE.
 #ifndef __SUPPORT_CCUSERDEFAULT_H__
 #define __SUPPORT_CCUSERDEFAULT_H__
 
+#include "ccTypeInfo.h"
 #include "platform/CCPlatformMacros.h"
 #include <string>
 
@@ -42,9 +43,14 @@ NS_CC_BEGIN
  * It supports the following base types:
  * bool, int, float, double, string
  */
-class CC_DLL CCUserDefault
+class CC_DLL CCUserDefault : public TypeInfo
 {
 public:
+    virtual long getClassTypeInfo() {
+        static const long id = cocos2d::getHashCodeByString(typeid(cocos2d::CCUserDefault).name());
+        return id;
+    }
+
     ~CCUserDefault();
 
     // get value methods
