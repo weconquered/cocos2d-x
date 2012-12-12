@@ -146,6 +146,7 @@ public:
     static void setTargetForNativeNode(CCNode *pNode, JSScheduleWrapper *target);
     static CCArray * getTargetForNativeNode(CCNode *pNode);
     static void removeAllTargetsForNatiaveNode(CCNode* pNode);
+    static void removeTargetForNativeNode(CCNode* pNode, JSScheduleWrapper* target);
     static void dump();
 
     void pause();
