@@ -1010,9 +1010,54 @@ void JSScheduleWrapper::removeAllTargetsForNatiaveNode(CCNode* pNode)
     CCLOGINFO("removeAllTargetsForNatiaveNode end");
 }
 
+void JSScheduleWrapper::removeTargetForNativeNode(CCNode* pNode, JSScheduleWrapper* target)
+{
+    schedTarget_proxy_t *t = NULL;
+    HASH_FIND_PTR(_schedTarget_native_ht, &pNode, t);
+    if (t != NULL) {
+        t->targets->removeObject(target);
+        if (t->targets->count() == 0)
+        {
+            t->targets->release();
+            HASH_DEL(_schedTarget_native_ht, t);
+            free(t);
+        }
+    }
+
+    schedFunc_proxy_t *current, *tmp, *removed=NULL;
+
+    HASH_ITER(hh, _schedFunc_target_ht, current, tmp) {
+        CCArray* targets = current->targets;
+        CCObject* pObj = NULL;
+        
+        CCARRAY_FOREACH(targets, pObj)
+        {
+            JSScheduleWrapper* pOneTarget = (JSScheduleWrapper*)pObj;
+            if (pOneTarget == target)
+            {
+                removed = current;
+                break;
+            }
+        }
+        if (removed) break;
+    }
+
+    if (removed)
+    {
+        removed->targets->removeObject(target);
+        if (removed->targets->count() == 0)
+        {
+            removed->targets->release();
+            HASH_DEL(_schedFunc_target_ht, removed);
+            free(removed);
+        }  
+    }
+    dump();
+}
+
 void JSScheduleWrapper::dump()
 {
-#if COCOS2D_DEBUG > 1
+#if COCOS2D_DEBUG >= 1
     CCLOGINFO("\n---------JSScheduleWrapper dump begin--------------\n");
     schedTarget_proxy_t *current, *tmp;
     int nativeTargetsCount = 0;
@@ -1025,7 +1070,7 @@ void JSScheduleWrapper::dump()
         }
     }
 
-    CCLOG("\n-----------------------------\n");
+    CCLOGINFO("\n-----------------------------\n");
 
     schedFunc_proxy_t *current_func, *tmp_func;
     int jsfuncTargetCount = 0;
@@ -1103,6 +1148,7 @@ JSBool js_CCNode_unschedule(JSContext *cx, uint32_t argc, jsval *vp)
             if (node == target->getTarget())
             {
                 sched->unscheduleSelector(schedule_selector(JSScheduleWrapper::scheduleFunc), target);
+                JSScheduleWrapper::removeTargetForNativeNode(node, target);
                 break;
             }
         }
