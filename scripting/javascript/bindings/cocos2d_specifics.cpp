@@ -1105,7 +1105,7 @@ void JSScheduleWrapper::scheduleFunc(float dt) const
     CCObject* pobj = (CCObject*)p->ptr;
     std::string str = "scheduleFunc: ";
     str += typeid(*pobj).name();
-    ScriptingCore::forceGC(cx, 0, NULL);
+    //ScriptingCore::forceGC(cx, 0, NULL);
     //CCLOG(str.c_str());
     if(!jsCallback.isNullOrUndefined() || !jsThisObj.isNullOrUndefined()) {
         JSAutoCompartment ac(cx, JSVAL_TO_OBJECT(jsThisObj));
