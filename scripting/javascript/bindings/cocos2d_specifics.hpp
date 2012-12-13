@@ -155,16 +155,23 @@ public:
     void setTarget(CCObject* pTarget);
 protected:
     CCObject* m_pTarget;
+public:
+    std::string m_name;
 };
 
 
 class JSTouchDelegate: public CCObject, public CCTouchDelegate
 {
 public:
+    static void setDelegateForJSObject(JSObject* pJSObj, JSTouchDelegate* pDelegate);
+    static JSTouchDelegate* getDelegateForJSObject(JSObject* pJSObj);
+    static void removeDelegateForJSObject(JSObject* pJSObj);
+
     void setJSObject(JSObject *obj);
     void registerStandardDelegate();
     void registerTargettedDelegate(int priority, bool swallowsTouches);
-    
+    void unregisterTouchDelegate();
+
     bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
     void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
     void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
@@ -177,7 +184,10 @@ public:
     void ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent);
 
 private:
-    JSObject *_mObj;    
+    JSObject *_mObj;
+    typedef std::map<JSObject*, JSTouchDelegate*> TouchDelegateMap;
+    typedef std::pair<JSObject*, JSTouchDelegate*> TouchDelegatePair;
+    static TouchDelegateMap sTouchDelegateMap;
 };
 
 

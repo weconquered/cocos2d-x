@@ -170,6 +170,14 @@ void js_log(const char *format, ...) {
     if (len) {
         CCLOG("JS: %s\n", _js_log_buf);
     }
+    static std::string strLog;
+    strLog = _js_log_buf;
+    if (strLog.find("Error") != std::string::npos)
+    {
+        int a = 0;
+        a = 0;
+    }
+    
 }
 
 #define JSB_COMPATIBLE_WITH_COCOS2D_HTML5_BASIC_TYPES 1
@@ -409,7 +417,6 @@ void ScriptingCore::createGlobalContext() {
     JS_SetOptions(this->cx_, JS_GetOptions(this->cx_) & ~JSOPTION_METHODJIT_ALWAYS);
     JS_SetErrorReporter(this->cx_, ScriptingCore::reportError);
 #if defined(JS_GC_ZEAL) && defined(DEBUG)
-    JS_SetGCZeal(this->cx_, 2, JS_DEFAULT_ZEAL_FREQ);
 #endif
     this->global_ = NewGlobalObject(cx_);
     for (std::vector<sc_register_sth>::iterator it = registrationList.begin(); it != registrationList.end(); it++) {

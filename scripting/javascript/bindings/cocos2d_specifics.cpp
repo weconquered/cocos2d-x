@@ -7,6 +7,32 @@ schedTarget_proxy_t *_schedTarget_native_ht = NULL;
 callfuncTarget_proxy_t *_callfuncTarget_native_ht = NULL;
 static bool s_bDumpProxy = false;
 
+JSTouchDelegate::TouchDelegateMap JSTouchDelegate::sTouchDelegateMap;
+
+void JSTouchDelegate::setDelegateForJSObject(JSObject* pJSObj, JSTouchDelegate* pDelegate)
+{
+    CCAssert(sTouchDelegateMap.find(pJSObj) == sTouchDelegateMap.end(), "");
+    sTouchDelegateMap.insert(TouchDelegatePair(pJSObj, pDelegate));
+}
+
+JSTouchDelegate* JSTouchDelegate::getDelegateForJSObject(JSObject* pJSObj)
+{
+    JSTouchDelegate* pRet = NULL;
+    TouchDelegateMap::iterator iter = sTouchDelegateMap.find(pJSObj);
+    if (iter != sTouchDelegateMap.end())
+    {
+        pRet = iter->second;
+    }
+    return pRet;
+}
+
+void JSTouchDelegate::removeDelegateForJSObject(JSObject* pJSObj)
+{
+    TouchDelegateMap::iterator iter = sTouchDelegateMap.find(pJSObj);
+    CCAssert(iter != sTouchDelegateMap.end(), "");
+    sTouchDelegateMap.erase(pJSObj);
+}
+
 void JSTouchDelegate::setJSObject(JSObject *obj) {
     _mObj = obj;
 }
@@ -24,6 +50,12 @@ void JSTouchDelegate::registerTargettedDelegate(int priority, bool swallowsTouch
 
 }
 
+void JSTouchDelegate::unregisterTouchDelegate()
+{
+    CCDirector* pDirector = CCDirector::sharedDirector();
+    pDirector->getTouchDispatcher()->removeDelegate(this);
+}
+
 bool JSTouchDelegate::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
     CC_UNUSED_PARAM(pTouch); 
     CC_UNUSED_PARAM(pEvent); 
@@ -31,7 +63,10 @@ bool JSTouchDelegate::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
     bool bRet = false;
     //JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
     //JS_AddValueRoot(cx, &retval);
-    
+    js_proxy_t* p = NULL;
+    JS_GET_NATIVE_PROXY(p, _mObj);
+    CCAssert(p, "js object has been unrooted.");
+
     ScriptingCore::getInstance()->executeCustomTouchEvent(CCTOUCHBEGAN, 
         pTouch, _mObj, retval);
     if(JSVAL_IS_BOOLEAN(retval)) {
@@ -46,7 +81,12 @@ bool JSTouchDelegate::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
 void JSTouchDelegate::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent) {
     CC_UNUSED_PARAM(pTouch); 
     CC_UNUSED_PARAM(pEvent);
+
     //jsval retval;
+    js_proxy_t* p = NULL;
+    JS_GET_NATIVE_PROXY(p, _mObj);
+    CCAssert(p, "js object has been unrooted.");
+
     ScriptingCore::getInstance()->executeCustomTouchEvent(CCTOUCHMOVED, 
         pTouch, _mObj);
 }
@@ -55,6 +95,10 @@ void JSTouchDelegate::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent) {
     CC_UNUSED_PARAM(pTouch); 
     CC_UNUSED_PARAM(pEvent);
 
+    js_proxy_t* p = NULL;
+    JS_GET_NATIVE_PROXY(p, _mObj);
+    CCAssert(p, "js object has been unrooted.");
+
     ScriptingCore::getInstance()->executeCustomTouchEvent(CCTOUCHENDED, 
         pTouch, _mObj);
 }
@@ -62,6 +106,10 @@ void JSTouchDelegate::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent) {
 void JSTouchDelegate::ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent) {
     CC_UNUSED_PARAM(pTouch); 
     CC_UNUSED_PARAM(pEvent);
+    js_proxy_t* p = NULL;
+    JS_GET_NATIVE_PROXY(p, _mObj);
+    CCAssert(p, "js object has been unrooted.");
+
     ScriptingCore::getInstance()->executeCustomTouchEvent(CCTOUCHCANCELLED, 
         pTouch, _mObj);
 }
@@ -606,14 +654,17 @@ JSBool js_cocos2dx_JSTouchDelegate_registerStandardDelegate(JSContext *cx, uint3
 {
 	if (argc >= 1) {
 		jsval *argv = JS_ARGV(cx, vp);
-        
+        JSObject* jsobj = NULL;
+
         JSTouchDelegate *touch = new JSTouchDelegate();
         touch->autorelease();
         touch->registerStandardDelegate();
-        touch->setJSObject((argc == 1 ? JSVAL_TO_OBJECT(argv[0]) : JSVAL_TO_OBJECT(JSVAL_VOID)));
-        
+        jsobj = (argc == 1 ? JSVAL_TO_OBJECT(argv[0]) : JSVAL_TO_OBJECT(JSVAL_VOID));
+        touch->setJSObject(jsobj);
+        JSTouchDelegate::setDelegateForJSObject(jsobj, touch);
 		return JS_TRUE;
 	}
+    JS_ReportError(cx, "wrong number of arguments: %d, was expecting >= 1", argc);
 	return JS_FALSE;
 }
 
@@ -621,18 +672,39 @@ JSBool js_cocos2dx_JSTouchDelegate_registerTargettedDelegate(JSContext *cx, uint
 {
 	if (argc >= 1) {
 		jsval *argv = JS_ARGV(cx, vp);
-        
+        JSObject* jsobj = NULL;
+
         JSTouchDelegate *touch = new JSTouchDelegate();
         touch->autorelease();
         touch->registerTargettedDelegate((argc >= 1 ? JSVAL_TO_INT(argv[0]) : 0), (argc >= 2 ? JSVAL_TO_BOOLEAN(argv[1]) : true));
-        touch->setJSObject((argc == 3 ? JSVAL_TO_OBJECT(argv[2]) : JSVAL_TO_OBJECT(JSVAL_VOID)));
         
+        jsobj = (argc == 3 ? JSVAL_TO_OBJECT(argv[2]) : JSVAL_TO_OBJECT(JSVAL_VOID));
+        touch->setJSObject(jsobj);
+        JSTouchDelegate::setDelegateForJSObject(jsobj, touch);
+
 		return JS_TRUE;
 	}
+    JS_ReportError(cx, "wrong number of arguments: %d, was expecting >=1", argc);
 	return JS_FALSE;
 }
 
-
+JSBool js_cocos2dx_JSTouchDelegate_unregisterTouchDelegate(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    if (argc == 1) {
+        jsval *argv = JS_ARGV(cx, vp);
+        JSObject* jsobj = JSVAL_TO_OBJECT(argv[0]);
+        JSTouchDelegate* pDelegate = JSTouchDelegate::getDelegateForJSObject(jsobj);
+        if (pDelegate)
+        {
+            pDelegate->unregisterTouchDelegate();
+            JSTouchDelegate::removeDelegateForJSObject(jsobj);
+        }
+        
+        return JS_TRUE;
+    }
+    JS_ReportError(cx, "wrong number of arguments: %d, was expecting %d", argc, 1);
+    return JS_FALSE;
+}
 
 JSBool js_cocos2dx_swap_native_object(JSContext *cx, uint32_t argc, jsval *vp)
 {
@@ -948,7 +1020,7 @@ void JSScheduleWrapper::dump()
         CCObject* pObj = NULL;
         CCARRAY_FOREACH(current->targets, pObj)
         {
-            CCLOGINFO("native %s ( %p ), target[%d]=( %p )", typeid(*current->nativeObj).name(), current->nativeObj, nativeTargetsCount, pObj);
+            CCLOG("native %s ( %p ), target[%d]=( %p )", typeid(*current->nativeObj).name(), current->nativeObj, nativeTargetsCount, pObj);
             nativeTargetsCount++;
         }
     }
@@ -961,18 +1033,20 @@ void JSScheduleWrapper::dump()
         CCObject* pObj = NULL;
         CCARRAY_FOREACH(current_func->targets, pObj)
         {
-            CCLOGINFO("jsfunc ( %p ), target[%d]=( %p )", current_func->jsfuncObj, jsfuncTargetCount, pObj);
+            CCLOG("jsfunc ( %p ), target[%d]=( %p )", current_func->jsfuncObj, jsfuncTargetCount, pObj);
             jsfuncTargetCount++;
         }
     }
     CCAssert(nativeTargetsCount == jsfuncTargetCount, "");
-    CCLOGINFO("\n---------JSScheduleWrapper dump end--------------\n");
+    CCLOG("\n---------JSScheduleWrapper dump end--------------\n");
 #endif
 }
 
 void JSScheduleWrapper::scheduleFunc(float dt) const
 {
-    jsval retval = JSVAL_NULL, data = DOUBLE_TO_JSVAL(dt);
+    jsval retval = JSVAL_NULL;
+    jsval data = DOUBLE_TO_JSVAL(dt);
+
     JSContext *cx = ScriptingCore::getInstance()->getGlobalContext();
 
     JSBool ok = JS_AddValueRoot(cx, &data);
@@ -980,6 +1054,14 @@ void JSScheduleWrapper::scheduleFunc(float dt) const
         return;
     }
 
+    js_proxy_t* p = NULL;
+    JS_GET_NATIVE_PROXY(p, jsThisObj);
+    CCAssert(p, "");
+    CCObject* pobj = (CCObject*)p->ptr;
+    std::string str = "scheduleFunc: ";
+    str += typeid(*pobj).name();
+    ScriptingCore::forceGC(cx, 0, NULL);
+    //CCLOG(str.c_str());
     if(!jsCallback.isNullOrUndefined() || !jsThisObj.isNullOrUndefined()) {
         JSAutoCompartment ac(cx, JSVAL_TO_OBJECT(jsThisObj));
         JS_CallFunctionValue(cx, JSVAL_TO_OBJECT(jsThisObj), jsCallback, 1, &data, &retval);
@@ -1091,6 +1173,7 @@ JSBool js_cocos2dx_CCScheduler_unscheduleAllSelectorsForTarget(JSContext *cx, ui
                     arg0->getScheduler()->unscheduleAllForTarget(arr->objectAtIndex(i));
                 }
             }
+            JSScheduleWrapper::removeAllTargetsForNatiaveNode(arg0);
 
 		} while (0);
         
@@ -1150,15 +1233,27 @@ JSBool js_CCNode_scheduleOnce(JSContext *cx, uint32_t argc, jsval *vp)
             JSScheduleWrapper::setTargetForSchedule(argv[0], tmpCobj);
             JSScheduleWrapper::setTargetForNativeNode(node, tmpCobj);
         }
-
+        if (dynamic_cast<CCLayer*>(node))
+        {
+            int a = 0;
+            a = 0;
+        }
+         tmpCobj->m_name = "js_CCNode_scheduleOnce";
         if(argc == 1) {
             sched->scheduleSelector(schedule_selector(JSScheduleWrapper::scheduleFunc), tmpCobj, 0, 0, 0.0f, !node->isRunning());
         } else {
             sched->scheduleSelector(schedule_selector(JSScheduleWrapper::scheduleFunc), tmpCobj, 0, 0, delay, !node->isRunning());
         }
 
-        jsb_set_reserved_slot(proxy->obj, 0, argv[0]);
-
+        JSBool bRet = JS_FALSE;
+        JSObject* pHostObj = proxy->obj;
+        bRet = jsb_set_reserved_slot(proxy->obj, 0, argv[0]);
+        while (!bRet)
+        {
+            pHostObj = JS_GetPrototype(pHostObj);
+            bRet = jsb_set_reserved_slot(pHostObj, 0, argv[0]);
+        }
+        
         JS_SET_RVAL(cx, vp, JSVAL_VOID);
     }
     return JS_TRUE;
@@ -1176,7 +1271,11 @@ JSBool js_CCNode_schedule(JSContext *cx, uint32_t argc, jsval *vp)
 		JS_GET_NATIVE_PROXY(proxy, obj);
 		cocos2d::CCNode *node = (cocos2d::CCNode *)(proxy ? proxy->ptr : NULL);
         CCScheduler *sched = node->getScheduler();
-
+        if (dynamic_cast<CCLayer*>(node))
+        {
+            int a = 0;
+            a = 0;
+        }
         js_proxy_t *p = js_get_or_create_proxy<cocos2d::CCScheduler>(cx, sched);        
 
         JSScheduleWrapper *tmpCobj = NULL;
@@ -1229,7 +1328,7 @@ JSBool js_CCNode_schedule(JSContext *cx, uint32_t argc, jsval *vp)
             JSScheduleWrapper::setTargetForSchedule(argv[0], tmpCobj);        
             JSScheduleWrapper::setTargetForNativeNode(node, tmpCobj);
         }
-        
+        tmpCobj->m_name = "js_CCNode_schedule";
         if(argc == 1) {
             sched->scheduleSelector(schedule_selector(JSScheduleWrapper::scheduleFunc), tmpCobj, 0, !node->isRunning());
         } if(argc == 2) {
@@ -1266,6 +1365,11 @@ JSBool js_CCScheduler_schedule(JSContext *cx, uint32_t argc, jsval *vp)
         JS_GET_NATIVE_PROXY(proxy, tmpObj);
         node = (cocos2d::CCNode*)(proxy ? proxy->ptr : NULL);
         TEST_NATIVE_OBJECT(cx, node)
+        if (dynamic_cast<CCLayer*>(node))
+        {
+            int a = 0;
+            a = 0;
+        }
         
     	double interval = 0;
         if( argc >= 3 ) {
@@ -1322,7 +1426,7 @@ JSBool js_CCScheduler_schedule(JSContext *cx, uint32_t argc, jsval *vp)
             JSScheduleWrapper::setTargetForSchedule(argv[1], tmpCobj);
             JSScheduleWrapper::setTargetForNativeNode(node, tmpCobj);
         }
-        
+        tmpCobj->m_name = "js_CCScheduler_schedule";
         sched->scheduleSelector(schedule_selector(JSScheduleWrapper::scheduleFunc), tmpCobj, interval, repeat, delay, paused);
 
         JS_SET_RVAL(cx, vp, JSVAL_VOID);
@@ -2437,6 +2541,7 @@ void register_cocos2dx_js_extensions(JSContext* cx, JSObject* global)
 
 	JS_DefineFunction(cx, ns, "registerTargettedDelegate", js_cocos2dx_JSTouchDelegate_registerTargettedDelegate, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 	JS_DefineFunction(cx, ns, "registerStandardDelegate", js_cocos2dx_JSTouchDelegate_registerStandardDelegate, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "unregisterTouchDelegate", js_cocos2dx_JSTouchDelegate_unregisterTouchDelegate, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.CallFunc; })()"));
 	JS_DefineFunction(cx, tmpObj, "create", js_callFunc, 1, JSPROP_READONLY | JSPROP_PERMANENT);
