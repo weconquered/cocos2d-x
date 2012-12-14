@@ -85,8 +85,8 @@ void register_cocos2dx_js_extensions(JSContext* cx, JSObject* obj);
 
 class JSCallbackWrapper: public CCObject {
 public:
-    JSCallbackWrapper() : jsCallback(JSVAL_VOID), jsThisObj(JSVAL_VOID), extraData(JSVAL_VOID) {}
-    virtual ~JSCallbackWrapper(void) {}
+    JSCallbackWrapper();
+    virtual ~JSCallbackWrapper();
     void setJSCallbackFunc(jsval obj);
     void setJSCallbackThis(jsval thisObj);
     void setJSExtraData(jsval data);

@@ -776,9 +776,22 @@ JSBool js_platform(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_TRUE;
 }
 
+JSCallbackWrapper::JSCallbackWrapper()
+: jsCallback(JSVAL_VOID), jsThisObj(JSVAL_VOID), extraData(JSVAL_VOID)
+{
+
+}
+
+JSCallbackWrapper::~JSCallbackWrapper()
+{
+    JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+    JS_RemoveValueRoot(cx, &jsCallback);
+}
 
 void JSCallbackWrapper::setJSCallbackFunc(jsval func) {
     jsCallback = func;
+    JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+    JS_AddNamedValueRoot(cx, &jsCallback, "JSCallbackWrapper_callback_func");
 }
 
 void JSCallbackWrapper::setJSCallbackThis(jsval thisObj) {
@@ -1057,8 +1070,8 @@ void JSScheduleWrapper::removeTargetForNativeNode(CCNode* pNode, JSScheduleWrapp
 
 void JSScheduleWrapper::dump()
 {
-#if COCOS2D_DEBUG >= 1
-    CCLOGINFO("\n---------JSScheduleWrapper dump begin--------------\n");
+#if COCOS2D_DEBUG > 1
+    CCLOG("\n---------JSScheduleWrapper dump begin--------------\n");
     schedTarget_proxy_t *current, *tmp;
     int nativeTargetsCount = 0;
     HASH_ITER(hh, _schedTarget_native_ht, current, tmp) {
@@ -1070,7 +1083,7 @@ void JSScheduleWrapper::dump()
         }
     }
 
-    CCLOGINFO("\n-----------------------------\n");
+    CCLOG("\n-----------------------------\n");
 
     schedFunc_proxy_t *current_func, *tmp_func;
     int jsfuncTargetCount = 0;
@@ -1140,7 +1153,7 @@ JSBool js_CCNode_unschedule(JSContext *cx, uint32_t argc, jsval *vp)
         CCScheduler *sched = node->getScheduler();
         
         CCArray* targetArray = JSScheduleWrapper::getTargetForSchedule(argv[0]);
-        CCLOG("unschedule target number: %d", targetArray->count());
+        CCLOGINFO("unschedule target number: %d", targetArray->count());
         CCObject* tmp = NULL;
         CCARRAY_FOREACH(targetArray, tmp)
         {
@@ -1291,14 +1304,14 @@ JSBool js_CCNode_scheduleOnce(JSContext *cx, uint32_t argc, jsval *vp)
             sched->scheduleSelector(schedule_selector(JSScheduleWrapper::scheduleFunc), tmpCobj, 0, 0, delay, !node->isRunning());
         }
 
-        JSBool bRet = JS_FALSE;
-        JSObject* pHostObj = proxy->obj;
-        bRet = jsb_set_reserved_slot(proxy->obj, 0, argv[0]);
-        while (!bRet)
-        {
-            pHostObj = JS_GetPrototype(pHostObj);
-            bRet = jsb_set_reserved_slot(pHostObj, 0, argv[0]);
-        }
+//         JSBool bRet = JS_FALSE;
+//         JSObject* pHostObj = proxy->obj;
+//         bRet = jsb_set_reserved_slot(proxy->obj, 0, argv[0]);
+//         while (!bRet)
+//         {
+//             pHostObj = JS_GetPrototype(pHostObj);
+//             bRet = jsb_set_reserved_slot(pHostObj, 0, argv[0]);
+//         }
         
         JS_SET_RVAL(cx, vp, JSVAL_VOID);
     }
@@ -1385,7 +1398,7 @@ JSBool js_CCNode_schedule(JSContext *cx, uint32_t argc, jsval *vp)
             sched->scheduleSelector(schedule_selector(JSScheduleWrapper::scheduleFunc), tmpCobj, interval, (unsigned int)repeat, delay, !node->isRunning());
         }
         
-        jsb_set_reserved_slot(proxy->obj, 0, argv[0]);
+        //jsb_set_reserved_slot(proxy->obj, 0, argv[0]);
 
         JS_SET_RVAL(cx, vp, JSVAL_VOID);
     }
@@ -1579,6 +1592,23 @@ JSBool js_cocos2dx_release(JSContext *cx, uint32_t argc, jsval *vp)
 		}
 	}
 	return JS_FALSE;
+}
+
+JSBool js_cocos2dx_setReused(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JSObject *thisObj = JS_THIS_OBJECT(cx, vp);
+    jsval *argv = JS_ARGV(cx, vp);
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
+    if (thisObj) {
+        js_proxy_t *proxy;
+        JS_GET_NATIVE_PROXY(proxy, thisObj);
+        if (proxy) {
+            bool bReused = JSVAL_TO_BOOLEAN(argv[0]);
+            ((CCNode *)proxy->ptr)->__setReused(bReused);
+            return JS_TRUE;
+        }
+    }
+    return JS_FALSE;
 }
 
 JSBool js_cocos2dx_CCSet_constructor(JSContext *cx, uint32_t argc, jsval *vp)
@@ -2534,7 +2564,8 @@ void register_cocos2dx_js_extensions(JSContext* cx, JSObject* global)
         
 	JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "retain", js_cocos2dx_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 	JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "release", js_cocos2dx_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-    
+    JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "__setReused", js_cocos2dx_setReused, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+
     JS_DefineFunction(cx, js_cocos2dx_CCSprite_prototype, "setBlendFunc", js_cocos2dx_CCSprite_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
     JS_DefineFunction(cx, js_cocos2dx_CCSpriteBatchNode_prototype, "setBlendFunc", js_cocos2dx_CCSpriteBatchNode_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
     //JS_DefineFunction(cx, js_cocos2dx_CCMotionStreak_prototype, "setBlendFunc", js_cocos2dx_CCMotionStreak_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
