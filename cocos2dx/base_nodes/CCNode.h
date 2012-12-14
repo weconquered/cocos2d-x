@@ -210,10 +210,11 @@ protected:
 
     // script type, lua or javascript
     ccScriptType m_eScriptType;
-
-public:
-    // getter & setter
     
+public:
+    
+    // getter & setter
+    void __setReused(bool bReused);
     /** The z order of the node relative to it's "brothers": children of the same parent */
     virtual int getZOrder();
     virtual void setZOrder(int nZOrder);

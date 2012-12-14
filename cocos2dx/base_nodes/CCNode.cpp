@@ -157,6 +157,11 @@ void CCNode::setSkewY(float newSkewY)
     m_bTransformDirty = m_bInverseDirty = true;
 }
 
+void CCNode::__setReused(bool bReused)
+{
+    m_bReused = bReused;
+}
+
 /// zOrder getter
 int CCNode::getZOrder()
 {
@@ -720,7 +725,7 @@ void CCNode::detachChild(CCNode *child, bool doCleanup)
 
     // set parent nil at the end
     child->setParent(NULL);
-
+    CCAssert(!child->m_bReused, "");
     m_pChildren->removeObject(child);
 }
 

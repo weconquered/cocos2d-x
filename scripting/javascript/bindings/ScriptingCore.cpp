@@ -417,7 +417,7 @@ void ScriptingCore::createGlobalContext() {
     JS_SetOptions(this->cx_, JS_GetOptions(this->cx_) & ~JSOPTION_METHODJIT_ALWAYS);
     JS_SetErrorReporter(this->cx_, ScriptingCore::reportError);
 #if defined(JS_GC_ZEAL) && defined(DEBUG)
-   // JS_SetGCZeal(this->cx_, 2, JS_DEFAULT_ZEAL_FREQ);
+    JS_SetGCZeal(this->cx_, 2, JS_DEFAULT_ZEAL_FREQ);
 #endif
     this->global_ = NewGlobalObject(cx_);
     for (std::vector<sc_register_sth>::iterator it = registrationList.begin(); it != registrationList.end(); it++) {
@@ -515,6 +515,7 @@ JSBool ScriptingCore::log(JSContext* cx, uint32_t argc, jsval *vp)
 
 JSBool ScriptingCore::dumpProxyTable(JSContext *cx, uint32_t argc, jsval *vp)
 {
+#if COCOS2D_DEBUG > 1
     js_proxy_t *current, *tmp;
     CCLOG("---------\n_js_native_global_ht----------------\n");
     HASH_ITER(hh, _js_native_global_ht, current, tmp) {
@@ -525,6 +526,7 @@ JSBool ScriptingCore::dumpProxyTable(JSContext *cx, uint32_t argc, jsval *vp)
         CCLOG("JS,dumpProxy: jsobj( %p ), native( %s )", current->obj, typeid(*((CCObject*)current->ptr)).name());
     }
     CCLOG("---------------end --------------\n");
+#endif
     return JS_TRUE;
 }
 
@@ -535,6 +537,7 @@ void ScriptingCore::removeScriptObjectByCCObject(CCObject* pObj)
     void *ptr = (void*)pObj;
     JS_GET_PROXY(nproxy, ptr);
     if (nproxy) {
+        CCAssert(!pObj->m_bReused, "");
         JSContext *cx = ScriptingCore::getInstance()->getGlobalContext();
         JS_GET_NATIVE_PROXY(jsproxy, nproxy->obj);
         JS_RemoveObjectRoot(cx, &jsproxy->obj);
