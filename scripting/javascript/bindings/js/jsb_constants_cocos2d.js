@@ -60,7 +60,7 @@ cc.WHITE = {r:255, g:255, b:255};
 cc.POINT_ZERO = {x:0, y:0};
 
 // XXX: This definition is different than cocos2d-html5
-cc.REPEAT_FOREVER = - 1;
+cc.REPEAT_FOREVER = 0xffffffff;
 
 
 cc.MENU_STATE_WAITING = 0;
