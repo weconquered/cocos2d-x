@@ -518,7 +518,12 @@ cc.Class.extend = function (prop) {
     return Class;
 };
 
-cc.Node.prototype.ctor = function() {};
+var __jsb_id_accum = 0;
+cc.Node.prototype._jsb_id = 0;
+cc.Node.prototype.ctor = function() {
+    this._jsb_id = __jsb_id_accum++;
+};
+
 cc.Node.extend = cc.Class.extend;
 cc.Layer.extend = cc.Class.extend;
 cc.LayerGradient.extend = cc.Class.extend;
