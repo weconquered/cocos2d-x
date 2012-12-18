@@ -1,136 +1,159 @@
-/****************************************************************************
- Copyright (c) 2012 cocos2d-x.org
- 
- http://www.cocos2d-x.org
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- ****************************************************************************/
+/*************************************************************/
+/*                           MD2.H                           */
+/*                                                           */
+/* Purpose: Definitions for CMd2, a class to load, render and*/
+/*          animate id Software's .md2 file format.  Also    */
+/*          contains all nessasary data structures for MD2   */
+/*      Evan Pipho (evan@codershq.com)                       */
+/*                                                           */
+/*************************************************************/
+#ifndef MD2_H
+#define MD2_h
 
-#ifndef __3D_MODEL_MD2_H__
-#define __3D_MODEL_MD2_H__
-
-#include "platform/CCPlatformMacros.h"
-#include "base_nodes/CCNode.h"
-#include "textures/CCTexture2D.h"
+//-------------------------------------------------------------
+//                       INCLUDES                             -
+//-------------------------------------------------------------
+#include "image.h"
+#include "model.h"
 
 NS_CC_BEGIN
 
-#ifdef _MSC_VER
-#pragma pack(push,1)
-#define PACK_STRUCT
-#else
-#define PACK_STRUCT	__attribute__((packed))
-#endif
-
-/* MD2 files are stored in little-endian form.
- */
-
-typedef struct
+//-------------------------------------------------------------
+//- SMD2Header
+//- Header for all Md2 files, 
+struct SMD2Header
 {
-    int magicNum;       // magic number, should be 844121161
-    int versionNum;     // version number, should be 8
-    int skinWidth;      // texture width
-    int skinHeight;     // texture height
-    int frameSize;      // keyframe size in bytes
-    int numSkins;       // the number of textures
-    int numVertices;    // the number of vertices per frame
-    int numTexcoords;   // the number of texture coordinates
-    int numTriangles;   // the number of triangles
-    // the number of special commands that can be used to optimize the MD2's
-    // mesh into trianbles fans and strips for the renderer
-    int numGLCommands;
-    int numFrames;          // the number of frames
-    int offsetSkins;        // offset in bytes of textures in file
-    int offsetTexcoords;    // offset in bytes of texture coordinates in file
-    int offsetTriangles;    // offset in bytes of triangles in file
-    int offsetFrames;       // offset in bytes of frames in file
-    int offsetGLCommands;   // offset in bytes of OpenGL commands in file
-    int offsetEnd;          // file size from the header to the end of the file in bytes
-} PACK_STRUCT MD2Header;
+   int m_iMagicNum; //Always IDP2 (844121161)
+   int m_iVersion;  //8
+   int m_iSkinWidthPx;  
+   int m_iSkinHeightPx; 
+   int m_iFrameSize; 
+   int m_iNumSkins; 
+   int m_iNumVertices; 
+   int m_iNumTexCoords; 
+   int m_iNumTriangles; 
+   int m_iNumGLCommands; 
+   int m_iNumFrames; 
+   int m_iOffsetSkins; 
+   int m_iOffsetTexCoords; 
+   int m_iOffsetTriangles; 
+   int m_iOffsetFrames; 
+   int m_iOffsetGlCommands; 
+   int m_iFileSize; 
+};
 
-typedef struct
+//-------------------------------------------------------------
+//- SMD2Vert
+//- Vertex structure for MD2
+struct SMD2Vert
 {
-    unsigned char vertex[3];    // the value are compressed, should be recompress them when parsing
-    unsigned char lightNormalIndex;
-} PACK_STRUCT MD2Vert;
+	float m_fVert[3];
+	unsigned char m_ucReserved;
+};
 
-typedef struct
+
+//-------------------------------------------------------------
+//- SMD2Frame
+//- Frame information for the model file 
+struct SMD2Frame
 {
-    short s;
-    short t;
-} PACK_STRUCT MD2Texcoord;
+	float m_fScale[3];
+	float m_fTrans[3];
+	char m_caName[16];
+	SMD2Vert * m_pVerts;
 
-typedef struct
+	//Cleans up after itself
+	SMD2Frame()
+	{
+		m_pVerts = 0;
+	}
+
+	~SMD2Frame()
+	{
+		if(m_pVerts)
+			delete [] m_pVerts;
+	}
+};
+
+//-------------------------------------------------------------
+//- SMD2Tri
+//- Triangle information for the MD2
+struct SMD2Tri
 {
-    char skin[64];
-} PACK_STRUCT MD2Skin;
+	unsigned short m_sVertIndices[3];
+	unsigned short m_sTexIndices[3];
+};
 
-typedef struct
+//-------------------------------------------------------------
+//- SMD2TexCoord
+//- Texture coord information for the MD2
+struct SMD2TexCoord
 {
-    unsigned short vertIndices[3];  // vertex indices
-    unsigned short texIndices[3];   // texture coordinate indices
-} PACK_STRUCT MD2Mesh;
+	float m_fTex[2];
+};
 
-typedef struct
+//-------------------------------------------------------------
+//- SMD2Skin
+//- Name of a single skin in the md2 file
+struct SMD2Skin
 {
-    float   scale[3];      // scale factor
-    float   translate[3];  // translation vector
-    char    name[16];      // frame name
-    MD2Vert verts[1];        // list of frame's vertices
-} PACK_STRUCT MD2Frame;
+	char m_caSkin[64];	//filename
+	CImage m_Image;		//Image file ready for texturing
+};
 
-#ifdef _MSC_VER
-#pack(pop)
-#endif
-
-#undef PACK_STRUCT
-
-class CC_DLL MD2Model : public CCNode
+//-------------------------------------------------------------
+//                        CTIMER                              -
+// author: Evan Pipho (evan@codershq.com)                     -
+// date  : Jul 10, 2002                                       -
+//-------------------------------------------------------------
+class CC_DLL CMd2 : public CModel
 {
 public:
-    static MD2Model* create(const char *MD2FileName, const char *textureFileName);
-    
-    MD2Model();
-    virtual ~MD2Model();
-    
-    void draw();
-    
+
+	//Set skin to one of the files specified in the md2 files itself
+	void SetSkin(unsigned int uiSkin);
+	//Set skin to a different image
+	void SetSkin(CImage& skin);
+
+	//Load the file
+	bool Load(const char * szFilename);
+	
+	//Render file at the initial position
+	void Render();
+	//Render the file at a certain frame
+	void Render(unsigned int uiFrame);
+
+	//Animate the md2 model (start and end frames of 0 and 0 will loop through the WHOLE model
+	void Animate(float fSpeed = 30.0f, unsigned int uiStartFrame = 0, unsigned int uiEndFrame = 0, bool bLoop = true);
+
+	//constructors/destructo
+	CMd2();
+	CMd2(const char * szFile);
+	~CMd2();
+
 private:
-    bool loadMD2File(const char *MD2FileName, const char *textureFileName);
-    
-private:
-    MD2Header *m_pHeader;
-    MD2Mesh *m_pMeshes;
-    MD2Texcoord *m_pTexcoords;
-    MD2Vert *m_pVerts;
-    CCTexture2D *m_pTexture;
-    
-    int m_nCurrentFrame;
-    int m_nNextFrame;
-    
-    // percent through current frame
-    float m_fInterpol;
-    
-    float *m_pVertices;
-    float *m_pUV;
+	
+	//file header information
+	SMD2Header m_Head; 
+	//Frame information
+	SMD2Frame * m_pFrames;
+	//Triangles
+	SMD2Tri * m_pTriangles;
+	//Texure coords
+	SMD2TexCoord * m_pTexCoords;
+	//Skin files
+	SMD2Skin * m_pSkins;
+	//Interpolated vertices
+	SMD2Vert * m_pVerts;
+	//Current skin
+	unsigned int m_uiSkin;
+	//Using a custom skin?
+	bool m_bIsCustomSkin;
+	//The custom skin
+	CImage * m_pCustSkin;
+
 };
 
 NS_CC_END
 
-#endif // __3D_MODEL_MD2_H__
+#endif //MD2_H

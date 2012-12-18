@@ -94,6 +94,9 @@
     <Filter Include="draw_nodes">
       <UniqueIdentifier>{1179d205-d065-49f0-8457-bc4c3f1d0cb3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3d_model_support">
+      <UniqueIdentifier>{e1da6de7-49b8-454a-9e74-13717ef1b128}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\base_nodes\CCAtlasNode.cpp">
@@ -436,6 +439,12 @@
     </ClCompile>
     <ClCompile Include="..\shaders\CCGLProgram.cpp">
       <Filter>shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3d_model_support\image.cpp">
+      <Filter>3d_model_support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3d_model_support\md2.cpp">
+      <Filter>3d_model_support</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -886,6 +895,15 @@
     </ClInclude>
     <ClInclude Include="..\shaders\CCGLProgram.h">
       <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3d_model_support\image.h">
+      <Filter>3d_model_support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3d_model_support\md2.h">
+      <Filter>3d_model_support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3d_model_support\model.h">
+      <Filter>3d_model_support</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

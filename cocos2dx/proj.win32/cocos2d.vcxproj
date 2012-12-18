@@ -127,6 +127,8 @@ xcopy /Y /Q "$(ProjectDir)..\platform\third_party\win32\libraries\*.*" "$(OutDir
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\3d_model_support\image.cpp" />
+    <ClCompile Include="..\3d_model_support\md2.cpp" />
     <ClCompile Include="..\base_nodes\CCAtlasNode.cpp" />
     <ClCompile Include="..\base_nodes\CCNode.cpp" />
     <ClCompile Include="..\cocoa\CCAffineTransform.cpp" />
@@ -246,6 +248,9 @@ xcopy /Y /Q "$(ProjectDir)..\platform\third_party\win32\libraries\*.*" "$(OutDir
     <ClCompile Include="..\cocos2d.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\3d_model_support\image.h" />
+    <ClInclude Include="..\3d_model_support\md2.h" />
+    <ClInclude Include="..\3d_model_support\model.h" />
     <ClInclude Include="..\base_nodes\CCAtlasNode.h" />
     <ClInclude Include="..\base_nodes\CCNode.h" />
     <ClInclude Include="..\cocoa\CCAffineTransform.h" />

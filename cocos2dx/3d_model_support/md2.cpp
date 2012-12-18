@@ -1,215 +1,427 @@
-/****************************************************************************
- Copyright (c) 2012 cocos2d-x.org
- 
- http://www.cocos2d-x.org
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- ****************************************************************************/
-
+/*************************************************************/
+/*                          MD2.CPP                          */
+/*                                                           */
+/* Purpose: Implementation for loader and animator of MD2    */
+/*          3d models.                                       */
+/*      Evan Pipho (evan@codershq.com)                       */
+/*                                                           */
+/*************************************************************/
+//-------------------------------------------------------------
+//                       INCLUDES                             -
+//-------------------------------------------------------------
 #include "md2.h"
-#include "platform/CCFileUtils.h"
-#include "textures/CCTextureCache.h"
-#include "shaders/CCShaderCache.h"
-
-#define MD2_MAGIC_NUM   844121161
-#define MD2_VERSION     8
+#include <cstdio>
+#include <memory.h>
+#include <string.h>
+#include "platform/CCCommon.h"
+#include "shaders/CCGLProgram.h"
+#include "shaders/ccGLStateCache.h"
 
 NS_CC_BEGIN
-
-MD2Model* MD2Model::create(const char *MD2FileName, const char *textureFileName)
+//-------------------------------------------------------------
+//- Load
+//- Loads an MD2 model from file
+//-------------------------------------------------------------
+bool CMd2::Load(const char * szFilename)
 {
-    MD2Model *model = new MD2Model();
-    
-    if (model && model->loadMD2File(MD2FileName, textureFileName))
-    {
-        model->autorelease();
-    }
-    else
-    {
-        CC_SAFE_DELETE(model);
-    }
-    
-    return model;
+	unsigned char * ucpBuffer = 0;
+	unsigned char * ucpPtr = 0;
+	unsigned char * ucpTmpPtr = 0; 
+	int iFileSize = 0;
+	FILE * f;
+	
+	if(!(f = fopen(szFilename, "rb")))
+	{
+		CCLOG( "Could not open MD2 file %s", szFilename);
+		return false;
+	}
+
+	//check file size and read it all into the buffer
+	int iStart = ftell(f);
+	fseek(f, 0, SEEK_END);
+	int iEnd = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	iFileSize = iEnd - iStart;
+
+	//Allocate memory for whole file
+	ucpBuffer = new unsigned char[iFileSize];
+	ucpPtr = ucpBuffer;
+
+	if(!ucpBuffer)
+	{
+		CCLOG( "Could not allocate memory for %s", szFilename);
+		return false;
+	}
+
+	//Load file into buffer
+	if(fread(ucpBuffer, 1, iFileSize, f) != (unsigned)iFileSize)
+	{
+		CCLOG( "Could not read from %s", szFilename);
+		delete [] ucpBuffer;
+		return false;
+	}
+
+	//close the file, we don't need it anymore
+	fclose(f);
+
+	//get the header
+	memcpy(&m_Head, ucpPtr, sizeof(SMD2Header));
+
+	//make sure it is a valid MD2 file before we get going
+	if(m_Head.m_iMagicNum != 844121161 || m_Head.m_iVersion != 8)
+	{
+		CCLOG( "%s is not a valid MD2 file", szFilename);
+		delete [] ucpBuffer;
+		return false;
+	}
+	
+	ucpTmpPtr = ucpPtr;
+	ucpTmpPtr += m_Head.m_iOffsetFrames;
+
+	//read the frames
+	m_pFrames = new SMD2Frame[m_Head.m_iNumFrames];
+	
+	for(int i = 0; i < m_Head.m_iNumFrames; i++)
+	{
+		float fScale[3];
+		float fTrans[3];
+		m_pFrames[i].m_pVerts = new SMD2Vert[m_Head.m_iNumVertices];
+		//expand the verices
+		memcpy(fScale, ucpTmpPtr, 12);
+		memcpy(fTrans, ucpTmpPtr + 12, 12);
+		memcpy(m_pFrames[i].m_caName, ucpTmpPtr + 24, 16);
+		ucpTmpPtr += 40;
+		for(int j = 0; j < m_Head.m_iNumVertices; j++)
+		{
+			//swap y and z coords to convert to the proper orientation on screen
+			m_pFrames[i].m_pVerts[j].m_fVert[0] = ucpTmpPtr[0] * fScale[0] + fTrans[0];
+			m_pFrames[i].m_pVerts[j].m_fVert[1] = ucpTmpPtr[2] * fScale[2] + fTrans[2];
+			m_pFrames[i].m_pVerts[j].m_fVert[2] = ucpTmpPtr[1] * fScale[1] + fTrans[1];
+			m_pFrames[i].m_pVerts[j].m_ucReserved = ucpTmpPtr[3];
+			ucpTmpPtr += 4;
+		}
+		
+	}
+
+	//Read in the triangles
+	ucpTmpPtr = ucpPtr;
+	ucpTmpPtr += m_Head.m_iOffsetTriangles;
+	m_pTriangles = new SMD2Tri[m_Head.m_iNumTriangles];
+	memcpy(m_pTriangles, ucpTmpPtr, 12 * m_Head.m_iNumTriangles);
+
+	//Read the U/V texture coords
+	ucpTmpPtr = ucpPtr;
+	ucpTmpPtr += m_Head.m_iOffsetTexCoords;
+	m_pTexCoords = new SMD2TexCoord[m_Head.m_iNumTexCoords];
+	
+	short * sTexCoords = new short[m_Head.m_iNumTexCoords * 2];
+	memcpy(sTexCoords, ucpTmpPtr, 4 * m_Head.m_iNumTexCoords);
+
+	for(int i = 0; i < m_Head.m_iNumTexCoords; i++)
+	{
+		m_pTexCoords[i].m_fTex[0] = (float)sTexCoords[2*i] / m_Head.m_iSkinWidthPx;
+		m_pTexCoords[i].m_fTex[1] = (float)sTexCoords[2*i+1] / m_Head.m_iSkinHeightPx;
+	}
+	
+	delete [] sTexCoords;
+
+	//Read the skin filenames
+	ucpTmpPtr = ucpPtr;
+	ucpTmpPtr += m_Head.m_iOffsetSkins;
+	m_pSkins = new SMD2Skin[m_Head.m_iNumSkins];
+	
+	//Load textures
+	for(int i = 0; i < m_Head.m_iNumSkins; i++)
+	{
+		memcpy(m_pSkins[i].m_caSkin, ucpTmpPtr, 64);
+		//hack off the leading parts and just get the filename
+		char * szEnd = strrchr(m_pSkins[i].m_caSkin, '/');
+		
+		if(szEnd)
+		{
+			szEnd++;
+			strcpy(m_pSkins[i].m_caSkin, szEnd);
+		}
+
+		m_pSkins[i].m_Image.Load(m_pSkins[i].m_caSkin);
+		ucpTmpPtr += 64;
+	}
+		
+	delete [] ucpBuffer;
+	return true;
 }
 
-MD2Model::MD2Model()
-: m_pHeader(NULL)
-, m_pMeshes(NULL)
-, m_pTexcoords(NULL)
-, m_pVerts(NULL)
-, m_pTexture(NULL)
-, m_nCurrentFrame(0)
-, m_pUV(NULL)
-, m_pVertices(NULL)
-, m_nNextFrame(1)
+//-------------------------------------------------------------
+//- Render
+//- Renders the model in its initial position (frame 0)
+//-------------------------------------------------------------
+void CMd2::Render()
 {
-    CCGLProgram* program = CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionTexture);
-    setShaderProgram(program);
-}
+	glEnable(GL_TEXTURE_2D);
+	if(!m_bIsCustomSkin)
+		m_pSkins[m_uiSkin].m_Image.Bind();
+	else
+		m_pCustSkin->Bind();
 
-MD2Model::~MD2Model()
-{
-    CC_SAFE_DELETE(m_pHeader);
-    CC_SAFE_DELETE_ARRAY(m_pMeshes);
-    CC_SAFE_DELETE_ARRAY(m_pTexcoords);
-    CC_SAFE_DELETE_ARRAY(m_pVerts);
-    CC_SAFE_RELEASE(m_pTexture);
-}
-
-bool MD2Model::loadMD2File(const char *MD2FileName, const char *textureFileName)
-{
-    bool result = false;
-    unsigned char *buffer = NULL;
-
-    do
-    {
-        unsigned long fileSize;
-        buffer = CCFileUtils::sharedFileUtils()->getFileData(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(MD2FileName), "rb", &fileSize);
-        if (! buffer)
-        {
-            CCLOG("can not read file data from %s", MD2FileName);
-            break;
-        }
-        
-        // get header data
-        m_pHeader = new MD2Header();
-        if (! m_pHeader)
-        {
-            CCLOG("can not allocate memory for header");
-            break;
-        }
-        *m_pHeader = *(MD2Header*)buffer;
-        
-        // check header
-        if (m_pHeader->magicNum != MD2_MAGIC_NUM
-            || m_pHeader->versionNum != MD2_VERSION)
-        {
-            CCLOG("%s is not a valid MD2 file", MD2FileName);
-            break;
-        }
-        
-        // load texture
-        m_pTexture = CCTextureCache::sharedTextureCache()->addImage(textureFileName);
-        if (! m_pTexture)
-        {
-            CCLOG("can not load texture %s", textureFileName);
-            break;
-        }
-        m_pTexture->retain();
-        
-        // alloc memories
-        m_pVerts = new MD2Vert[m_pHeader->numVertices * m_pHeader->numFrames];
-        m_pTexcoords = new MD2Texcoord[m_pHeader->numTexcoords];
-        m_pMeshes = new MD2Mesh[m_pHeader->numTriangles];
-        if (!m_pVerts || !m_pTexcoords || !m_pMeshes)
-        {
-            CCLOG("can not allocate enough memories");
-            break;
-        }
-        
-        // get vertices
-        MD2Frame *frame = NULL;
-        MD2Vert *tmpVert = NULL;
-        for (int i = 0; i < m_pHeader->numFrames; ++i)
-        {
-            frame = (MD2Frame*)&buffer[m_pHeader->offsetFrames + m_pHeader->frameSize*i];
-            tmpVert = (MD2Vert*)&m_pVerts[m_pHeader->numVertices * i];
-            
-            for (int j = 0; j < m_pHeader->numVertices; ++j)
-            {
-                //swap y and z coords to convert to the proper orientation on screen
-                tmpVert[j].vertex[0] = frame->scale[0] * frame->verts[j].vertex[0] + frame->translate[0];
-                tmpVert[j].vertex[2] = frame->scale[1] * frame->verts[j].vertex[1] + frame->translate[1];
-                tmpVert[j].vertex[1] = frame->scale[2] * frame->verts[j].vertex[2] + frame->translate[2];
-                
-                tmpVert[j].lightNormalIndex = frame->verts[j].lightNormalIndex;
-            }
-        }
-
-        // get texture coordinates
-        
-        CCSize winSize = m_pTexture->getContentSize();
-        float texWidth = winSize.width;
-        float texHeight = winSize.height;
-        
-        MD2Texcoord *tmpTexPtr = (MD2Texcoord*)&buffer[m_pHeader->offsetTexcoords];
-        for (int i = 0; i < m_pHeader->numTexcoords; ++i)
-        {
-            m_pTexcoords[i].s = (float)tmpTexPtr[i].s / texWidth;
-            m_pTexcoords[i].t = (float)tmpTexPtr[i].t / texHeight;
-        }
-        
-        // get mesh data
-        
-        MD2Mesh *tmpMeshPtr = (MD2Mesh*)&buffer[m_pHeader->offsetTriangles];
-        memcpy(m_pMeshes, tmpMeshPtr, sizeof(MD2Mesh) * m_pHeader->numTriangles);
-        
-        result = true;
-    } while(0);
-    
-    m_pUV = new float[m_pHeader->numTriangles * 6];
-    m_pVertices = new float[m_pHeader->numTriangles * 9];
-    
-    // release memory
-    CC_SAFE_DELETE_ARRAY(buffer);
-    
-    return result;
-}
-
-void MD2Model::draw()
-{
-    ccGLBindTexture2D(m_pTexture->getName());
-    
     ccGLEnableVertexAttribs(kCCVertexAttribFlag_Position | kCCVertexAttribFlag_TexCoords );
-    
+
+	//glBegin(GL_TRIANGLES);
+
+// 	for(int x = 0; x < m_Head.m_iNumTriangles; x++)
+// 	{
+// 		glTexCoord2fv(m_pTexCoords[m_pTriangles[x].m_sTexIndices[0]].m_fTex);
+// 		glVertex3fv(m_pFrames[0].m_pVerts[m_pTriangles[x].m_sVertIndices[0]].m_fVert);
+// 		glTexCoord2fv(m_pTexCoords[m_pTriangles[x].m_sTexIndices[1]].m_fTex);
+// 		glVertex3fv(m_pFrames[0].m_pVerts[m_pTriangles[x].m_sVertIndices[1]].m_fVert);
+// 		glTexCoord2fv(m_pTexCoords[m_pTriangles[x].m_sTexIndices[2]].m_fTex);
+// 		glVertex3fv(m_pFrames[0].m_pVerts[m_pTriangles[x].m_sVertIndices[2]].m_fVert);
+// 	}
+
+	//glEnd();
+
+    float* m_pUV = new float[m_Head.m_iNumTriangles * 6];
+    memset(m_pUV, 0, m_Head.m_iNumTriangles * 6);
+
+    float* m_pVertices = new float[m_Head.m_iNumTriangles * 9];
+    memset(m_pVertices, 0, m_Head.m_iNumTriangles * 9);
     int uvIdx = 0;
     int vertexIdx = 0;
-    for (int i =0; i < m_pHeader->numTriangles; i++)
+    for (int i =0; i < m_Head.m_iNumTriangles; i++)
     {
-        m_pVertices[vertexIdx++] = m_pVerts[m_pMeshes[i].vertIndices[0]].vertex[0];
-        m_pVertices[vertexIdx++] = m_pVerts[m_pMeshes[i].vertIndices[0]].vertex[1];
-        m_pVertices[vertexIdx++] = m_pVerts[m_pMeshes[i].vertIndices[0]].vertex[2];
-        
-        m_pVertices[vertexIdx++] = m_pVerts[m_pMeshes[i].vertIndices[1]].vertex[0];
-        m_pVertices[vertexIdx++] = m_pVerts[m_pMeshes[i].vertIndices[1]].vertex[1];
-        m_pVertices[vertexIdx++] = m_pVerts[m_pMeshes[i].vertIndices[1]].vertex[2];
-        
-        m_pVertices[vertexIdx++] = m_pVerts[m_pMeshes[i].vertIndices[2]].vertex[0];
-        m_pVertices[vertexIdx++] = m_pVerts[m_pMeshes[i].vertIndices[2]].vertex[1];
-        m_pVertices[vertexIdx++] = m_pVerts[m_pMeshes[i].vertIndices[2]].vertex[2];
-        
-        m_pUV[uvIdx++] = m_pTexcoords[m_pMeshes[i].texIndices[0]].s;
-        m_pUV[uvIdx++] = m_pTexcoords[m_pMeshes[i].texIndices[0]].t;
-        
-        m_pUV[uvIdx++] = m_pTexcoords[m_pMeshes[i].texIndices[1]].s;
-        m_pUV[uvIdx++] = m_pTexcoords[m_pMeshes[i].texIndices[1]].t;
-        
-        m_pUV[uvIdx++] = m_pTexcoords[m_pMeshes[i].texIndices[2]].s;
-        m_pUV[uvIdx++] = m_pTexcoords[m_pMeshes[i].texIndices[2]].t;
+        m_pVertices[vertexIdx++] = m_pFrames[0].m_pVerts[m_pTriangles[i].m_sVertIndices[0]].m_fVert[0];
+        m_pVertices[vertexIdx++] = m_pFrames[0].m_pVerts[m_pTriangles[i].m_sVertIndices[0]].m_fVert[1];
+        m_pVertices[vertexIdx++] = m_pFrames[0].m_pVerts[m_pTriangles[i].m_sVertIndices[0]].m_fVert[2];
+
+        m_pVertices[vertexIdx++] = m_pFrames[0].m_pVerts[m_pTriangles[i].m_sVertIndices[1]].m_fVert[0];
+        m_pVertices[vertexIdx++] = m_pFrames[0].m_pVerts[m_pTriangles[i].m_sVertIndices[1]].m_fVert[1];
+        m_pVertices[vertexIdx++] = m_pFrames[0].m_pVerts[m_pTriangles[i].m_sVertIndices[1]].m_fVert[2];
+
+        m_pVertices[vertexIdx++] = m_pFrames[0].m_pVerts[m_pTriangles[i].m_sVertIndices[2]].m_fVert[0];
+        m_pVertices[vertexIdx++] = m_pFrames[0].m_pVerts[m_pTriangles[i].m_sVertIndices[2]].m_fVert[1];
+        m_pVertices[vertexIdx++] = m_pFrames[0].m_pVerts[m_pTriangles[i].m_sVertIndices[2]].m_fVert[2];
+
+        m_pUV[uvIdx++] = m_pTexCoords[m_pTriangles[i].m_sTexIndices[0]].m_fTex[0];
+        m_pUV[uvIdx++] = m_pTexCoords[m_pTriangles[i].m_sTexIndices[0]].m_fTex[1];
+
+        m_pUV[uvIdx++] = m_pTexCoords[m_pTriangles[i].m_sTexIndices[1]].m_fTex[0];
+        m_pUV[uvIdx++] = m_pTexCoords[m_pTriangles[i].m_sTexIndices[1]].m_fTex[1];
+
+        m_pUV[uvIdx++] = m_pTexCoords[m_pTriangles[i].m_sTexIndices[2]].m_fTex[0];
+        m_pUV[uvIdx++] = m_pTexCoords[m_pTriangles[i].m_sTexIndices[2]].m_fTex[1];
     }
-    
+
     glVertexAttribPointer(kCCVertexAttrib_Position, 3, GL_FLOAT, GL_FALSE, 0, m_pVertices);
     glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, 0, m_pUV);
-    
-    glDrawArrays(GL_TRIANGLES, 0, m_pHeader->numTriangles * 3);
-    
+
+    glDrawArrays(GL_TRIANGLES, 0, m_Head.m_iNumTriangles * 3);
+
     CHECK_GL_ERROR_DEBUG();
+    CC_SAFE_DELETE_ARRAY(m_pUV);
+    CC_SAFE_DELETE_ARRAY(m_pVertices);
+}
+
+//-------------------------------------------------------------
+//- Render
+//- Renders a specific frame of the MD2 model
+//-------------------------------------------------------------
+void CMd2::Render(unsigned int uiFrame)
+{
+	glEnable(GL_TEXTURE_2D);
+	if(!m_bIsCustomSkin)
+		m_pSkins[m_uiSkin].m_Image.Bind();
+	else
+		m_pCustSkin->Bind();
+
+
+
+	glBegin(GL_TRIANGLES);
+
+	for(int x = 0; x < m_Head.m_iNumTriangles; x++)
+	{
+		glTexCoord2fv(m_pTexCoords[m_pTriangles[x].m_sTexIndices[0]].m_fTex);
+		glVertex3fv(m_pFrames[uiFrame].m_pVerts[m_pTriangles[x].m_sVertIndices[0]].m_fVert);
+		glTexCoord2fv(m_pTexCoords[m_pTriangles[x].m_sTexIndices[1]].m_fTex);
+		glVertex3fv(m_pFrames[uiFrame].m_pVerts[m_pTriangles[x].m_sVertIndices[1]].m_fVert);
+		glTexCoord2fv(m_pTexCoords[m_pTriangles[x].m_sTexIndices[2]].m_fTex);
+		glVertex3fv(m_pFrames[uiFrame].m_pVerts[m_pTriangles[x].m_sVertIndices[2]].m_fVert);
+	}
+
+	glEnd();
+}
+
+//-------------------------------------------------------------
+//- Animate 
+//- Animates the MD2 file  fspeed is frames per second
+//-------------------------------------------------------------
+void CMd2::Animate(float fSpeed, unsigned int uiStartFrame, unsigned int uiEndFrame, bool bLoop)
+{
+// 	static unsigned int uiTotalFrames = 0;			//total number of frames
+// 	static unsigned int uiLastStart = 0, uiLastEnd = 0;	//last start/end parems passed to the function
+// 	static unsigned int uiLastFrame = 0;			//lastframe rendered
+// 	static unsigned int uiMSPerFrame = 0;			//number of milliseconds per frame
+// 	static float fLastInterp = 0;					//Last interpolation value
+// 
+// 	//alloc a place to put the interpolated vertices
+// 	if(!m_pVerts)
+// 		m_pVerts = new SMD2Vert[m_Head.m_iNumVertices];
+// 
+// 	//Prevent invalid frame counts
+// 	if(uiEndFrame >= (unsigned)m_Head.m_iNumFrames)
+// 		uiEndFrame = m_Head.m_iNumFrames - 1;
+// 	if(uiStartFrame > (unsigned)m_Head.m_iNumFrames)
+// 		uiStartFrame = 0;
+// 
+// 	//avoid calculating everything every frame
+// 	if(uiLastStart != uiStartFrame || uiLastEnd != uiEndFrame)
+// 	{
+// 		uiLastStart = uiStartFrame;
+// 		uiLastEnd = uiEndFrame;
+// 		if(uiStartFrame > uiEndFrame)
+// 		{
+// 			uiTotalFrames = m_Head.m_iNumFrames - uiStartFrame + uiEndFrame + 1;
+// 		}
+// 		else
+// 		{
+// 			uiTotalFrames = uiEndFrame - uiStartFrame;
+// 		}
+// 	}
+// 	uiMSPerFrame = (unsigned int)(1000 / fSpeed);
+// 	
+// 	//Calculate the next frame and the interpolation value
+// 	unsigned int uiTime = CCTime::gettimeofdayCocos2d()//m_Timer.GetMS();
+// 	float fInterpValue = ((float) uiTime / uiMSPerFrame) + fLastInterp;
+// 	fLastInterp = fInterpValue;
+// 
+// 	//If the interpolation value is greater than 1, we must increment the frame counter
+// 	while(fInterpValue > 1.0f)
+// 	{
+// 		uiLastFrame ++;
+// 		if(uiLastFrame >= uiEndFrame)
+// 		{
+// 			uiLastFrame = uiStartFrame;
+// 		}
+// 		fInterpValue -= 1.0f;
+// 		fLastInterp = 0.0f;
+// 	}
+// 
+// 	SMD2Frame* pCurFrame = &m_pFrames[uiLastFrame];
+// 	SMD2Frame* pNextFrame = &m_pFrames[uiLastFrame+1];
+// 
+// 	if(uiLastFrame == uiEndFrame-1)
+// 		pNextFrame = &m_pFrames[uiStartFrame];
+// 	
+// //
+// 	//interpolate the vertices
+// 	for(int x = 0; x < m_Head.m_iNumVertices; x++)
+// 	{
+// 		m_pVerts[x].m_fVert[0] = pCurFrame->m_pVerts[x].m_fVert[0] + (pNextFrame->m_pVerts[x].m_fVert[0] - pCurFrame->m_pVerts[x].m_fVert[0]) * fInterpValue;
+// 		m_pVerts[x].m_fVert[1] = pCurFrame->m_pVerts[x].m_fVert[1] + (pNextFrame->m_pVerts[x].m_fVert[1] - pCurFrame->m_pVerts[x].m_fVert[1]) * fInterpValue;
+// 		m_pVerts[x].m_fVert[2] = pCurFrame->m_pVerts[x].m_fVert[2] + (pNextFrame->m_pVerts[x].m_fVert[2] - pCurFrame->m_pVerts[x].m_fVert[2]) * fInterpValue;
+// 	}
+// 
+// 	//Render the new vertices
+// 	glEnable(GL_TEXTURE_2D);
+// 
+// 	if(!m_bIsCustomSkin)
+// 		m_pSkins[m_uiSkin].m_Image.Bind();
+// 	else
+// 		m_pCustSkin->Bind();
+// 
+// 	glBegin(GL_TRIANGLES);
+// 
+// 	for(int x = 0; x < m_Head.m_iNumTriangles; x++)
+// 	{
+// 		glTexCoord2fv(m_pTexCoords[m_pTriangles[x].m_sTexIndices[0]].m_fTex);
+// 		glVertex3fv(m_pVerts[m_pTriangles[x].m_sVertIndices[0]].m_fVert);
+// 		glTexCoord2fv(m_pTexCoords[m_pTriangles[x].m_sTexIndices[1]].m_fTex);
+// 		glVertex3fv(m_pVerts[m_pTriangles[x].m_sVertIndices[1]].m_fVert);
+// 		glTexCoord2fv(m_pTexCoords[m_pTriangles[x].m_sTexIndices[2]].m_fTex);
+// 		glVertex3fv(m_pVerts[m_pTriangles[x].m_sVertIndices[2]].m_fVert);
+// 	}
+// 
+// 	glEnd();
+// 
+// 	//Print debug info
+// 	APP->Print(0.2f, 0.9f, "Frame: %i : %s", uiLastFrame, m_pFrames[uiLastFrame].m_caName);
+}
+
+//-------------------------------------------------------------
+//- SetSkin
+//- Sets the current skin to one of the skins predefined by the md2 itself
+//-------------------------------------------------------------
+void CMd2::SetSkin(unsigned int uiSkin)
+{
+	m_uiSkin = uiSkin;
+	m_bIsCustomSkin = false;
+}
+
+//-------------------------------------------------------------
+//- SetSkin
+//- Sets the skin to an image loaded elsewhere using a CIMAGE object
+//-------------------------------------------------------------
+void CMd2::SetSkin(CImage& skin)
+{
+	m_pCustSkin = &skin;
+	m_bIsCustomSkin = true;
+}
+
+//-------------------------------------------------------------
+//- Constructors
+//- 1. Default Constructor
+//- 2. takes filename, calls load
+//-------------------------------------------------------------
+CMd2::CMd2()
+{
+	m_pFrames = 0;
+	m_pTriangles = 0;
+	m_pTexCoords = 0;
+	m_pSkins = 0;
+	m_pVerts = 0;
+	m_uiSkin = 0;
+	m_bIsCustomSkin = false;
+	m_pCustSkin = 0;
+}
+
+CMd2::CMd2(const char * szFile)
+{
+	m_pFrames = 0;
+	m_pTriangles = 0;
+	m_pTexCoords = 0;
+	m_pSkins = 0;
+	m_bIsCustomSkin = false;
+	m_pCustSkin = 0;
+	m_pVerts = 0;
+	m_uiSkin = 0;
+	Load(szFile);
+}
+
+CMd2::~CMd2()
+{
+	if(m_pFrames)
+	{
+		delete [] m_pFrames;
+		m_pFrames = 0;
+	}
+	if(m_pTexCoords)
+	{
+		delete [] m_pTexCoords;
+		m_pTexCoords = 0;
+	}
+	if(m_pTriangles)
+	{
+		delete [] m_pTriangles;
+		m_pTriangles = 0;
+	}
+	if(m_pSkins)
+	{
+		delete [] m_pSkins;
+		m_pSkins = 0;
+	}
+	if(m_pVerts)
+	{
+		delete[] m_pVerts;
+		m_pVerts = 0;
+	}
 }
 
 NS_CC_END
