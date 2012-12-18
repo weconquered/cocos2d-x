@@ -21,12 +21,15 @@ CCScene* HelloWorld::scene()
 // on "init" you need to initialize your instance
 bool HelloWorld::init()
 {
+    
     //////////////////////////////
     // 1. super init first
     if ( !CCLayer::init() )
     {
         return false;
     }
+    
+    /*
     
     CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
@@ -73,8 +76,49 @@ bool HelloWorld::init()
 
     // add the sprite as a child to this layer
     this->addChild(pSprite, 0);
+     */
+    
+    model = MD2Model::create("hellpig.md2", "hellpig2.png");
+    model->retain();
+    
+    CCGLProgram* program = CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionTexture);
+    setShaderProgram(program);
     
     return true;
+}
+
+void HelloWorld::draw()
+{
+    CCDirector::sharedDirector()->setDepthTest(true);
+    
+	
+    
+	//getShaderProgram()->use();
+    CC_NODE_DRAW_SETUP();
+    
+    /*
+	kmMat4 matrixP;
+    kmMat4 matrixMV;
+    kmMat4 matrixMVP;
+    
+    kmGLGetMatrix(KM_GL_PROJECTION, &matrixP );
+    kmGLGetMatrix(KM_GL_MODELVIEW, &matrixMV );
+    
+	kmVec3 translation;
+	kmVec3Fill(&translation, 240, 150, 220);
+    
+    kmMat4 translation1;
+    kmMat4Translation(&translation1, 150, 150, 150);
+    
+    kmMat4Multiply(&matrixMVP, &matrixP, &matrixMV);
+	//kmMat4Multiply(&matrixMVP, &matrixMVP, &rotationAndMove);				// apply rotation and translation to the matrix
+    kmMat4Multiply(&matrixMVP, &matrixMVP, &translation1);
+    
+    GLuint matrixId = glGetUniformLocation(getShaderProgram()->getProgram(), "CC_MVPMatrix");
+    getShaderProgram()->setUniformLocationWithMatrix4fv(matrixId, matrixMVP.mat, 1);
+    */
+
+    model->draw();
 }
 
 
