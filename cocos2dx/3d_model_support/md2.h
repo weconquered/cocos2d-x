@@ -1,45 +1,58 @@
-/*************************************************************/
-/*                           MD2.H                           */
-/*                                                           */
-/* Purpose: Definitions for CMd2, a class to load, render and*/
-/*          animate id Software's .md2 file format.  Also    */
-/*          contains all nessasary data structures for MD2   */
-/*      Evan Pipho (evan@codershq.com)                       */
-/*                                                           */
-/*************************************************************/
-#ifndef MD2_H
-#define MD2_h
+/****************************************************************************
+Copyright (c) 2012 cocos2d-x.org
 
-//-------------------------------------------------------------
-//                       INCLUDES                             -
-//-------------------------------------------------------------
-#include "image.h"
+http://www.cocos2d-x.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+****************************************************************************/
+
+#ifndef MD2_H
+#define MD2_H
+
 #include "model.h"
 
 NS_CC_BEGIN
+
+class CCTexture2D;
 
 //-------------------------------------------------------------
 //- SMD2Header
 //- Header for all Md2 files, 
 struct SMD2Header
 {
-   int m_iMagicNum; //Always IDP2 (844121161)
-   int m_iVersion;  //8
-   int m_iSkinWidthPx;  
-   int m_iSkinHeightPx; 
-   int m_iFrameSize; 
-   int m_iNumSkins; 
-   int m_iNumVertices; 
-   int m_iNumTexCoords; 
-   int m_iNumTriangles; 
-   int m_iNumGLCommands; 
-   int m_iNumFrames; 
-   int m_iOffsetSkins; 
-   int m_iOffsetTexCoords; 
-   int m_iOffsetTriangles; 
-   int m_iOffsetFrames; 
-   int m_iOffsetGlCommands; 
-   int m_iFileSize; 
+   int magicNum; //Always IDP2 (844121161)
+   int version;  //8
+   int skinWidthPx;  
+   int skinHeightPx; 
+   int frameSize; 
+   int numSkins; 
+   int numVertices; 
+   int numTexCoords; 
+   int numTriangles; 
+   int numGLCommands; 
+   int numFrames; 
+   int offsetSkins; 
+   int offsetTexCoords; 
+   int offsetTriangles; 
+   int offsetFrames; 
+   int offsetGlCommands; 
+   int fileSize; 
 };
 
 //-------------------------------------------------------------
@@ -47,8 +60,8 @@ struct SMD2Header
 //- Vertex structure for MD2
 struct SMD2Vert
 {
-	float m_fVert[3];
-	unsigned char m_ucReserved;
+	float x, y, z;
+	unsigned char reserved;
 };
 
 
@@ -57,21 +70,20 @@ struct SMD2Vert
 //- Frame information for the model file 
 struct SMD2Frame
 {
-	float m_fScale[3];
-	float m_fTrans[3];
-	char m_caName[16];
-	SMD2Vert * m_pVerts;
+	float scale[3];
+	float trans[3];
+	char name[16];
+	SMD2Vert* verts;
 
 	//Cleans up after itself
 	SMD2Frame()
 	{
-		m_pVerts = 0;
+		verts = 0;
 	}
 
 	~SMD2Frame()
 	{
-		if(m_pVerts)
-			delete [] m_pVerts;
+		CC_SAFE_DELETE_ARRAY(verts);
 	}
 };
 
@@ -80,8 +92,8 @@ struct SMD2Frame
 //- Triangle information for the MD2
 struct SMD2Tri
 {
-	unsigned short m_sVertIndices[3];
-	unsigned short m_sTexIndices[3];
+	unsigned short vertIndices[3];
+	unsigned short texIndices[3];
 };
 
 //-------------------------------------------------------------
@@ -89,7 +101,8 @@ struct SMD2Tri
 //- Texture coord information for the MD2
 struct SMD2TexCoord
 {
-	float m_fTex[2];
+	float s;
+    float t;
 };
 
 //-------------------------------------------------------------
@@ -97,42 +110,34 @@ struct SMD2TexCoord
 //- Name of a single skin in the md2 file
 struct SMD2Skin
 {
-	char m_caSkin[64];	//filename
-	CImage m_Image;		//Image file ready for texturing
+    char skinFileName[64];	//filename
+    CCTexture2D* m_Image;		//Image file ready for texturing
 };
 
-//-------------------------------------------------------------
-//                        CTIMER                              -
-// author: Evan Pipho (evan@codershq.com)                     -
-// date  : Jul 10, 2002                                       -
-//-------------------------------------------------------------
-class CC_DLL CMd2 : public CModel
+class CC_DLL CCModelMd2 : public CCModel
 {
 public:
-
 	//Set skin to one of the files specified in the md2 files itself
-	void SetSkin(unsigned int uiSkin);
+	void setSkin(unsigned int uiSkin);
 	//Set skin to a different image
-	void SetSkin(CImage& skin);
+	void setSkin(const char* pszFileName);
 
 	//Load the file
-	bool Load(const char * szFilename);
+	bool load(const char * szFilename);
 	
-	//Render file at the initial position
-	void Render();
+    virtual void render();
 	//Render the file at a certain frame
-	void Render(unsigned int uiFrame);
+	void render(unsigned int uiFrame);
 
 	//Animate the md2 model (start and end frames of 0 and 0 will loop through the WHOLE model
-	void Animate(float fSpeed = 30.0f, unsigned int uiStartFrame = 0, unsigned int uiEndFrame = 0, bool bLoop = true);
+	void animate(float fSpeed = 30.0f, unsigned int uiStartFrame = 0, unsigned int uiEndFrame = 0, bool bLoop = true);
 
 	//constructors/destructo
-	CMd2();
-	CMd2(const char * szFile);
-	~CMd2();
+	CCModelMd2();
+	CCModelMd2(const char * szFile);
+	~CCModelMd2();
 
 private:
-	
 	//file header information
 	SMD2Header m_Head; 
 	//Frame information
@@ -150,8 +155,7 @@ private:
 	//Using a custom skin?
 	bool m_bIsCustomSkin;
 	//The custom skin
-	CImage * m_pCustSkin;
-
+	CCTexture2D* m_pCustSkin;
 };
 
 NS_CC_END

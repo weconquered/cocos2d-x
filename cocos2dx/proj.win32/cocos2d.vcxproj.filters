@@ -440,11 +440,11 @@
     <ClCompile Include="..\shaders\CCGLProgram.cpp">
       <Filter>shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\3d_model_support\image.cpp">
-      <Filter>3d_model_support</Filter>
-    </ClCompile>
     <ClCompile Include="..\3d_model_support\md2.cpp">
       <Filter>3d_model_support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sprite_nodes\CCSprite3D.cpp">
+      <Filter>sprite_nodes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -896,14 +896,14 @@
     <ClInclude Include="..\shaders\CCGLProgram.h">
       <Filter>shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\3d_model_support\image.h">
-      <Filter>3d_model_support</Filter>
-    </ClInclude>
     <ClInclude Include="..\3d_model_support\md2.h">
       <Filter>3d_model_support</Filter>
     </ClInclude>
     <ClInclude Include="..\3d_model_support\model.h">
       <Filter>3d_model_support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sprite_nodes\CCSprite3D.h">
+      <Filter>sprite_nodes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

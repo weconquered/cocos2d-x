@@ -143,6 +143,10 @@ bool CCImage::initWithImageData(void * pData,
             bRet = _initWithTiffData(pData, nDataLen);
             break;
         }
+        else if (kFmtBmp == eFmt)
+        {
+            bRet = _initWithBmpData(pData, nDataLen);
+        }
         else if (kFmtRawData == eFmt)
         {
             bRet = _initWithRawData(pData, nDataLen, nWidth, nHeight, nBitsPerComponent);
@@ -192,9 +196,103 @@ bool CCImage::initWithImageData(void * pData,
                     break;
                 }
             }
+            
+            // if it is a bmp file buffer.
+            if (nDataLen > 2)
+            {
+                unsigned char* pHead = (unsigned char*)pData;
+                if (   pHead[0] == 0x42
+                    && pHead[1] == 0x4D)
+                {
+                    bRet = _initWithBmpData(pData, nDataLen);
+                    break;
+                }
+            }
         }
     } while (0);
     return bRet;
+}
+
+//-------------------------------------------------------------
+//- VFlip
+//- Flip the image vertically
+//-------------------------------------------------------------
+static void VFlip(unsigned char * ucpData, unsigned int uiHeight, unsigned int uiWidth, unsigned int uiBpp)
+{
+    unsigned char * ucpCopy = new unsigned char[uiWidth * uiHeight * uiBpp];
+    if(!ucpCopy)
+        return;
+    for(unsigned int i = 0; i < uiHeight; i++)
+        memcpy(ucpCopy + (uiWidth * uiBpp * i), ucpData + (uiWidth * uiBpp * (uiHeight - i)), uiWidth * uiBpp);
+    memcpy(ucpData, ucpCopy, uiWidth * uiHeight * uiBpp);
+    delete [] ucpCopy;
+}
+
+bool CCImage::_initWithBmpData(void* pData, int nDataLen)
+{
+    unsigned char * ucpPtr = (unsigned char*)pData;
+
+    //BMP File header 
+    struct SBMPFHeader
+    {
+        unsigned char m_ucType[2];	//Identifier, must be BM
+        unsigned int m_uiSize;		//Size of BMP file
+        unsigned int m_uiReserved;	//0
+        unsigned int m_uiOffset;	
+    };
+    //BMP Information Header
+    struct SBMPIHeader
+    {
+        unsigned int m_uiSize;		//Number of bytes in structure
+        unsigned int m_uiWidth;		//Width of Image
+        unsigned int m_uiHeight;		//Height of Image
+        unsigned short m_uiPlanes;	//Always 1
+        unsigned short m_uiBpp;		//Bits Per Pixel (must be 24 for now)
+        unsigned int m_uiCompression;	//Must be 0 (uncompressed)
+        unsigned int m_uiXPPM;			//X Pels Per Meter
+        unsigned int m_uiYPPM;			//Y Pels Per Meter
+        unsigned int m_uiClrUsed;		//0 for 24 bpp bmps
+        unsigned int m_uiClrImp;		//0
+
+    };
+
+    SBMPFHeader * pFileHeader = (SBMPFHeader *)ucpPtr;
+    ucpPtr += 14;	//Skip the file header
+    SBMPIHeader * pInfoHeader = (SBMPIHeader *)(ucpPtr);
+    ucpPtr += 40;
+
+    //make sure its 24 bpp and contains data 
+    if(pInfoHeader->m_uiBpp != 24 || pInfoHeader->m_uiHeight == 0 || pInfoHeader->m_uiWidth == 0)
+    {
+        CCLOG( "This is an invalid BMP file");
+        return false;
+    }
+
+    //Fill in data for later use
+    m_nWidth = pInfoHeader->m_uiWidth;
+    m_nHeight = pInfoHeader->m_uiHeight;
+    m_nBitsPerComponent = pInfoHeader->m_uiBpp / 3;
+    m_bHasAlpha = false;
+    m_bPreMulti = false;
+    //Fill in the data
+    m_pData = new unsigned char[m_nHeight * m_nWidth * 3];
+    if(!m_pData)
+    {
+        CCLOG( "Out of memory");
+        return false;
+    }
+
+    //Swap red and blue values to get RGB instead of BGR
+    for(unsigned int i = 0; i < m_nHeight * m_nWidth * 3; i+=3)
+    {
+        m_pData[i] = ucpPtr[i+2];
+        m_pData[i+1] = ucpPtr[i+1];
+        m_pData[i+2] = ucpPtr[i];
+    }
+
+    VFlip(m_pData, m_nWidth, m_nHeight, 3);
+
+    return true;
 }
 
 /*
