@@ -125,9 +125,9 @@ public:
 	//Load the file
 	bool load(const char * szFilename);
 	
-    virtual void render();
+    virtual void draw();
 	//Render the file at a certain frame
-	void render(unsigned int uiFrame);
+	void draw(unsigned int uiFrame);
 
 	//Animate the md2 model (start and end frames of 0 and 0 will loop through the WHOLE model
 	void animate(float fSpeed = 30.0f, unsigned int uiStartFrame = 0, unsigned int uiEndFrame = 0, bool bLoop = true);
@@ -138,7 +138,10 @@ public:
 	~CCModelMd2();
 
 private:
-	//file header information
+    // TODO
+    void toHostEndian() {};
+
+    //file header information
 	SMD2Header m_Head; 
 	//Frame information
 	SMD2Frame * m_pFrames;

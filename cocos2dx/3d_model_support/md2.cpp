@@ -135,16 +135,16 @@ bool CCModelMd2::load(const char * szFilename)
 	return true;
 }
 
-void CCModelMd2::render()
+void CCModelMd2::draw()
 {
-    render(0);
+    draw(0);
 }
 
 //-------------------------------------------------------------
 //- Render
 //- Renders a specific frame of the MD2 model
 //-------------------------------------------------------------
-void CCModelMd2::render(unsigned int uiFrame)
+void CCModelMd2::draw(unsigned int uiFrame)
 {
     float* m_pUV = new float[m_Head.numTriangles * 6];
     memset(m_pUV, 0, m_Head.numTriangles * 6);

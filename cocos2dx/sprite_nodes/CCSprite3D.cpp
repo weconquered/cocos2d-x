@@ -113,12 +113,12 @@ void CCSprite3D::showBoundingBox(bool show)
 
 void CCSprite3D::draw()
 {
-    m_bDepthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
+    m_bDepthTestEnabled = 0 == glIsEnabled(GL_DEPTH_TEST) ? false : true;
 
     CCDirector::sharedDirector()->setDepthTest(true);
     
     CC_NODE_DRAW_SETUP();
-    m_pModel->render();
+    m_pModel->draw();
     
    CCDirector::sharedDirector()->setDepthTest(m_bDepthTestEnabled);
 }

@@ -37,7 +37,7 @@ public:
 	//Load the model from file
 	virtual bool load(const char * szFile) = 0;
 	//Render the model, generally at its initial position
-	virtual void render() = 0;
+	virtual void draw() = 0;
 };
 
 NS_CC_END
