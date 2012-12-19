@@ -282,6 +282,8 @@
 		1551A874158F2B4700E66CFE /* cocos2dx-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 1551A873158F2B4700E66CFE /* cocos2dx-Prefix.pch */; };
 		15768F5F167ACFE4007CDCDD /* md2.h in Headers */ = {isa = PBXBuildFile; fileRef = 15768F5E167ACFE4007CDCDD /* md2.h */; };
 		15768F61167AD03C007CDCDD /* md2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15768F60167AD03C007CDCDD /* md2.cpp */; };
+		15A3CDF31681B24B002FB0C5 /* CCSprite3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15A3CDF11681B24B002FB0C5 /* CCSprite3D.cpp */; };
+		15A3CDF41681B24B002FB0C5 /* CCSprite3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 15A3CDF21681B24B002FB0C5 /* CCSprite3D.h */; };
 		15FBEE5C164B87F2008CB2C3 /* CCClippingNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 15FBEE5B164B87F2008CB2C3 /* CCClippingNode.h */; };
 		15FBEE5F164B8B5B008CB2C3 /* CCClippingNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15FBEE5E164B8B5B008CB2C3 /* CCClippingNode.cpp */; };
 		15FBEE68164BBA98008CB2C3 /* CCDrawingPrimitives.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15FBEE66164BBA98008CB2C3 /* CCDrawingPrimitives.cpp */; };
@@ -571,6 +573,8 @@
 		1551A873158F2B4700E66CFE /* cocos2dx-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cocos2dx-Prefix.pch"; sourceTree = "<group>"; };
 		15768F5E167ACFE4007CDCDD /* md2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md2.h; sourceTree = "<group>"; };
 		15768F60167AD03C007CDCDD /* md2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = md2.cpp; sourceTree = "<group>"; };
+		15A3CDF11681B24B002FB0C5 /* CCSprite3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCSprite3D.cpp; sourceTree = "<group>"; };
+		15A3CDF21681B24B002FB0C5 /* CCSprite3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSprite3D.h; sourceTree = "<group>"; };
 		15FBEE5B164B87F2008CB2C3 /* CCClippingNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCClippingNode.h; sourceTree = "<group>"; };
 		15FBEE5E164B8B5B008CB2C3 /* CCClippingNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCClippingNode.cpp; sourceTree = "<group>"; };
 		15FBEE66164BBA98008CB2C3 /* CCDrawingPrimitives.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCDrawingPrimitives.cpp; sourceTree = "<group>"; };
@@ -1019,6 +1023,8 @@
 		1551A5DA158F2ADE00E66CFE /* sprite_nodes */ = {
 			isa = PBXGroup;
 			children = (
+				15A3CDF11681B24B002FB0C5 /* CCSprite3D.cpp */,
+				15A3CDF21681B24B002FB0C5 /* CCSprite3D.h */,
 				1551A5DB158F2ADE00E66CFE /* CCAnimation.cpp */,
 				1551A5DC158F2ADE00E66CFE /* CCAnimation.h */,
 				1551A5DD158F2ADE00E66CFE /* CCAnimationCache.cpp */,
@@ -1340,6 +1346,7 @@
 				15FBEE69164BBA98008CB2C3 /* CCDrawingPrimitives.h in Headers */,
 				15FBEE6B164BBB20008CB2C3 /* CCDrawNode.h in Headers */,
 				15768F5F167ACFE4007CDCDD /* md2.h in Headers */,
+				15A3CDF41681B24B002FB0C5 /* CCSprite3D.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1517,6 +1524,7 @@
 				15FBEE68164BBA98008CB2C3 /* CCDrawingPrimitives.cpp in Sources */,
 				15FBEE6D164BBF77008CB2C3 /* CCDrawNode.cpp in Sources */,
 				15768F61167AD03C007CDCDD /* md2.cpp in Sources */,
+				15A3CDF31681B24B002FB0C5 /* CCSprite3D.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

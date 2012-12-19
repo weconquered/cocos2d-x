@@ -37,7 +37,7 @@ CCSprite3D::CCSprite3D()
 , m_modelRotation(0.0f)
 {
     kmVec3Fill(&m_modelPosition, 0, 0, 0);
-    kmVec3Fill(&m_modelScale, 0, 0, 0);
+    kmVec3Fill(&m_modelScale, 1.0f, 1.0f, 1.0f);
 }
 
 CCSprite3D::~CCSprite3D()
@@ -113,102 +113,20 @@ void CCSprite3D::showBoundingBox(bool show)
 
 void CCSprite3D::draw()
 {
+    m_bDepthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
+
+    CCDirector::sharedDirector()->setDepthTest(true);
+    
+    CC_NODE_DRAW_SETUP();
     m_pModel->render();
+    
+   CCDirector::sharedDirector()->setDepthTest(m_bDepthTestEnabled);
 }
 
 void CCSprite3D::transform(void)
 {
-    CCDirector::sharedDirector()->setDepthTest(true);
-
-    CC_NODE_DRAW_SETUP();
-
-    kmMat4 matrixP;
-    kmMat4 matrixMV;
-    kmMat4 matrixMVP;
-
-    kmGLGetMatrix(KM_GL_PROJECTION, &matrixP );
-    kmGLGetMatrix(KM_GL_MODELVIEW, &matrixMV );
-
-    kmMat4 matPos;
-    kmMat4Translation(&matPos, m_modelPosition.x, m_modelPosition.y, m_modelPosition.z);
-    kmMat4 matScale;
-    kmMat4Scaling(&matScale, m_modelScale.x, m_modelScale.y, m_modelScale.z);
-    //     kmMat4 matRotation;
-    //     kmMat4RotationX(&matRotation, m_modelScale.x, m_modelScale.y, m_modelScale.z);
-    kmMat4 matOut;
-    kmMat4Multiply(&matOut, &matPos, &matScale);
-
-    kmMat4Multiply(&matrixMVP, &matrixP, &matrixMV);
-    //kmMat4Multiply(&matrixMVP, &matrixMVP, &rotationAndMove);				// apply rotation and translation to the matrix
-    kmMat4Multiply(&matrixMVP, &matrixMVP, &matOut);
-
-    GLuint matrixId = glGetUniformLocation(m_pShaderProgram->getProgram(), kCCUniformMVPMatrix_s);
-    m_pShaderProgram->setUniformLocationWithMatrix4fv(matrixId, matrixMVP.mat, 1);
-}
-
-void CCSprite3D::visit()
-{
-    // quick return if not visible. children won't be drawn.
-    if (!m_bVisible)
-    {
-        return;
-    }
-    kmGLPushMatrix();
-
-    if (m_pGrid && m_pGrid->isActive())
-    {
-        m_pGrid->beforeDraw();
-    }
-
-    this->transform();
-
-    CCNode* pNode = NULL;
-    unsigned int i = 0;
-
-    if(m_pChildren && m_pChildren->count() > 0)
-    {
-        sortAllChildren();
-        // draw children zOrder < 0
-        ccArray *arrayData = m_pChildren->data;
-        for( ; i < arrayData->num; i++ )
-        {
-            pNode = (CCNode*) arrayData->arr[i];
-
-            //if ( pNode && pNode->m_nZOrder < 0 ) 
-            {
-                pNode->visit();
-            }
-//             else
-//             {
-//                 break;
-//             }
-        }
-        // self draw
-        this->draw();
-
-        for( ; i < arrayData->num; i++ )
-        {
-            pNode = (CCNode*) arrayData->arr[i];
-            if (pNode)
-            {
-                pNode->visit();
-            }
-        }        
-    }
-    else
-    {
-        this->draw();
-    }
-
-    // reset for next frame
-    m_uOrderOfArrival = 0;
-
-    if (m_pGrid && m_pGrid->isActive())
-    {
-        m_pGrid->afterDraw(this);
-    }
-
-    kmGLPopMatrix();
+    kmGLTranslatef(m_modelPosition.x, m_modelPosition.y, m_modelPosition.z);
+    kmGLScalef(m_modelScale.x, m_modelScale.y, m_modelScale.z);
 }
 
 NS_CC_END

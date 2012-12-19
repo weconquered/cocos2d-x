@@ -51,14 +51,14 @@ public:
      *                  Transform                      *
      ***************************************************/
 
-    void setPosition(float x,float y,float z);
-    kmVec3 getPosition() const;
+    virtual void setPosition(float x,float y,float z);
+    virtual kmVec3 getPosition() const;
 
-    void setScale(float x,float y,float z);
-    kmVec3 getScale() const;
+    virtual void setScale(float x,float y,float z);
+    virtual kmVec3 getScale() const;
 
-    void setRotation(float angle);
-    float getRotation() const;
+    virtual void setRotation(float angle);
+    virtual float getRotation() const;
     
     /***************************************************
      *              Rendering and Visiting             *
@@ -67,8 +67,8 @@ public:
     /**
      * visible switcher
      */
-    void setVisible(bool visible);
-    bool isVisible();
+    virtual void setVisible(bool visible);
+    virtual bool isVisible();
     
     /**
      * Show or hide the bounding box, useful when debugging.
@@ -80,12 +80,7 @@ public:
      */
     virtual void draw();
     
-    /**
-     *  Override visit() method of CCNode. This method is called by engine internal.
-     */
-    virtual void visit();
-    
-    void transform(void);
+    virtual void transform(void);
     /***************************************************
     *                     Mesh                        *
     ***************************************************/
@@ -188,6 +183,7 @@ protected:
     float m_modelRotation;
     kmVec3 m_modelScale;
     CCModel* m_pModel;
+    bool m_bDepthTestEnabled;
 };
 
 NS_CC_END
