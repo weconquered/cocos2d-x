@@ -88,7 +88,8 @@ cc.g = cc.g || cc.p;
 cc._reuse_grid = cc.g(0,0);
 
 cc.log = cc.log || log;
-
+console = {};
+console.log = cc.log;
 //
 // Color 3B
 //
