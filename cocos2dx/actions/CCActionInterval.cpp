@@ -2413,6 +2413,183 @@ CCActionInterval* CCAnimate::reverse(void)
     return create(newAnim);
 }
 
+//
+// CCAnimate3D
+//
+CCAnimate3D* CCAnimate3D::create(unsigned int startFrame, unsigned int endFrame, float duration)
+{
+    CCAnimate3D *pAnimate = new CCAnimate3D();
+    pAnimate->init(startFrame, endFrame, duration);
+    pAnimate->autorelease();
+
+    return pAnimate;
+}
+
+bool CCAnimate3D::init(unsigned int startFrame, unsigned int endFrame, float duration)
+{
+    float singleDuration = duration;
+
+    if ( CCActionInterval::initWithDuration(singleDuration /*TODO* pAnimation->getLoops()*/ ) ) 
+    {
+        m_nNextFrame = 0;
+        m_pOrigFrame = NULL;
+        m_uExecutedLoops = 0;
+
+        m_pSplitTimes->reserve(pAnimation->getFrames()->count());
+
+        float accumUnitsOfTime = 0;
+        float newUnitOfTimeValue = singleDuration / pAnimation->getTotalDelayUnits();
+
+        CCArray* pFrames = pAnimation->getFrames();
+        CCARRAY_VERIFY_TYPE(pFrames, CCAnimationFrame*);
+
+        CCObject* pObj = NULL;
+        CCARRAY_FOREACH(pFrames, pObj)
+        {
+            CCAnimationFrame* frame = (CCAnimationFrame*)pObj;
+            float value = (accumUnitsOfTime * newUnitOfTimeValue) / singleDuration;
+            accumUnitsOfTime += frame->getDelayUnits();
+            m_pSplitTimes->push_back(value);
+        }    
+        return true;
+    }
+    return false;
+}
+
+CCObject* CCAnimate3D::copyWithZone(CCZone *pZone)
+{
+    CCZone* pNewZone = NULL;
+    CCAnimate3D* pCopy = NULL;
+    if(pZone && pZone->m_pCopyObject) 
+    {
+        //in case of being called at sub class
+        pCopy = (CCAnimate3D*)(pZone->m_pCopyObject);
+    }
+    else
+    {
+        pCopy = new CCAnimate3D();
+        pZone = pNewZone = new CCZone(pCopy);
+    }
+
+    CCActionInterval::copyWithZone(pZone);
+
+    pCopy->initWithAnimation((CCAnimation*)m_pAnimation->copy()->autorelease());
+
+    CC_SAFE_DELETE(pNewZone);
+    return pCopy;
+}
+
+CCAnimate3D::CCAnimate3D()
+    : m_pAnimation(NULL)
+    , m_pSplitTimes(new std::vector<float>)
+    , m_nNextFrame(0)
+    , m_pOrigFrame(NULL)
+    , m_uExecutedLoops(0)
+{
+
+}
+
+CCAnimate3D::~CCAnimate3D()
+{
+    CC_SAFE_RELEASE(m_pAnimation);
+    CC_SAFE_RELEASE(m_pOrigFrame);
+    CC_SAFE_DELETE(m_pSplitTimes);
+}
+
+void CCAnimate3D::startWithTarget(CCNode *pTarget)
+{
+    CCActionInterval::startWithTarget(pTarget);
+    CCSprite *pSprite = (CCSprite*)(pTarget);
+
+    CC_SAFE_RELEASE(m_pOrigFrame);
+
+    if (m_pAnimation->getRestoreOriginalFrame())
+    {
+        m_pOrigFrame = pSprite->displayFrame();
+        m_pOrigFrame->retain();
+    }
+    m_nNextFrame = 0;
+    m_uExecutedLoops = 0;
+}
+
+void CCAnimate3D::stop(void)
+{
+    if (m_pAnimation->getRestoreOriginalFrame() && m_pTarget)
+    {
+        ((CCSprite*)(m_pTarget))->setDisplayFrame(m_pOrigFrame);
+    }
+
+    CCActionInterval::stop();
+}
+
+void CCAnimate3D::update(float t)
+{
+    // if t==1, ignore. Animation should finish with t==1
+    if( t < 1.0f ) {
+        t *= m_pAnimation->getLoops();
+
+        // new loop?  If so, reset frame counter
+        unsigned int loopNumber = (unsigned int)t;
+        if( loopNumber > m_uExecutedLoops ) {
+            m_nNextFrame = 0;
+            m_uExecutedLoops++;
+        }
+
+        // new t for animations
+        t = fmodf(t, 1.0f);
+    }
+
+    CCArray* frames = m_pAnimation->getFrames();
+    unsigned int numberOfFrames = frames->count();
+    CCSpriteFrame *frameToDisplay = NULL;
+
+    for( unsigned int i=m_nNextFrame; i < numberOfFrames; i++ ) {
+        float splitTime = m_pSplitTimes->at(i);
+
+        if( splitTime <= t ) {
+            CCAnimationFrame* frame = (CCAnimationFrame*)frames->objectAtIndex(i);
+            frameToDisplay = frame->getSpriteFrame();
+            ((CCSprite*)m_pTarget)->setDisplayFrame(frameToDisplay);
+
+            CCDictionary* dict = frame->getUserInfo();
+            if( dict )
+            {
+                //TODO: [[NSNotificationCenter defaultCenter] postNotificationName:CCAnimationFrameDisplayedNotification object:target_ userInfo:dict];
+            }
+            m_nNextFrame = i+1;
+
+            break;
+        }
+    }
+}
+
+CCActionInterval* CCAnimate3D::reverse(void)
+{
+    CCArray* pOldArray = m_pAnimation->getFrames();
+    CCArray* pNewArray = CCArray::createWithCapacity(pOldArray->count());
+
+    CCARRAY_VERIFY_TYPE(pOldArray, CCAnimationFrame*);
+
+    if (pOldArray->count() > 0)
+    {
+        CCObject* pObj = NULL;
+        CCARRAY_FOREACH_REVERSE(pOldArray, pObj)
+        {
+            CCAnimationFrame* pElement = (CCAnimationFrame*)pObj;
+            if (! pElement)
+            {
+                break;
+            }
+
+            pNewArray->addObject((CCAnimationFrame*)(pElement->copy()->autorelease()));
+        }
+    }
+
+    CCAnimation *newAnim = CCAnimation::create(pNewArray, m_pAnimation->getDelayPerUnit(), m_pAnimation->getLoops());
+    newAnim->setRestoreOriginalFrame(m_pAnimation->getRestoreOriginalFrame());
+    return create(newAnim);
+}
+
 // CCTargetedAction
 
 CCTargetedAction::CCTargetedAction()

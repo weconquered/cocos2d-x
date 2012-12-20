@@ -725,6 +725,32 @@ protected:
        unsigned int    m_uExecutedLoops;
 };
 
+/** @brief Animates a sprite given the name of an Animation */
+class CC_DLL CCAnimate3D : public CCActionInterval
+{
+public:
+    /** creates the action with an Animation and will restore the original frame when the animation is over */
+    static CCAnimate3D* create();
+
+    CCAnimate3D();
+    ~CCAnimate3D();
+    bool init(unsigned int startFrame, unsigned int endFrame, float duration);
+
+    virtual CCObject* copyWithZone(CCZone* pZone);
+    virtual void startWithTarget(CCNode *pTarget);
+    virtual void stop(void);
+    virtual void update(float t);
+    virtual CCActionInterval* reverse(void);
+
+protected:
+    std::vector<float>* m_pSplitTimes;
+    int                m_nNextFrame;
+    CCSpriteFrame*  m_pOrigFrame;
+    unsigned int    m_uExecutedLoops;
+    unsigned int m_uStartFrame;
+    unsigned int m_uEndFrame;
+};
+
 /** Overrides the target of an action so that it always runs on the target
  * specified at action creation rather than the one specified by runAction.
  */
