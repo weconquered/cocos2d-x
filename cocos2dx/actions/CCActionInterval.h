@@ -730,7 +730,7 @@ class CC_DLL CCAnimate3D : public CCActionInterval
 {
 public:
     /** creates the action with an Animation and will restore the original frame when the animation is over */
-    static CCAnimate3D* create();
+    static CCAnimate3D* create(unsigned int startFrame, unsigned int endFrame, float duration);
 
     CCAnimate3D();
     ~CCAnimate3D();

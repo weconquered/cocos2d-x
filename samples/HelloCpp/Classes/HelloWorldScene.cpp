@@ -86,13 +86,29 @@ bool HelloWorld::init()
 //     CCGLProgram* program = CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionTexture);
 //     setShaderProgram(program);
 //     
-     g_MD2.load("hellpig.md2");
-     g_MD2.setSkin("hellpig.bmp");
+    g_MD2.load("hellpig.md2");
+    g_MD2.setSkin("hellpig.bmp");
+
+    //g_MD2.load("snork.md2");
+    //g_MD2.setSkin("tris.pcx");
 
     CCSprite3D* pSprite = CCSprite3D::create(&g_MD2);
-    pSprite->setPosition(240, 160, 0);
-    pSprite->setScale(100, 100, 100);
+    pSprite->setPosition(100, 160, 0);
+    pSprite->setScale(50, 50, 50);
     this->addChild(pSprite);
+
+    CCRotateBy* pRotateAction = CCRotateBy::create(1.0f, 360);
+    CCMoveBy* pMoveAction = CCMoveBy::create(1.0f, ccp(320, 0));
+    pSprite->runAction(CCRepeatForever::create(CCSequence::create(
+            pMoveAction,
+            pRotateAction,
+            pMoveAction->reverse(),
+            pRotateAction->reverse(),
+            NULL
+        )));
+
+    
+
 
     return true;
 }

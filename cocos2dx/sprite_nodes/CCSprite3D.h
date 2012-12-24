@@ -51,14 +51,18 @@ public:
      *                  Transform                      *
      ***************************************************/
 
+    // Override CCNode functions
+    virtual void setPosition(const CCPoint &position);
+    virtual CCPoint getPosition();
+    virtual float getRotation();
+    virtual void setRotation(float fRotation);
+    //
     virtual void setPosition(float x,float y,float z);
+
     virtual kmVec3 getPosition() const;
 
     virtual void setScale(float x,float y,float z);
     virtual kmVec3 getScale() const;
-
-    virtual void setRotation(float angle);
-    virtual float getRotation() const;
     
     /***************************************************
      *              Rendering and Visiting             *

@@ -29,6 +29,8 @@ THE SOFTWARE.
 #include "kazmath/GL/matrix.h"
 #include "shaders/CCShaderCache.h"
 #include "effects/CCGrid.h"
+//#include "3d_model_support/md2.h"
+#include "support/CCPointExtension.h"
 
 NS_CC_BEGIN
 
@@ -70,10 +72,31 @@ void CCSprite3D::setPosition(float x,float y,float z)
 {
     kmVec3Fill(&m_modelPosition, x, y, z);
 }
-    
+
+void CCSprite3D::setPosition(const CCPoint &position)
+{
+    m_modelPosition.x = position.x;
+    m_modelPosition.y = position.y;
+}
+
+CCPoint CCSprite3D::getPosition()
+{
+    return ccp(m_modelPosition.x, m_modelPosition.y);
+}
+
 kmVec3 CCSprite3D::getPosition() const
 {
     return m_modelPosition;
+}
+
+float CCSprite3D::getRotation()
+{
+    return CCNode::getRotation();
+}
+
+void CCSprite3D::setRotation(float fRotation)
+{
+    CCNode::setRotation(fRotation);
 }
 
 void CCSprite3D::setScale(float x,float y,float z)
@@ -84,16 +107,6 @@ void CCSprite3D::setScale(float x,float y,float z)
 kmVec3 CCSprite3D::getScale() const
 {
     return m_modelScale;
-}
-
-void CCSprite3D::setRotation(float angle)
-{
-    m_modelRotation = angle;
-}
-    
-float CCSprite3D::getRotation() const
-{
-    return m_modelRotation;
 }
 
 void CCSprite3D::setVisible(bool visible)
@@ -118,8 +131,11 @@ void CCSprite3D::draw()
     CCDirector::sharedDirector()->setDepthTest(true);
     
     CC_NODE_DRAW_SETUP();
+
     m_pModel->draw();
-    
+    static unsigned int uiStartFrame = 0, uiEndFrame = 182;
+    static float fAnimSpeed = 16.5f;
+   // ((CCModelMd2*)m_pModel)->animate(fAnimSpeed, uiStartFrame, uiEndFrame, true);
    CCDirector::sharedDirector()->setDepthTest(m_bDepthTestEnabled);
 }
 
@@ -127,6 +143,7 @@ void CCSprite3D::transform(void)
 {
     kmGLTranslatef(m_modelPosition.x, m_modelPosition.y, m_modelPosition.z);
     kmGLScalef(m_modelScale.x, m_modelScale.y, m_modelScale.z);
+    kmGLRotatef(getRotation(), 0, 0, 1.0f);
 }
 
 NS_CC_END
