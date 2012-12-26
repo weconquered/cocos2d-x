@@ -34,6 +34,19 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
+CCSprite3D* CCSprite3D::create(CCModel* pModel)
+{
+    CCSprite3D* pRet = new CCSprite3D();
+    if (pRet && pRet->init()) {
+        pRet->setModel(pModel);
+        pRet->autorelease();
+    }
+    else {
+        CC_SAFE_DELETE(pRet);
+    }
+    return pRet;
+}
+
 CCSprite3D::CCSprite3D()
 : m_pModel(NULL)
 , m_modelRotation(0.0f)
@@ -44,20 +57,19 @@ CCSprite3D::CCSprite3D()
 
 CCSprite3D::~CCSprite3D()
 {
-
+    CC_SAFE_RELEASE(m_pModel);
 }
 
-CCSprite3D* CCSprite3D::create(CCModel* pModel)
+void CCSprite3D::setModel(CCModel* pModel)
 {
-    CCSprite3D* pRet = new CCSprite3D();
-    if (pRet && pRet->init()) {
-        pRet->m_pModel = pModel;
-        pRet->autorelease();
-    }
-    else {
-        CC_SAFE_DELETE(pRet);
-    }
-    return pRet;
+    CC_SAFE_RETAIN(pModel);
+    CC_SAFE_RELEASE(m_pModel);
+    m_pModel = pModel;
+}
+
+CCModel* CCSprite3D::getModel()
+{
+    return m_pModel;
 }
 
 bool CCSprite3D::init()

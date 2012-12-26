@@ -23,6 +23,19 @@
 #include "textures/CCTextureCache.h"
 
 NS_CC_BEGIN
+
+CCModelMd2* CCModelMd2::create(const char* pszFilename)
+{
+    CCModelMd2* pRet = new CCModelMd2();
+    if (pRet)
+    {
+        pRet->load(pszFilename);
+        pRet->autorelease();
+    }
+
+    return pRet;
+}
+
 //-------------------------------------------------------------
 //- Load
 //- Loads an MD2 model from file

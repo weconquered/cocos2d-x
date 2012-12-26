@@ -117,6 +117,8 @@ struct SMD2Skin
 class CC_DLL CCModelMd2 : public CCModel
 {
 public:
+    static CCModelMd2* create(const char* pszFilename);
+
 	//Set skin to one of the files specified in the md2 files itself
 	void setSkin(unsigned int uiSkin);
 	//Set skin to a different image

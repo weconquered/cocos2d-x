@@ -47,6 +47,8 @@ public:
     static CCSprite3D* create(CCModel* pModel);
     virtual bool init();
 
+    void setModel(CCModel* pModel);
+    CCModel* getModel();
     /***************************************************
      *                  Transform                      *
      ***************************************************/

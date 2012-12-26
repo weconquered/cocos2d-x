@@ -3,8 +3,6 @@
 #include "sprite_nodes/CCSprite3D.h"
 USING_NS_CC;
 
-CCModelMd2 g_MD2;
-
 CCScene* HelloWorld::scene()
 {
     // 'scene' is an autorelease object
@@ -79,36 +77,24 @@ bool HelloWorld::init()
 //     // add the sprite as a child to this layer
 //     this->addChild(pSprite, 0);
      
-    
-//     model = MD2Model::create("hellpig.md2", "hellpig2.png");
-//     model->retain();
-    
-//     CCGLProgram* program = CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionTexture);
-//     setShaderProgram(program);
-//     
-    g_MD2.load("hellpig.md2");
-    g_MD2.setSkin("hellpig.bmp");
 
-    //g_MD2.load("snork.md2");
-    //g_MD2.setSkin("tris.pcx");
+    CCModelMd2* pMd2 = CCModelMd2::create("hellpig.md2");
+    pMd2->setSkin("hellpig.bmp");
 
-    CCSprite3D* pSprite = CCSprite3D::create(&g_MD2);
-    pSprite->setPosition(100, 160, 0);
-    pSprite->setScale(50, 50, 50);
-    this->addChild(pSprite);
+    CCSprite3D* pSprite3D = CCSprite3D::create(pMd2);
+    pSprite3D->setPosition(100, 160, 0);
+    pSprite3D->setScale(50, 50, 50);
+    this->addChild(pSprite3D);
 
     CCRotateBy* pRotateAction = CCRotateBy::create(1.0f, 360);
     CCMoveBy* pMoveAction = CCMoveBy::create(1.0f, ccp(320, 0));
-    pSprite->runAction(CCRepeatForever::create(CCSequence::create(
+    pSprite3D->runAction(CCRepeatForever::create(CCSequence::create(
             pMoveAction,
             pRotateAction,
             pMoveAction->reverse(),
             pRotateAction->reverse(),
             NULL
         )));
-
-    
-
 
     return true;
 }

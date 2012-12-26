@@ -26,13 +26,15 @@ THE SOFTWARE.
 #define MODEL_H
 
 #include "platform/CCPlatformMacros.h"
+#include "cocoa/CCObject.h"
 
 NS_CC_BEGIN
 
-class CC_DLL CCModel
+class CC_DLL CCModel : public CCObject
 {
-public:
+protected:
     CCModel() {};
+public:
     virtual ~CCModel() {};
 	//Load the model from file
 	virtual bool load(const char * szFile) = 0;
