@@ -8,19 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		15003FA315D2601D00B6775A /* iphone in Resources */ = {isa = PBXBuildFile; fileRef = 15003FA215D2601D00B6775A /* iphone */; };
-<<<<<<< HEAD:samples/HelloCpp/proj.ios/HelloCpp.xcodeproj/project.pbxproj
-		154269EB15B5669E00712A7F /* libcocos2dx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 154269D015B5644500712A7F /* libcocos2dx.a */; };
-		15A3CDC216804B44002FB0C5 /* abarlith.png in Resources */ = {isa = PBXBuildFile; fileRef = 15A3CDC016804B44002FB0C5 /* abarlith.png */; };
-		15A3CDC316804B44002FB0C5 /* tris.md2 in Resources */ = {isa = PBXBuildFile; fileRef = 15A3CDC116804B44002FB0C5 /* tris.md2 */; };
-		15A3CDCB16805547002FB0C5 /* hellpig.md2 in Resources */ = {isa = PBXBuildFile; fileRef = 15A3CDC816805547002FB0C5 /* hellpig.md2 */; };
-		15A3CDCC16805547002FB0C5 /* hellpig.png in Resources */ = {isa = PBXBuildFile; fileRef = 15A3CDC916805547002FB0C5 /* hellpig.png */; };
-		15A3CDCD16805547002FB0C5 /* hellpig2.png in Resources */ = {isa = PBXBuildFile; fileRef = 15A3CDCA16805547002FB0C5 /* hellpig2.png */; };
-		15A3CDF01681B216002FB0C5 /* hellpig.bmp in Resources */ = {isa = PBXBuildFile; fileRef = 15A3CDEF1681B216002FB0C5 /* hellpig.bmp */; };
-=======
 		15A3D7B91682F609002FB0C5 /* libcocos2dx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15A3D7B61682F5ED002FB0C5 /* libcocos2dx.a */; };
->>>>>>> gles20:samples/Cpp/HelloCpp/proj.ios/HelloCpp.xcodeproj/project.pbxproj
 		1A1CF3691626CEFF00AFC938 /* ipad in Resources */ = {isa = PBXBuildFile; fileRef = 1A1CF3671626CEFF00AFC938 /* ipad */; };
 		1A1CF36A1626CEFF00AFC938 /* ipadhd in Resources */ = {isa = PBXBuildFile; fileRef = 1A1CF3681626CEFF00AFC938 /* ipadhd */; };
+		1A8C1AFB169A679400561E13 /* hellpig.bmp in Resources */ = {isa = PBXBuildFile; fileRef = 1A8C1AF9169A679400561E13 /* hellpig.bmp */; };
+		1A8C1AFC169A679400561E13 /* hellpig.md2 in Resources */ = {isa = PBXBuildFile; fileRef = 1A8C1AFA169A679400561E13 /* hellpig.md2 */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
@@ -61,20 +53,12 @@
 
 /* Begin PBXFileReference section */
 		15003FA215D2601D00B6775A /* iphone */ = {isa = PBXFileReference; lastKnownFileType = folder; path = iphone; sourceTree = "<group>"; };
-<<<<<<< HEAD:samples/HelloCpp/proj.ios/HelloCpp.xcodeproj/project.pbxproj
-		154269C815B5644500712A7F /* cocos2dx.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cocos2dx.xcodeproj; path = ../../../cocos2dx/proj.ios/cocos2dx.xcodeproj; sourceTree = "<group>"; };
-		15A3CDC016804B44002FB0C5 /* abarlith.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = abarlith.png; sourceTree = "<group>"; };
-		15A3CDC116804B44002FB0C5 /* tris.md2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = tris.md2; sourceTree = "<group>"; };
-		15A3CDC816805547002FB0C5 /* hellpig.md2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = hellpig.md2; sourceTree = "<group>"; };
-		15A3CDC916805547002FB0C5 /* hellpig.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hellpig.png; sourceTree = "<group>"; };
-		15A3CDCA16805547002FB0C5 /* hellpig2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hellpig2.png; sourceTree = "<group>"; };
-		15A3CDEF1681B216002FB0C5 /* hellpig.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = hellpig.bmp; sourceTree = "<group>"; };
-=======
 		15A3D7AE1682F5EC002FB0C5 /* cocos2dx.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cocos2dx.xcodeproj; path = ../../../../cocos2dx/proj.ios/cocos2dx.xcodeproj; sourceTree = "<group>"; };
->>>>>>> gles20:samples/Cpp/HelloCpp/proj.ios/HelloCpp.xcodeproj/project.pbxproj
 		1A1CF3661626CB6000AFC938 /* AppMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppMacros.h; sourceTree = "<group>"; };
 		1A1CF3671626CEFF00AFC938 /* ipad */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ipad; sourceTree = "<group>"; };
 		1A1CF3681626CEFF00AFC938 /* ipadhd */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ipadhd; sourceTree = "<group>"; };
+		1A8C1AF9169A679400561E13 /* hellpig.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = hellpig.bmp; sourceTree = "<group>"; };
+		1A8C1AFA169A679400561E13 /* hellpig.md2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = hellpig.md2; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* HelloCpp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloCpp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -172,12 +156,8 @@
 		784521C214EBA449009D533B /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				15A3CDEF1681B216002FB0C5 /* hellpig.bmp */,
-				15A3CDC816805547002FB0C5 /* hellpig.md2 */,
-				15A3CDC916805547002FB0C5 /* hellpig.png */,
-				15A3CDCA16805547002FB0C5 /* hellpig2.png */,
-				15A3CDC016804B44002FB0C5 /* abarlith.png */,
-				15A3CDC116804B44002FB0C5 /* tris.md2 */,
+				1A8C1AF9169A679400561E13 /* hellpig.bmp */,
+				1A8C1AFA169A679400561E13 /* hellpig.md2 */,
 				1A1CF3671626CEFF00AFC938 /* ipad */,
 				1A1CF3681626CEFF00AFC938 /* ipadhd */,
 				15003FA215D2601D00B6775A /* iphone */,
@@ -297,12 +277,8 @@
 				D446FD7D161028F4000ADA7B /* Default-568h@2x.png in Resources */,
 				1A1CF3691626CEFF00AFC938 /* ipad in Resources */,
 				1A1CF36A1626CEFF00AFC938 /* ipadhd in Resources */,
-				15A3CDC216804B44002FB0C5 /* abarlith.png in Resources */,
-				15A3CDC316804B44002FB0C5 /* tris.md2 in Resources */,
-				15A3CDCB16805547002FB0C5 /* hellpig.md2 in Resources */,
-				15A3CDCC16805547002FB0C5 /* hellpig.png in Resources */,
-				15A3CDCD16805547002FB0C5 /* hellpig2.png in Resources */,
-				15A3CDF01681B216002FB0C5 /* hellpig.bmp in Resources */,
+				1A8C1AFB169A679400561E13 /* hellpig.bmp in Resources */,
+				1A8C1AFC169A679400561E13 /* hellpig.md2 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
