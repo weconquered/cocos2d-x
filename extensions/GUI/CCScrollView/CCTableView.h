@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2012 cocos2d-x.org
+ Copyright (c) 2012 Mike Owens <mike@filespanker>
  Copyright (c) 2010 Sangwoo Im
  
  http://www.cocos2d-x.org
@@ -100,6 +101,23 @@ public:
      */
     virtual unsigned int numberOfCellsInTableView(CCTableView *table) = 0;
 
+    /**
+     * Asserts that each cell has a constant size.
+     * Returning false from this method enables a table scan, and may have 
+     * performance penalties for larger data sets.  The per-cell size will
+     * be calculated by calling cellSizeForIndex
+     * Defaults to true.
+     *
+     * @return true iff cells in the table will be of constant size
+     */
+     virtual bool hasFixedCellSize();
+
+     /**
+      * Called to determine the size of a cell at index.  This is only
+      * useful if hasFixedCellSize() returns false.  By default, returns
+      * cellSizeForTable()
+      */
+     virtual CCSize cellSizeForIndex(CCTableView *table, unsigned int idx);
 };
 
 

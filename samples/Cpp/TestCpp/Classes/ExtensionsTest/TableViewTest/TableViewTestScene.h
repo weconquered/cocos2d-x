@@ -21,6 +21,9 @@ public:
     virtual cocos2d::CCSize cellSizeForTable(cocos2d::extension::CCTableView *table);
     virtual cocos2d::extension::CCTableViewCell* tableCellAtIndex(cocos2d::extension::CCTableView *table, unsigned int idx);
     virtual unsigned int numberOfCellsInTableView(cocos2d::extension::CCTableView *table);
+    virtual bool hasFixedCellSize();
+    virtual cocos2d::CCSize cellSizeForIndex(cocos2d::extension::CCTableView *table, unsigned int idx);
+    
 };
 
 #endif // __TABLEVIEWTESTSCENE_H__

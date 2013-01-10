@@ -97,3 +97,15 @@ unsigned int TableViewTestLayer::numberOfCellsInTableView(CCTableView *table)
 {
     return 20;
 }
+
+bool TableViewTestLayer::hasFixedCellSize()
+{
+    return false;
+}
+
+cocos2d::CCSize TableViewTestLayer::cellSizeForIndex(cocos2d::extension::CCTableView *table, unsigned int idx)
+{
+    static int i = 50;
+    i+=10;
+    return CCSizeMake(i, 60);
+}
