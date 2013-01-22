@@ -11,6 +11,12 @@
 		15A3D7B91682F609002FB0C5 /* libcocos2dx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15A3D7B61682F5ED002FB0C5 /* libcocos2dx.a */; };
 		1A1CF3691626CEFF00AFC938 /* ipad in Resources */ = {isa = PBXBuildFile; fileRef = 1A1CF3671626CEFF00AFC938 /* ipad */; };
 		1A1CF36A1626CEFF00AFC938 /* ipadhd in Resources */ = {isa = PBXBuildFile; fileRef = 1A1CF3681626CEFF00AFC938 /* ipadhd */; };
+		1A26AC3416AE991300D8F7E9 /* CCScrollLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A26AC2816AE991300D8F7E9 /* CCScrollLayer.cpp */; };
+		1A26AC3516AE991300D8F7E9 /* CCScrollLayerExt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A26AC2A16AE991300D8F7E9 /* CCScrollLayerExt.cpp */; };
+		1A26AC3616AE991300D8F7E9 /* CCTableView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A26AC2C16AE991300D8F7E9 /* CCTableView.cpp */; };
+		1A26AC3716AE991300D8F7E9 /* CCTableViewCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A26AC2E16AE991300D8F7E9 /* CCTableViewCell.cpp */; };
+		1A26AC3816AE991300D8F7E9 /* CustomCCTableViewCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A26AC3016AE991300D8F7E9 /* CustomCCTableViewCell.cpp */; };
+		1A26AC3916AE991300D8F7E9 /* TestCCTableView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A26AC3216AE991300D8F7E9 /* TestCCTableView.cpp */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
@@ -55,6 +61,18 @@
 		1A1CF3661626CB6000AFC938 /* AppMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppMacros.h; sourceTree = "<group>"; };
 		1A1CF3671626CEFF00AFC938 /* ipad */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ipad; sourceTree = "<group>"; };
 		1A1CF3681626CEFF00AFC938 /* ipadhd */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ipadhd; sourceTree = "<group>"; };
+		1A26AC2816AE991300D8F7E9 /* CCScrollLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCScrollLayer.cpp; sourceTree = "<group>"; };
+		1A26AC2916AE991300D8F7E9 /* CCScrollLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCScrollLayer.h; sourceTree = "<group>"; };
+		1A26AC2A16AE991300D8F7E9 /* CCScrollLayerExt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCScrollLayerExt.cpp; sourceTree = "<group>"; };
+		1A26AC2B16AE991300D8F7E9 /* CCScrollLayerExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCScrollLayerExt.h; sourceTree = "<group>"; };
+		1A26AC2C16AE991300D8F7E9 /* CCTableView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTableView.cpp; sourceTree = "<group>"; };
+		1A26AC2D16AE991300D8F7E9 /* CCTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTableView.h; sourceTree = "<group>"; };
+		1A26AC2E16AE991300D8F7E9 /* CCTableViewCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTableViewCell.cpp; sourceTree = "<group>"; };
+		1A26AC2F16AE991300D8F7E9 /* CCTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTableViewCell.h; sourceTree = "<group>"; };
+		1A26AC3016AE991300D8F7E9 /* CustomCCTableViewCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomCCTableViewCell.cpp; sourceTree = "<group>"; };
+		1A26AC3116AE991300D8F7E9 /* CustomCCTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCCTableViewCell.h; sourceTree = "<group>"; };
+		1A26AC3216AE991300D8F7E9 /* TestCCTableView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestCCTableView.cpp; sourceTree = "<group>"; };
+		1A26AC3316AE991300D8F7E9 /* TestCCTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestCCTableView.h; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* HelloCpp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloCpp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -170,6 +188,18 @@
 		BF23D4E2143315EB00657E08 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				1A26AC2816AE991300D8F7E9 /* CCScrollLayer.cpp */,
+				1A26AC2916AE991300D8F7E9 /* CCScrollLayer.h */,
+				1A26AC2A16AE991300D8F7E9 /* CCScrollLayerExt.cpp */,
+				1A26AC2B16AE991300D8F7E9 /* CCScrollLayerExt.h */,
+				1A26AC2C16AE991300D8F7E9 /* CCTableView.cpp */,
+				1A26AC2D16AE991300D8F7E9 /* CCTableView.h */,
+				1A26AC2E16AE991300D8F7E9 /* CCTableViewCell.cpp */,
+				1A26AC2F16AE991300D8F7E9 /* CCTableViewCell.h */,
+				1A26AC3016AE991300D8F7E9 /* CustomCCTableViewCell.cpp */,
+				1A26AC3116AE991300D8F7E9 /* CustomCCTableViewCell.h */,
+				1A26AC3216AE991300D8F7E9 /* TestCCTableView.cpp */,
+				1A26AC3316AE991300D8F7E9 /* TestCCTableView.h */,
 				1A1CF3661626CB6000AFC938 /* AppMacros.h */,
 				BF23D4E3143315EB00657E08 /* AppDelegate.cpp */,
 				BF23D4E4143315EB00657E08 /* AppDelegate.h */,
@@ -286,6 +316,12 @@
 				D4ABB4B313B4395300552E6E /* main.m in Sources */,
 				BF23D4E7143315EB00657E08 /* AppDelegate.cpp in Sources */,
 				BF23D4E8143315EB00657E08 /* HelloWorldScene.cpp in Sources */,
+				1A26AC3416AE991300D8F7E9 /* CCScrollLayer.cpp in Sources */,
+				1A26AC3516AE991300D8F7E9 /* CCScrollLayerExt.cpp in Sources */,
+				1A26AC3616AE991300D8F7E9 /* CCTableView.cpp in Sources */,
+				1A26AC3716AE991300D8F7E9 /* CCTableViewCell.cpp in Sources */,
+				1A26AC3816AE991300D8F7E9 /* CustomCCTableViewCell.cpp in Sources */,
+				1A26AC3916AE991300D8F7E9 /* TestCCTableView.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
