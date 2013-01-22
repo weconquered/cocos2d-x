@@ -387,7 +387,8 @@ bool CCTableView::ccTouchBegan(CCTouch* touch, CCEvent* event)
     
 	beginTouch = touch;
 	CCPoint touchLocation = touch->getLocation();
-	
+	beginLocation = checkLocation = touchLocation;
+    
 	if (!this->getIsScheduled()) {
 		this->schedule(schedule_selector(CCTableView::checkBoundaryOfContent));
 		this->setIsScheduled(true);

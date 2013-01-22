@@ -171,7 +171,8 @@ bool CCScrollLayerExt::ccTouchBegan(CCTouch* touch, CCEvent* event)
 	
 	beginTouch = touch;
 	CCPoint touchLocation = touch->getLocation();
-	
+	touchOnLocation = firstTouchLocation = touchLocation;
+    
 	touchLocation = this->convertToNodeSpace(touchOnLocation);
 	CCRect r;
 	r.origin = CCPointZero;
