@@ -246,7 +246,7 @@ CCNode* CCBReader::readNodeGraphFromFile(const char *pCCBFileName, CCObject *pOw
         strCCBFileName += strSuffix;
     }
 
-    std::string strPath = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(strCCBFileName.c_str());
+    std::string strPath = CCFileUtils::sharedFileUtils()->fullPathForFilename(strCCBFileName.c_str());
     unsigned long size = 0;
 
     unsigned char * pBytes = CCFileUtils::sharedFileUtils()->getFileData(strPath.c_str(), "rb", &size);
@@ -294,7 +294,7 @@ CCNode* CCBReader::readNodeGraphFromData(CCData *pData, CCObject *pOwner, const 
     {
         CCNode* pNode = (CCNode*)pElement->getIntKey();
         CCBAnimationManager* manager = (CCBAnimationManager*)animationManagers->objectForKey((intptr_t)pNode);
-        //pNode->setUserObject(manager);
+        pNode->setUserObject(manager);
 
         if (jsControlled)
         {
