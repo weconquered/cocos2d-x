@@ -83,7 +83,7 @@ void CCScrollLayerExt::constraintContent()
 		
 		
 		if (scrollDelegate) {
-			scrollDelegate->scrllViewWillBeginDecelerating(this);
+			scrollDelegate->scrollViewWillBeginDecelerating(this);
 		}
 		
 		CCEaseOut * fadeOut = CCEaseOut::create(CCMoveTo::create(0.3, ccp( properX,properY)), 3);
@@ -211,7 +211,7 @@ void CCScrollLayerExt::ccTouchEnded(CCTouch *touch, CCEvent* event)
 			else if (this->getLockHorizontal()) deltaPos.x =0.0f;
             
 			if (scrollDelegate) {
-				scrollDelegate->scrllViewWillBeginDecelerating(this);
+				scrollDelegate->scrollViewWillBeginDecelerating(this);
 			}
 			//int tmpSign = deltaPos.y <0 ? -1 : 1;
 			CCEaseOut * fadeOut = CCEaseOut::create(CCMoveBy::create(0.3, deltaPos ),3);

@@ -18,7 +18,7 @@ class CCScrollLayerExt;
 
 class CCScrollLayerExtDelegate {
 public:
-	virtual void scrllViewWillBeginDecelerating(CCScrollLayerExt * mScrollView){} // called on finger up as we are moving
+	virtual void scrollViewWillBeginDecelerating(CCScrollLayerExt * mScrollView){} // called on finger up as we are moving
 	virtual void scrollViewDidEndDecelerating(CCScrollLayerExt * mScrollView){}// called when scroll view grinds to a halt
 	virtual void scrollViewTouchMoving(CCScrollLayerExt * mScrollView){}//touch moving.
 	virtual void scrollViewDidEndMoving(CCScrollLayerExt * mScrollView){}//it's not decelerating
