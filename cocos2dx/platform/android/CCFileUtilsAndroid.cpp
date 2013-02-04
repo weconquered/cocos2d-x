@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "support/zip_support/ZipUtils.h"
 #include "platform/CCCommon.h"
 #include "jni/Java_org_cocos2dx_lib_Cocos2dxHelper.h"
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -171,6 +172,23 @@ string CCFileUtilsAndroid::getWriteablePath()
     {
         return "";
     }
+}
+
+bool CCFileUtilsAndroid::createDirectory(const std::string& strDirectory)
+{
+    bool bRet = false;
+    if (strDirectory.length() > 0)
+    {
+        int ret = access(strDirectory.c_str(), F_OK);
+        if (-1 == ret)
+        {
+            ret = mkdir(strDirectory.c_str(), 0777);
+            CCLOG("mkdir return %d", ret);
+        }
+        bRet =  (ret != -1) ? true : false;
+    }
+
+    return bRet;
 }
 
 NS_CC_END

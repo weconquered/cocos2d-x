@@ -52,6 +52,7 @@ public:
     virtual std::string getWriteablePath();
     virtual bool isFileExist(const std::string& strFilePath);
     virtual bool isAbsolutePath(const std::string& strPath);
+    virtual bool createDirectory(const std::string& strDirectory);
 };
 
 // end of platform group

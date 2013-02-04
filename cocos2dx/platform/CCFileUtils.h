@@ -272,7 +272,7 @@ public:
      */
     virtual bool isAbsolutePath(const std::string& strPath);
     
-    
+    virtual bool createDirectory(const std::string& strDirectory) = 0;
     /**
      *  Sets/Gets whether to pop-up a message box when failed to load an image.
      */

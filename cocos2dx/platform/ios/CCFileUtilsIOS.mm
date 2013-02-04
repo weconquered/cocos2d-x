@@ -219,6 +219,13 @@ bool CCFileUtilsIOS::isAbsolutePath(const std::string& strPath)
     return [path isAbsolutePath] ? true : false;
 }
 
+bool CCFileUtilsIOS::createDirectory(const std::string& strDirectory)
+{
+    NSString* dir = [NSString stringWithUTF8String:strDirectory.c_str()];
+    BOOL ret = [s_fileManager createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    return ret ? true : false;
+}
+
 CCDictionary* CCFileUtilsIOS::createCCDictionaryWithContentsOfFile(const std::string& filename)
 {
     std::string fullPath = CCFileUtils::sharedFileUtils()->fullPathForFilename(filename.c_str());

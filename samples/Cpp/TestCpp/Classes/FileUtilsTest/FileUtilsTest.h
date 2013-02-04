@@ -42,6 +42,8 @@ public:
     virtual string title();
     virtual string subtitle();
 private:
+    void createFile(const std::string& strFilePath, const std::string& strContent);
+    void readFileContents(const std::string& strFilePath);
     vector<string> m_defaultSearchPathArray;
     vector<string> m_defaultResolutionsOrderArray;
 };
@@ -56,6 +58,15 @@ public:
 };
 
 class TestIsFileExist : public FileUtilsDemo
+{
+public:
+    virtual void onEnter();
+    virtual void onExit();
+    virtual string title();
+    virtual string subtitle();
+};
+
+class TestCreateDirectory : public FileUtilsDemo
 {
 public:
     virtual void onEnter();

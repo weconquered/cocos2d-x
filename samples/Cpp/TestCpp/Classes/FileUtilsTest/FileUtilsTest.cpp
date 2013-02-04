@@ -5,12 +5,14 @@ TESTLAYER_CREATE_FUNC(TestResolutionDirectories);
 TESTLAYER_CREATE_FUNC(TestSearchPath);
 TESTLAYER_CREATE_FUNC(TestFilenameLookup);
 TESTLAYER_CREATE_FUNC(TestIsFileExist);
+TESTLAYER_CREATE_FUNC(TestCreateDirectory);
 
 static NEWTESTFUNC createFunctions[] = {
     CF(TestResolutionDirectories),
     CF(TestSearchPath),
     CF(TestFilenameLookup),
-    CF(TestIsFileExist)
+    CF(TestIsFileExist),
+    CF(TestCreateDirectory)
 };
 
 static int sceneIdx=-1;
@@ -141,19 +143,20 @@ void TestResolutionDirectories::onEnter()
     
     sharedFileUtils->purgeCachedEntries();
     m_defaultSearchPathArray = sharedFileUtils->getSearchPaths();
-    vector<string> searchPaths = m_defaultSearchPathArray;
-    searchPaths.insert(searchPaths.begin(),   "Misc");
+    m_defaultResolutionsOrderArray = sharedFileUtils->getSearchResolutionsOrder();
+    
+    vector<string> searchPaths;
+    searchPaths.push_back("Misc");
     sharedFileUtils->setSearchPaths(searchPaths);
     
-    m_defaultResolutionsOrderArray = sharedFileUtils->getSearchResolutionsOrder();
-    vector<string> resolutionsOrder = m_defaultResolutionsOrderArray;
+    vector<string> resolutionsOrder;
 
-    resolutionsOrder.insert(resolutionsOrder.begin(), "resources-ipadhd");
-    resolutionsOrder.insert(resolutionsOrder.begin()+1, "resources-ipad");
-    resolutionsOrder.insert(resolutionsOrder.begin()+2, "resources-widehd");
-    resolutionsOrder.insert(resolutionsOrder.begin()+3, "resources-wide");
-    resolutionsOrder.insert(resolutionsOrder.begin()+4, "resources-hd");
-    resolutionsOrder.insert(resolutionsOrder.begin()+5, "resources-iphone");
+    resolutionsOrder.push_back("resources-ipadhd");
+    resolutionsOrder.push_back("resources-ipad");
+    resolutionsOrder.push_back("resources-widehd");
+    resolutionsOrder.push_back("resources-wide");
+    resolutionsOrder.push_back("resources-hd");
+    resolutionsOrder.push_back("resources-iphone");
     
     sharedFileUtils->setSearchResolutionsOrder(resolutionsOrder);
     
@@ -195,27 +198,35 @@ void TestSearchPath::onEnter()
     
     sharedFileUtils->purgeCachedEntries();
     m_defaultSearchPathArray = sharedFileUtils->getSearchPaths();
-    vector<string> searchPaths = m_defaultSearchPathArray;
+    m_defaultResolutionsOrderArray = sharedFileUtils->getSearchResolutionsOrder();
+    
+    vector<string> searchPaths;
     string writablePath = sharedFileUtils->getWriteablePath();
-    string fileName = writablePath+"external.txt";
-    char szBuf[100] = "Hello Cocos2d-x!";
-    FILE* fp = fopen(fileName.c_str(), "wb");
-    if (fp)
+
+    createFile(writablePath+"external.txt", "Hello Cocos2d-x!");
+    
+    std::string strCreatedDir = writablePath+"resources-iphone";
+    bool isDirCreated = sharedFileUtils->createDirectory(strCreatedDir);
+    if (isDirCreated)
     {
-        fwrite(szBuf, 1, strlen(szBuf), fp);
-        fclose(fp);
-        CCLog("Writing file to writable path succeed.");
+        CCLog("create directory (%s) succeed.", strCreatedDir.c_str());
+        createFile(strCreatedDir+"/external-subdir.txt", "I'm the file in sub directory");
+    }
+    else
+    {
+        CCLog("create directory (%s) fails", strCreatedDir.c_str());
     }
     
-    searchPaths.insert(searchPaths.begin(), writablePath);
-    searchPaths.insert(searchPaths.begin()+1,   "Misc/searchpath1");
-    searchPaths.insert(searchPaths.begin()+2, "Misc/searchpath2");
+    searchPaths.push_back(writablePath);
+    searchPaths.push_back("Misc/searchpath1");
+    searchPaths.push_back("Misc/searchpath2");
     sharedFileUtils->setSearchPaths(searchPaths);
     
-    m_defaultResolutionsOrderArray = sharedFileUtils->getSearchResolutionsOrder();
-    vector<string> resolutionsOrder = m_defaultResolutionsOrderArray;
     
-    resolutionsOrder.insert(resolutionsOrder.begin(), "resources-ipad");
+    vector<string> resolutionsOrder;
+    
+    resolutionsOrder.push_back("resources-iphone");
+    resolutionsOrder.push_back("resources-ipad");
     sharedFileUtils->setSearchResolutionsOrder(resolutionsOrder);
     
     for( int i=1; i<3; i++) {
@@ -225,18 +236,9 @@ void TestSearchPath::onEnter()
     }
     
     // Gets external.txt from writable path
-    string fullPath = sharedFileUtils->fullPathForFilename("external.txt");
-    CCLog("\nexternal file path = %s\n", fullPath.c_str());
-    if (fullPath.length() > 0) {
-        fp = fopen(fullPath.c_str(), "rb");
-        if (fp)
-        {
-            char szReadBuf[100] = {0};
-            fread(szReadBuf, 1, strlen(szBuf), fp);
-            CCLog("The content of file from writable path: %s", szReadBuf);
-            fclose(fp);
-        }
-    }
+    readFileContents(sharedFileUtils->fullPathForFilename("external.txt"));
+    
+    readFileContents(sharedFileUtils->fullPathForFilename("external-subdir.txt"));
 }
 
 void TestSearchPath::onExit()
@@ -257,6 +259,36 @@ string TestSearchPath::title()
 string TestSearchPath::subtitle()
 {
     return "See the console";
+}
+
+void TestSearchPath::createFile(const std::string& strFilePath, const std::string& strContent)
+{
+    FILE* fp = fopen(strFilePath.c_str(), "wb");
+    if (fp)
+    {
+        fwrite(strContent.c_str(), 1, strContent.length(), fp);
+        fclose(fp);
+    }
+}
+
+void TestSearchPath::readFileContents(const std::string& strFilePath)
+{
+    FILE* fp = fopen(strFilePath.c_str(), "rb");
+    if (fp)
+    {
+        int length = 0;
+        fseek(fp, 0, SEEK_END);
+        length = ftell(fp);
+        fseek(fp, 0, SEEK_SET);
+        char* pBuf = (char*)malloc(length+1);
+        memset(pBuf, 0, length+1);
+        fread(pBuf, 1, length, fp);
+        CCLog("\n-------------------------begin-------------------------------\n");
+        CCLog("The content of file (%s) : %s", strFilePath.c_str(), pBuf);
+        CCLog("\n------------------------- end -------------------------------\n");
+        fclose(fp);
+        free(pBuf);
+    }
 }
 
 //#pragma mark - TestFilenameLookup
@@ -331,9 +363,6 @@ void TestIsFileExist::onExit()
 	
 	CCFileUtils *sharedFileUtils = CCFileUtils::sharedFileUtils();
 	
-	// reset filename lookup
-    sharedFileUtils->setFilenameLookupDictionary(CCDictionary::create());
-	
     FileUtilsDemo::onExit();
 }
 
@@ -343,6 +372,33 @@ string TestIsFileExist::title()
 }
 
 string TestIsFileExist::subtitle()
+{
+    return "";
+}
+
+//#pragma mark - TestCreateDirectory
+
+void TestCreateDirectory::onEnter()
+{
+    FileUtilsDemo::onEnter();
+    CCFileUtils *sharedFileUtils = CCFileUtils::sharedFileUtils();
+    
+    std::string writablePath = sharedFileUtils->getWriteablePath();
+    bool ret = sharedFileUtils->createDirectory(writablePath+"newDir");
+    CCLog("create directory return: %d", ret);
+}
+
+void TestCreateDirectory::onExit()
+{
+    FileUtilsDemo::onExit();
+}
+
+string TestCreateDirectory::title()
+{
+    return "FileUtils: test creating directory";
+}
+
+string TestCreateDirectory::subtitle()
 {
     return "";
 }
