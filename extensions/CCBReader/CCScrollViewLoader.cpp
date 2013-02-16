@@ -32,6 +32,7 @@ void CCScrollViewLoader::onHandlePropTypeCCBFile(CCNode * pNode, CCNode * pParen
     if(strcmp(pPropertyName, PROPERTY_CONTAINER) == 0) {
         ((CCScrollView *)pNode)->setContainer(pCCBFileNode);
 		((CCScrollView *)pNode)->updateInset();
+        ((CCScrollView *)pNode)->updateIndicators(0);
     } else {
         CCNodeLoader::onHandlePropTypeCCBFile(pNode, pParent, pPropertyName, pCCBFileNode, pCCBReader);
     }

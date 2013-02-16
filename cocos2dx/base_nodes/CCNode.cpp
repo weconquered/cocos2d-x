@@ -590,13 +590,13 @@ void CCNode::addChild(CCNode *child, int zOrder, int tag)
 void CCNode::addChild(CCNode *child, int zOrder)
 {
     CCAssert( child != NULL, "Argument must be non-nil");
-    this->addChild(child, zOrder, child->m_nTag);
+    CCNode::addChild(child, zOrder, child->m_nTag);
 }
 
 void CCNode::addChild(CCNode *child)
 {
     CCAssert( child != NULL, "Argument must be non-nil");
-    this->addChild(child, child->m_nZOrder, child->m_nTag);
+    CCNode::addChild(child, child->m_nZOrder, child->m_nTag);
 }
 
 void CCNode::removeFromParent()

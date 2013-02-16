@@ -201,6 +201,8 @@ public:
     virtual void addChild(CCNode * child, int zOrder);
     virtual void addChild(CCNode * child);
     void setTouchEnabled(bool e);
+    void updateIndicators(float dt);
+    
 private:
     /**
      * Init this object with a given size to clip its content.
@@ -324,6 +326,13 @@ protected:
      * max and min scale
      */
     float m_fMinScale, m_fMaxScale;
+    /**
+     * Whether to show indicator.
+     */
+    bool m_bShowScrollIndicator;
+    
+    CC_SYNTHESIZE(CCLayerColor*, m_pVerticalScrollIndicator,VerticalScrollIndicator);
+	CC_SYNTHESIZE(CCLayerColor*, m_pHorizontalScrollIndicator,HorizontalScrollIndicator);
 };
 
 // end of GUI group

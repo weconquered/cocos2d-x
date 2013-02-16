@@ -55,6 +55,9 @@ CCScrollView::CCScrollView()
 , m_pTouches(NULL)
 , m_fMinScale(0.0f)
 , m_fMaxScale(0.0f)
+, m_bShowScrollIndicator(true)
+, m_pVerticalScrollIndicator(NULL)
+, m_pHorizontalScrollIndicator(NULL)
 {
 
 }
@@ -118,8 +121,24 @@ bool CCScrollView::initWithViewSize(CCSize size, CCNode *container/* = NULL*/)
         m_pContainer->setPosition(ccp(0.0f, 0.0f));
         m_fTouchLength = 0.0f;
         
-        this->addChild(m_pContainer);
+        CCLayer::addChild(m_pContainer);
         m_fMinScale = m_fMaxScale = 1.0f;
+        
+        m_pVerticalScrollIndicator = CCLayerColor::create(ccc4(50, 50, 50, 180));
+        m_pVerticalScrollIndicator->ignoreAnchorPointForPosition(false);
+        m_pVerticalScrollIndicator->setAnchorPoint(ccp(1.0f, 0.0f));
+        m_pVerticalScrollIndicator->setTouchEnabled(false);
+        CCLayer::addChild(m_pVerticalScrollIndicator, 9999);
+
+        m_pHorizontalScrollIndicator = CCLayerColor::create(ccc4(50, 50, 50, 180));
+        m_pHorizontalScrollIndicator->ignoreAnchorPointForPosition(false);
+        m_pHorizontalScrollIndicator->setAnchorPoint(ccp(0, 0));
+        m_pHorizontalScrollIndicator->setPosition(ccp(0, 0));
+        m_pHorizontalScrollIndicator->setTouchEnabled(false);
+        CCLayer::addChild(m_pHorizontalScrollIndicator, 9999);
+
+        this->schedule(schedule_selector(CCScrollView::updateIndicators));
+        
         return true;
     }
     return false;
@@ -305,17 +324,20 @@ CCNode * CCScrollView::getContainer()
 
 void CCScrollView::setContainer(CCNode * pContainer)
 {
-    this->removeAllChildrenWithCleanup(true);
-
     if (!pContainer) return;
 
+    m_pContainer->removeAllChildrenWithCleanup(true);
+    this->removeChild(this->m_pContainer, true);
+    
     this->m_pContainer = pContainer;
 
     this->m_pContainer->ignoreAnchorPointForPosition(false);
     this->m_pContainer->setAnchorPoint(ccp(0.0f, 0.0f));
 
-    this->addChild(this->m_pContainer);
-
+    CCLayer::addChild(this->m_pContainer);
+//    m_pHorizontalScrollIndicator->retain();
+//    this->removeChild(m_pHorizontalScrollIndicator);
+//    CCLayer::addChild(m_pHorizontalScrollIndicator);
     this->setViewSize(this->m_tViewSize);
 }
 
@@ -356,7 +378,7 @@ CCPoint CCScrollView::maxContainerOffset()
 
 CCPoint CCScrollView::minContainerOffset()
 {
-    return ccp(m_tViewSize.width - m_pContainer->getContentSize().width*m_pContainer->getScaleX(), 
+    return ccp(m_tViewSize.width - m_pContainer->getContentSize().width*m_pContainer->getScaleX(),
                m_tViewSize.height - m_pContainer->getContentSize().height*m_pContainer->getScaleY());
 }
 
@@ -440,6 +462,7 @@ void CCScrollView::setContentSize(const CCSize & size)
     {
         this->getContainer()->setContentSize(size);
 		this->updateInset();
+        this->updateIndicators(0);
     }
 }
 
@@ -526,8 +549,9 @@ void CCScrollView::visit()
 	this->transform();
     this->beforeDraw();
 
-	if(m_pChildren)
+	if(m_pChildren && m_pChildren->count() > 0)
     {
+        sortAllChildren();
 		ccArray *arrayData = m_pChildren->data;
 		unsigned int i=0;
 		
@@ -741,6 +765,35 @@ CCRect CCScrollView::getViewRect()
     }
     
     return CCRectMake(screenPos.x, screenPos.y, m_tViewSize.width*scaleX, m_tViewSize.height*scaleY);
+}
+
+void CCScrollView::updateIndicators(float dt)
+{
+    m_pHorizontalScrollIndicator->setVisible(false);
+	m_pVerticalScrollIndicator->setVisible(false);
+
+	CCSize scrollSize = this->getContentSize();
+
+	if (m_bShowScrollIndicator && ( m_eDirection == kCCScrollViewDirectionVertical || m_eDirection == kCCScrollViewDirectionBoth))
+	{
+        this->m_pVerticalScrollIndicator->setVisible(true);
+		CCSize vScrollIndSize = CCSizeMake(4, m_tViewSize.height * m_tViewSize.height / scrollSize.height);
+		m_pVerticalScrollIndicator->setContentSize(vScrollIndSize);
+        float fIndScaleOfV = m_pContainer->getPosition().y / (scrollSize.height-m_tViewSize.height) * (m_tViewSize.height-vScrollIndSize.height);
+		CCPoint vScrollIndPos = ccp(m_tViewSize.width, -fIndScaleOfV);
+		m_pVerticalScrollIndicator->setPosition(vScrollIndPos);
+	}
+	
+    if (m_bShowScrollIndicator && ( m_eDirection == kCCScrollViewDirectionHorizontal || m_eDirection == kCCScrollViewDirectionBoth))
+	{
+        this->m_pHorizontalScrollIndicator->setVisible(true);
+		CCSize hScrollIndSize = CCSizeMake(m_tViewSize.width * m_tViewSize.width / scrollSize.width, 4);
+		m_pHorizontalScrollIndicator->setContentSize(hScrollIndSize);
+		float fIndScaleOfH = m_pContainer->getPosition().x / (scrollSize.width-m_tViewSize.width) * (m_tViewSize.width-hScrollIndSize.width);
+        
+		CCPoint hScrollIndPos = ccp(-fIndScaleOfH , 0);
+		m_pHorizontalScrollIndicator->setPosition(hScrollIndPos);
+	}
 }
 
 NS_CC_EXT_END
