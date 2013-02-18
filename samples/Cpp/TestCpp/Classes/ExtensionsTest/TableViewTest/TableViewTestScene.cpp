@@ -257,12 +257,18 @@ TableViewTestLayer2::~TableViewTestLayer2()
         iter->second->release();
     }
     m_mapIcon.clear();
+    
+    std::map<std::string, CCSprite*>::iterator iterBG = m_mapBg.begin();
+    for (; iterBG != m_mapBg.end(); ++iterBG) {
+        iterBG->second->release();
+    }
+    m_mapBg.clear();
 }
 
 // on "init" you need to initialize your instance
 bool TableViewTestLayer2::init()
 {
-    if ( !CCLayerColor::initWithColor(ccc4(255, 255, 0, 255)) )
+    if ( !CCLayerColor::initWithColor(ccc4(0, 0, 0, 255)) )
     {
         return false;
     }
@@ -315,14 +321,23 @@ CCTableViewCell* TableViewTestLayer2::tableCellAtIndex(CCTableView *table, unsig
 
     CCLOG("idx = %d", idx);
 
+    bool bComingSoonItem = idx >= 17 && idx <= 19;
+    
     CustomTableViewCell *cell = (CustomTableViewCell*)table->dequeueCell();
     if (!cell) {
         cell = new CustomTableViewCell();
         cell->autorelease();
-        CCSprite *sprite = CCSprite::createWithSpriteFrameName("store_item.png");
+        
+        
+        std::string itemBG = bComingSoonItem ? "store_comingsoon.png" : "store_item.png";
+
+        CCSprite *sprite = CCSprite::createWithSpriteFrameName(itemBG.c_str());
         sprite->setAnchorPoint(CCPointZero);
         sprite->setPosition(ccp(0, 0));
+        sprite->retain();
         cell->setBackGround(sprite);
+        
+        m_mapBg[string->getCString()] = sprite;
         
         sprite = CCSprite::createWithSpriteFrameName("store_focus_cover.png");
         sprite->setAnchorPoint(ccp(0.5, 0.5));
@@ -340,23 +355,43 @@ CCTableViewCell* TableViewTestLayer2::tableCellAtIndex(CCTableView *table, unsig
         CCLabelTTF *label = CCLabelTTF::create(string->getCString(), "Helvetica", 20.0);
         
         label->setPosition(ccp(0, 0));
-		label->setAnchorPoint(CCPointZero);
+        label->setAnchorPoint(CCPointZero);
         cell->setIndexLabel(label);
         
         CCLabelTTF *titlelabel = CCLabelTTF::create(s_cellLabels[idx%20].title.c_str(), "Helvetica", 24.0);
         titlelabel->setPosition(ccp(85, 85));
         titlelabel->setColor(ccc3(150, 0, 0));
-		titlelabel->setAnchorPoint(ccp(0, 1));
+        titlelabel->setAnchorPoint(ccp(0, 1));
         cell->setTitle(titlelabel);
         
         CCLabelTTF *contentlabel = CCLabelTTF::create(s_cellLabels[idx%20].content.c_str(), "Helvetica", 20.0, CCSizeMake(200, 80), kCCTextAlignmentLeft);
         contentlabel->setPosition(ccp(85, 60));
         contentlabel->setColor(ccc3(30, 30, 150));
-		contentlabel->setAnchorPoint(ccp(0, 1));
+        contentlabel->setAnchorPoint(ccp(0, 1));
         cell->setContent(contentlabel);
+
     }
     else
     {
+        std::map<std::string, CCSprite*>::iterator iterBG = m_mapBg.find(string->getCString());
+        if (iterBG != m_mapBg.end())
+        {
+            iterBG->second->removeFromParent();
+            cell->setBackGround(iterBG->second);
+        }
+        else
+        {
+            std::string itemBG = bComingSoonItem ? "store_comingsoon.png" : "store_item.png";
+            
+            CCSprite *sprite = CCSprite::createWithSpriteFrameName(itemBG.c_str());
+            sprite->setAnchorPoint(CCPointZero);
+            sprite->setPosition(ccp(0, 0));
+            sprite->retain();
+            cell->setBackGround(sprite);
+            
+            m_mapBg[string->getCString()] = sprite;
+        }
+        
         std::map<std::string, CCSprite*>::iterator it = m_mapIcon.find(string->getCString());
         if (it != m_mapIcon.end())
         {
@@ -373,13 +408,16 @@ CCTableViewCell* TableViewTestLayer2::tableCellAtIndex(CCTableView *table, unsig
         }
         
         
-        CCLabelTTF *label = cell->getIndexLabel();
-        label->setString(string->getCString());
-        
         cell->getTitle()->setString(s_cellLabels[idx%20].title.c_str());
         cell->getContent()->setString(s_cellLabels[idx%20].content.c_str());
+        
+        CCLabelTTF *label = cell->getIndexLabel();
+        label->setString(string->getCString());
     }
     
+    cell->getIcon()->setVisible(!bComingSoonItem);
+    cell->getTitle()->setVisible(!bComingSoonItem);
+    cell->getContent()->setVisible(!bComingSoonItem);
     
     return cell;
 }

@@ -68,6 +68,7 @@ public:
     
 private:
     std::map<std::string, CCSprite*> m_mapIcon;
+    std::map<std::string, CCSprite*> m_mapBg;
 };
 
 #endif // __TABLEVIEWTESTSCENE_H__

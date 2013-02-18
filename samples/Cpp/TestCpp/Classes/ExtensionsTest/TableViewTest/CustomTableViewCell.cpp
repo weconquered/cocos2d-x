@@ -52,7 +52,7 @@ CCSprite* CustomTableViewCell::getBackGround()
 void CustomTableViewCell::setBackGroundHighLight(CCSprite* pBG)
 {
     this->removeChild(m_pBGHighLight);
-    this->addChild(pBG, 0);
+    this->addChild(pBG, 10);
     m_pBGHighLight = pBG;
 }
 
