@@ -51,7 +51,7 @@ class TableViewTestLayer2 : public TableViewTestDemo, public cocos2d::extension:
 {
 public:
     virtual bool init();
-    
+    ~TableViewTestLayer2();
 	void toExtensionsMainLayer(cocos2d::CCObject *sender);
     
     CREATE_FUNC(TableViewTestLayer2);

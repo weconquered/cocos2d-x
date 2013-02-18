@@ -220,6 +220,45 @@ unsigned int TableViewTestLayer::numberOfCellsInTableView(CCTableView *table)
 }
 
 // TableViewTestLayer2
+
+typedef struct tagTableViewCellLabel
+{
+    std::string title;
+    std::string content;
+}TableViewCellLabel;
+
+static TableViewCellLabel s_cellLabels[] = {
+    {"title01", "hello1 aaa tableview contents"},
+    {"title02", "hello2 bbb tableview contents"},
+    {"title03", "hello3 tableview contents sdf"},
+    {"title04", "hello4 tableview contents111"},
+    {"title05", "hello5 tableview contents33"},
+    {"title06", "hello6 tableview contents4444"},
+    {"title07", "hello7 tableview contents555"},
+    {"title08", "hello8 tableview contents adf"},
+    {"title09", "hello9 tableview contents6666"},
+    {"title10", "hello10 tableview contents  wuicl"},
+    {"title11", "hello11 tableview contents dfdsf"},
+    {"title12", "hello12 tableview contents7 dk"},
+    {"title13", "hello13 tableview contentssdfdsf"},
+    {"title14", "hello14 tableview content dklassse1"},
+    {"title15", "hello15 tableview contents888"},
+    {"title16", "hello16 tableview contents oxocpa"},
+    {"title17", "hello17 tableview contents couoqwoenn"},
+    {"title18", "hello18 tableview contents p23jkll"},
+    {"title19", "hello19 tableview contents cxjlcxvj"},
+    {"title20", "hello20 tableview contents 2o3uljdlfzo"}
+};
+
+TableViewTestLayer2::~TableViewTestLayer2()
+{
+    std::map<std::string, CCSprite*>::iterator iter = m_mapIcon.begin();
+    for (; iter != m_mapIcon.end(); ++iter) {
+        iter->second->release();
+    }
+    m_mapIcon.clear();
+}
+
 // on "init" you need to initialize your instance
 bool TableViewTestLayer2::init()
 {
@@ -273,6 +312,9 @@ CCSize TableViewTestLayer2::cellSizeForTable(CCTableView *table)
 CCTableViewCell* TableViewTestLayer2::tableCellAtIndex(CCTableView *table, unsigned int idx)
 {
     CCString *string = CCString::createWithFormat("%d", idx);
+
+    CCLOG("idx = %d", idx);
+
     CustomTableViewCell *cell = (CustomTableViewCell*)table->dequeueCell();
     if (!cell) {
         cell = new CustomTableViewCell();
@@ -290,17 +332,28 @@ CCTableViewCell* TableViewTestLayer2::tableCellAtIndex(CCTableView *table, unsig
         
         
         CCSprite *icon = CCSprite::createWithSpriteFrameName(CCString::createWithFormat("store_%d.png", idx%9)->getCString());
-        icon->setAnchorPoint(CCPointZero);
-        icon->setPosition(ccp(10, 10));
+        icon->setPosition(ccp(50, 50));
         cell->setIcon(icon);
         icon->retain();
         m_mapIcon.insert(std::map<std::string, CCSprite*>::value_type(string->getCString(), icon));
         
         CCLabelTTF *label = CCLabelTTF::create(string->getCString(), "Helvetica", 20.0);
+        
         label->setPosition(ccp(0, 0));
 		label->setAnchorPoint(CCPointZero);
         cell->setIndexLabel(label);
         
+        CCLabelTTF *titlelabel = CCLabelTTF::create(s_cellLabels[idx%20].title.c_str(), "Helvetica", 24.0);
+        titlelabel->setPosition(ccp(85, 85));
+        titlelabel->setColor(ccc3(150, 0, 0));
+		titlelabel->setAnchorPoint(ccp(0, 1));
+        cell->setTitle(titlelabel);
+        
+        CCLabelTTF *contentlabel = CCLabelTTF::create(s_cellLabels[idx%20].content.c_str(), "Helvetica", 20.0, CCSizeMake(200, 80), kCCTextAlignmentLeft);
+        contentlabel->setPosition(ccp(85, 60));
+        contentlabel->setColor(ccc3(30, 30, 150));
+		contentlabel->setAnchorPoint(ccp(0, 1));
+        cell->setContent(contentlabel);
     }
     else
     {
@@ -313,8 +366,7 @@ CCTableViewCell* TableViewTestLayer2::tableCellAtIndex(CCTableView *table, unsig
         else
         {
             CCSprite *icon = CCSprite::createWithSpriteFrameName(CCString::createWithFormat("store_%d.png", idx%9)->getCString());
-            icon->setAnchorPoint(CCPointZero);
-            icon->setPosition(ccp(10, 10));
+            icon->setPosition(ccp(50, 50));
             cell->setIcon(icon);
             icon->retain();
             m_mapIcon.insert(std::map<std::string, CCSprite*>::value_type(string->getCString(), icon));
@@ -323,6 +375,9 @@ CCTableViewCell* TableViewTestLayer2::tableCellAtIndex(CCTableView *table, unsig
         
         CCLabelTTF *label = cell->getIndexLabel();
         label->setString(string->getCString());
+        
+        cell->getTitle()->setString(s_cellLabels[idx%20].title.c_str());
+        cell->getContent()->setString(s_cellLabels[idx%20].content.c_str());
     }
     
     
@@ -348,6 +403,7 @@ void TableViewTestLayer2::tableCellUnhighlight(CCTableView* table, CCTableViewCe
 
 void TableViewTestLayer2::tableCellWillRecycle(CCTableView* table, CCTableViewCell* cell)
 {
-    
+    CustomTableViewCell* p = (CustomTableViewCell*)cell;
+    p->reset();
 }
 
