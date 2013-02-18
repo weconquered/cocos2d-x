@@ -423,7 +423,8 @@ void CCTableView::scrollViewDidScroll(CCScrollView* view)
     
     endIdx   = this->_indexFromOffset(offset);   
     
-#if 0 // For Testing.
+#if 1 // For Testing.
+    CCLog("start idx = %d, end idx = %d", startIdx, endIdx);
     CCObject* pObj;
     int i = 0;
     CCARRAY_FOREACH(m_pCellsUsed, pObj)

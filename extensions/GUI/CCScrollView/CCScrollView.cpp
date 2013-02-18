@@ -434,6 +434,11 @@ void CCScrollView::deaccelerateScrolling(float dt)
 void CCScrollView::stoppedAnimatedScroll(CCNode * node)
 {
     this->unschedule(schedule_selector(CCScrollView::performedAnimatedScroll));
+    // After the animation stopped, "scrollViewDidScroll" should be invoked, this could fix the bug of lack of tableview cells.
+    if (m_pDelegate != NULL)
+    {
+        m_pDelegate->scrollViewDidScroll(this);
+    }
 }
 
 void CCScrollView::performedAnimatedScroll(float dt)
@@ -482,27 +487,27 @@ void CCScrollView::updateInset()
 /**
  * make sure all children go to the container
  */
-void CCScrollView::addChild(CCNode * child, int zOrder, int tag)
-{
-    child->ignoreAnchorPointForPosition(false);
-    child->setAnchorPoint(ccp(0.0f, 0.0f));
-    if (m_pContainer != child) {
-        m_pContainer->addChild(child, zOrder, tag);
-    } else {
-        CCLayer::addChild(child, zOrder, tag);
-    }
-}
-
-void CCScrollView::addChild(CCNode * child, int zOrder)
-{
-    this->addChild(child, zOrder, child->getTag());
-}
-
-void CCScrollView::addChild(CCNode * child)
-{
-    this->addChild(child, child->getZOrder(), child->getTag());
-}
-
+//void CCScrollView::addChild(CCNode * child, int zOrder, int tag)
+//{
+//    child->ignoreAnchorPointForPosition(false);
+//    child->setAnchorPoint(ccp(0.0f, 0.0f));
+//    if (m_pContainer != child) {
+//        m_pContainer->addChild(child, zOrder, tag);
+//    } else {
+//        CCLayer::addChild(child, zOrder, tag);
+//    }
+//}
+//
+//void CCScrollView::addChild(CCNode * child, int zOrder)
+//{
+//    this->addChild(child, zOrder, child->getTag());
+//}
+//
+//void CCScrollView::addChild(CCNode * child)
+//{
+//    this->addChild(child, child->getZOrder(), child->getTag());
+//}
+//
 /**
  * clip this view so that outside of the visible bounds can be hidden.
  */

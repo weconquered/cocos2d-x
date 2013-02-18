@@ -229,6 +229,7 @@
 		1AB2D71716B649C200D72C48 /* FileUtilsTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AB2D71516B649C200D72C48 /* FileUtilsTest.cpp */; };
 		1AB2D71B16B64DC600D72C48 /* Misc in Resources */ = {isa = PBXBuildFile; fileRef = 1AB2D71A16B64DC600D72C48 /* Misc */; };
 		1ACB3244164770DE00914215 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ACB3243164770DE00914215 /* libcurl.a */; };
+		1AD6834816D0FED800BC15AD /* res-tableview in Resources */ = {isa = PBXBuildFile; fileRef = 1AD6834716D0FED800BC15AD /* res-tableview */; };
 		1D3623260D0F684500981E51 /* testsAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* testsAppDelegate.mm */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -787,6 +788,7 @@
 		1AB2D71616B649C200D72C48 /* FileUtilsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileUtilsTest.h; sourceTree = "<group>"; };
 		1AB2D71A16B64DC600D72C48 /* Misc */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Misc; sourceTree = "<group>"; };
 		1ACB3243164770DE00914215 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = ../../../cocos2dx/platform/third_party/ios/libraries/libcurl.a; sourceTree = "<group>"; };
+		1AD6834716D0FED800BC15AD /* res-tableview */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "res-tableview"; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* testsAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testsAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* testsAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = testsAppDelegate.mm; sourceTree = "<group>"; };
@@ -2169,6 +2171,7 @@
 		78C7DDAA14EBA5050085D0C2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				1AD6834716D0FED800BC15AD /* res-tableview */,
 				789B560C15197BE00038CD1E /* animations */,
 				15FC61A716095C2B00AE81F8 /* ccb */,
 				78ED2F84153D5BC500330E29 /* extensions */,
@@ -2310,6 +2313,7 @@
 				15384F141611A44F0021DC07 /* fps_images.png in Resources */,
 				15A3D9961682F7F9002FB0C5 /* CMakeLists.txt in Resources */,
 				1AB2D71B16B64DC600D72C48 /* Misc in Resources */,
+				1AD6834816D0FED800BC15AD /* res-tableview in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

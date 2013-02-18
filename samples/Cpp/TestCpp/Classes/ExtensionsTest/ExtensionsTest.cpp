@@ -116,7 +116,12 @@ void ExtensionsMainLayer::menuCallback(CCObject* pSender)
 #endif
 	case TEST_TABLEVIEW:
 		{
-			runTableViewTest();
+            TestScene* pScene = new TableViewTestScene();
+            if (pScene)
+            {
+                pScene->runThisTest();
+                pScene->release();
+            }
 		}
 		break;
     default:

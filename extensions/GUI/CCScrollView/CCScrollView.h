@@ -197,9 +197,9 @@ public:
     void setClippingToBounds(bool bClippingToBounds) { m_bClippingToBounds = bClippingToBounds; }
 
     virtual void visit();
-    virtual void addChild(CCNode * child, int zOrder, int tag);
-    virtual void addChild(CCNode * child, int zOrder);
-    virtual void addChild(CCNode * child);
+//    virtual void addChild(CCNode * child, int zOrder, int tag);
+//    virtual void addChild(CCNode * child, int zOrder);
+//    virtual void addChild(CCNode * child);
     void setTouchEnabled(bool e);
     void updateIndicators(float dt);
     
