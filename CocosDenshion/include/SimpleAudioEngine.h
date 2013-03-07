@@ -91,19 +91,13 @@ public:
     @param pszFilePath The path of the background music file,or the FileName of T_SoundResInfo
     @param bLoop Whether the background music loop or not
     */
-    void playBackgroundMusic(const char* pszFilePath, bool bLoop);
-    void playBackgroundMusic(const char* pszFilePath) {
-    	this->playBackgroundMusic(pszFilePath, false);
-    }
+    void playBackgroundMusic(const char* pszFilePath, bool bLoop = false);
 
     /**
     @brief Stop playing background music
     @param bReleaseData If release the background music data or not.As default value is false
     */
-    void stopBackgroundMusic(bool bReleaseData);
-    void stopBackgroundMusic() {
-    	this->stopBackgroundMusic(false);
-    }
+    void stopBackgroundMusic(bool bReleaseData = false);
 
     /**
     @brief Pause playing background music
@@ -157,10 +151,7 @@ public:
     @param pszFilePath The path of the effect file,or the FileName of T_SoundResInfo
     @bLoop Whether to loop the effect playing, default value is false
     */
-    unsigned int playEffect(const char* pszFilePath, bool bLoop);
-    unsigned int playEffect(const char* pszFilePath) {
-    	return this->playEffect(pszFilePath, false);
-    }
+    unsigned int playEffect(const char* pszFilePath, bool bLoop = false);
 
     /**
     @brief Pause playing sound effect

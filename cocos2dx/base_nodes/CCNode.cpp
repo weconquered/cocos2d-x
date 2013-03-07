@@ -626,11 +626,6 @@ void CCNode::removeFromParentAndCleanup(bool cleanup)
     } 
 }
 
-void CCNode::removeChild(CCNode* child)
-{
-    this->removeChild(child, true);
-}
-
 /* "remove" logic MUST only be on this method
 * If a class want's to extend the 'removeChild' behavior it only needs
 * to override this method
@@ -647,11 +642,6 @@ void CCNode::removeChild(CCNode* child, bool cleanup)
     {
         this->detachChild(child,cleanup);
     }
-}
-
-void CCNode::removeChildByTag(int tag)
-{
-    this->removeChildByTag(tag, true);
 }
 
 void CCNode::removeChildByTag(int tag, bool cleanup)

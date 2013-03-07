@@ -102,10 +102,7 @@ public:
     /* Creates an animation with an array of CCAnimationFrame, the delay per units in seconds and and how many times it should be executed.
      @since v2.0
      */
-    static CCAnimation* create(CCArray *arrayOfAnimationFrameNames, float delayPerUnit, unsigned int loops);
-    static CCAnimation* create(CCArray *arrayOfAnimationFrameNames, float delayPerUnit) {
-        return CCAnimation::create(arrayOfAnimationFrameNames, delayPerUnit, 1);
-    }
+    static CCAnimation* create(CCArray *arrayOfAnimationFrameNames, float delayPerUnit, unsigned int loops = 1);
 
     /** Adds a CCSpriteFrame to a CCAnimation.
      The frame will be added with one "delay unit".

@@ -354,11 +354,6 @@ CCSprite * CCTMXLayer::tileAt(const CCPoint& pos)
     return tile;
 }
 
-unsigned int CCTMXLayer::tileGIDAt(const CCPoint& pos)
-{
-    return tileGIDAt(pos, NULL);
-}
-
 unsigned int CCTMXLayer::tileGIDAt(const CCPoint& pos, ccTMXTileFlags* flags)
 {
     CCAssert(pos.x < m_tLayerSize.width && pos.y < m_tLayerSize.height && pos.x >=0 && pos.y >=0, "TMXLayer: invalid position");

@@ -3,6 +3,8 @@
 #include "cocos2d_specifics.hpp"
 #include <typeinfo>
 #include "js_bindings_config.h"
+#include "jsb_cocos2dx_classes.hpp"
+#include "jsb_cocos2dx_extension_classes.hpp"
 
 USING_NS_CC_EXT;
 
@@ -165,7 +167,7 @@ JSObject* bind_menu_item(JSContext *cx, T* nativeObj, jsval callback, jsval this
 	}
 }
 
-JSBool js_cocos2dx_CCNode_getChildren(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCNode_getChildren(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	JSObject *thisObj = JS_THIS_OBJECT(cx, vp);
 	if (thisObj) {
@@ -188,11 +190,11 @@ JSBool js_cocos2dx_CCNode_getChildren(JSContext *cx, uint32_t argc, jsval *vp)
             return JS_TRUE;
 		}
 	}
-    JS_ReportError(cx, "Error in js_cocos2dx_CCNode_getChildren");
+    JS_ReportError(cx, "Error in jsb_CCNode_getChildren");
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_CCMenu_create(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCMenu_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
 	if (argc > 0) {
@@ -252,7 +254,7 @@ JSBool js_cocos2dx_CCMenu_create(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_CCSequence_create(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCSequence_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
 	if (argc > 0) {
@@ -291,7 +293,7 @@ JSBool js_cocos2dx_CCSequence_create(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_CCSpawn_create(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCSpawn_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
 	if (argc > 0) {
@@ -330,7 +332,7 @@ JSBool js_cocos2dx_CCSpawn_create(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_CCMenuItem_create(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCMenuItem_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	if (argc >= 1) {
 		jsval *argv = JS_ARGV(cx, vp);
@@ -345,7 +347,7 @@ JSBool js_cocos2dx_CCMenuItem_create(JSContext *cx, uint32_t argc, jsval *vp)
 
 // "create" in JS
 // cc.MenuItemSprite.create( normalSprite, selectedSprite, [disabledSprite], [callback_fn], [this]
-JSBool js_cocos2dx_CCMenuItemSprite_create(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCMenuItemSprite_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	if (argc >= 2 && argc <= 5) {
 		jsval *argv = JS_ARGV(cx, vp);
@@ -410,7 +412,7 @@ JSBool js_cocos2dx_CCMenuItemSprite_create(JSContext *cx, uint32_t argc, jsval *
 
 // "create" in JS
 // cc.MenuItemImage.create( normalImage, selectedImage, [disabledImage], callback_fn, [this] 
-JSBool js_cocos2dx_CCMenuItemImage_create(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCMenuItemImage_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	if (argc >= 2 && argc <= 5) {
 		jsval *argv = JS_ARGV(cx, vp);
@@ -463,7 +465,7 @@ JSBool js_cocos2dx_CCMenuItemImage_create(JSContext *cx, uint32_t argc, jsval *v
 
 // "create" in JS:
 // cc.MenuItemLabel.create( label, callback_fn, [this] );
-JSBool js_cocos2dx_CCMenuItemLabel_create(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCMenuItemLabel_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	if (argc >= 1 && argc <= 3) {
 		jsval *argv = JS_ARGV(cx, vp);
@@ -481,7 +483,7 @@ JSBool js_cocos2dx_CCMenuItemLabel_create(JSContext *cx, uint32_t argc, jsval *v
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_CCMenuItemAtlasFont_create(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCMenuItemAtlasFont_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	if (argc >= 5) {
         JSBool ok = JS_TRUE;
@@ -503,7 +505,7 @@ JSBool js_cocos2dx_CCMenuItemAtlasFont_create(JSContext *cx, uint32_t argc, jsva
 
 // "create" in JS
 // cc.MenuItemFont.create( string, callback_fn, [this] );
-JSBool js_cocos2dx_CCMenuItemFont_create(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCMenuItemFont_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	if (argc >= 1 && argc <= 3) {
 		jsval *argv = JS_ARGV(cx, vp);
@@ -518,7 +520,7 @@ JSBool js_cocos2dx_CCMenuItemFont_create(JSContext *cx, uint32_t argc, jsval *vp
 }
 
 
-JSBool js_cocos2dx_CCMenuItemToggle_create(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCMenuItemToggle_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
   if (argc >= 1) {
     jsval *argv = JS_ARGV(cx, vp);
@@ -559,7 +561,7 @@ JSBool js_cocos2dx_CCMenuItemToggle_create(JSContext *cx, uint32_t argc, jsval *
 // "setCallback" in JS
 // item.setCallback( callback_fn, [this]);
 template<class T>
-JSBool js_cocos2dx_setCallback(JSContext *cx, uint32_t argc, jsval *vp) {
+JSBool jsb_setCallback(JSContext *cx, uint32_t argc, jsval *vp) {
 
     if(argc == 1 || argc == 2) {
         jsval *argv = JS_ARGV(cx, vp);
@@ -581,12 +583,12 @@ JSBool js_cocos2dx_setCallback(JSContext *cx, uint32_t argc, jsval *vp) {
     return JS_FALSE;
 }
 
-JSBool js_cocos2dx_CCMenuItem_setCallback(JSContext *cx, uint32_t argc, jsval *vp) {
-    return js_cocos2dx_setCallback<cocos2d::CCMenuItem>(cx, argc, vp);
+JSBool jsb_CCMenuItem_setCallback(JSContext *cx, uint32_t argc, jsval *vp) {
+    return jsb_setCallback<cocos2d::CCMenuItem>(cx, argc, vp);
 }
 
 
-JSBool js_cocos2dx_CCAnimation_create(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCAnimation_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JSBool ok = JS_TRUE;
 	jsval *argv = JS_ARGV(cx, vp);
@@ -636,7 +638,7 @@ JSBool js_cocos2dx_CCAnimation_create(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_CCLayerMultiplex_create(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCLayerMultiplex_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
 	cocos2d::CCArray* arg0;
@@ -658,7 +660,7 @@ JSBool js_cocos2dx_CCLayerMultiplex_create(JSContext *cx, uint32_t argc, jsval *
 	return JS_TRUE;
 }
 
-JSBool js_cocos2dx_JSTouchDelegate_registerStandardDelegate(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_JSTouchDelegate_registerStandardDelegate(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	if (argc >= 1) {
 		jsval *argv = JS_ARGV(cx, vp);
@@ -676,7 +678,7 @@ JSBool js_cocos2dx_JSTouchDelegate_registerStandardDelegate(JSContext *cx, uint3
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_JSTouchDelegate_registerTargettedDelegate(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_JSTouchDelegate_registerTargettedDelegate(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	if (argc >= 1) {
 		jsval *argv = JS_ARGV(cx, vp);
@@ -696,7 +698,7 @@ JSBool js_cocos2dx_JSTouchDelegate_registerTargettedDelegate(JSContext *cx, uint
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_JSTouchDelegate_unregisterTouchDelegate(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_JSTouchDelegate_unregisterTouchDelegate(JSContext *cx, uint32_t argc, jsval *vp)
 {
     if (argc == 1) {
         jsval *argv = JS_ARGV(cx, vp);
@@ -714,7 +716,7 @@ JSBool js_cocos2dx_JSTouchDelegate_unregisterTouchDelegate(JSContext *cx, uint32
     return JS_FALSE;
 }
 
-JSBool js_cocos2dx_swap_native_object(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_swap_native_object(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	if (argc == 2) {
 		// get the native object from the second object to the first object
@@ -738,7 +740,7 @@ JSBool js_cocos2dx_swap_native_object(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_TRUE;
 }
 
-JSBool js_cocos2dx_CCNode_copy(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCNode_copy(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	if (argc == 0) {
 		JSObject *obj = JS_THIS_OBJECT(cx, vp);
@@ -1173,7 +1175,7 @@ JSBool js_CCNode_unschedule(JSContext *cx, uint32_t argc, jsval *vp)
     return JS_TRUE;
 }
 
-JSBool js_cocos2dx_CCNode_unscheduleAllSelectors(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCNode_unscheduleAllSelectors(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	JSObject *obj = JS_THIS_OBJECT(cx, vp);
 	js_proxy_t *proxy; JS_GET_NATIVE_PROXY(proxy, obj);
@@ -1205,7 +1207,7 @@ JSBool js_cocos2dx_CCNode_unscheduleAllSelectors(JSContext *cx, uint32_t argc, j
 
 
 
-JSBool js_cocos2dx_CCScheduler_unscheduleAllSelectorsForTarget(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCScheduler_unscheduleAllSelectorsForTarget(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
 	JSObject *obj = JS_THIS_OBJECT(cx, vp);
@@ -1498,7 +1500,7 @@ JSBool js_CCScheduler_schedule(JSContext *cx, uint32_t argc, jsval *vp)
 
 
 
-JSBool js_cocos2dx_CCScheduler_pauseTarget(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCScheduler_pauseTarget(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
 	    
@@ -1527,7 +1529,7 @@ JSBool js_cocos2dx_CCScheduler_pauseTarget(JSContext *cx, uint32_t argc, jsval *
 }
 
 
-JSBool js_cocos2dx_CCScheduler_resumeTarget(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCScheduler_resumeTarget(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     
@@ -1569,7 +1571,7 @@ JSBool js_forceGC(JSContext *cx, uint32_t argc, jsval *vp) {
     return JS_TRUE;
 }
 
-JSBool js_cocos2dx_retain(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_retain(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	JSObject *thisObj = JS_THIS_OBJECT(cx, vp);
 	if (thisObj) {
@@ -1584,7 +1586,7 @@ JSBool js_cocos2dx_retain(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_release(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_release(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	JSObject *thisObj = JS_THIS_OBJECT(cx, vp);
 	if (thisObj) {
@@ -1599,7 +1601,7 @@ JSBool js_cocos2dx_release(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_CCSet_constructor(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCSet_constructor(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	JSObject *obj;
 	cocos2d::CCSet* cobj;
@@ -1622,11 +1624,11 @@ JSBool js_cocos2dx_CCSet_constructor(JSContext *cx, uint32_t argc, jsval *vp)
 		return JS_TRUE;
 	}
     
-    JS_ReportError(cx, "Error in js_cocos2dx_CCSet_constructor");
+    JS_ReportError(cx, "Error in jsb_CCSet_constructor");
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_CCNode_setPosition(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCNode_setPosition(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
 	JSObject *obj = JS_THIS_OBJECT(cx, vp);
@@ -1659,7 +1661,7 @@ JSBool js_cocos2dx_CCNode_setPosition(JSContext *cx, uint32_t argc, jsval *vp)
 }
 
 
-JSBool js_cocos2dx_CCSprite_setPosition(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCSprite_setPosition(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
 	JSObject *obj = JS_THIS_OBJECT(cx, vp);
@@ -1691,7 +1693,7 @@ JSBool js_cocos2dx_CCSprite_setPosition(JSContext *cx, uint32_t argc, jsval *vp)
 }
 
 
-JSBool js_cocos2dx_CCTMXLayer_tileFlagsAt(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCTMXLayer_tileFlagsAt(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
 	JSObject *obj;
@@ -1745,7 +1747,7 @@ private:
     JSObject* m_pJSDelegate;
 };
 
-JSBool js_cocos2dx_CCScrollView_setDelegate(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCScrollView_setDelegate(JSContext *cx, uint32_t argc, jsval *vp)
 {
     jsval *argv = JS_ARGV(cx, vp);
     JSObject *obj = JS_THIS_OBJECT(cx, vp);
@@ -1854,7 +1856,7 @@ private:
     JSObject* m_pJSDelegate;
 };
 
-JSBool js_cocos2dx_CCTableView_setDelegate(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCTableView_setDelegate(JSContext *cx, uint32_t argc, jsval *vp)
 {
     jsval *argv = JS_ARGV(cx, vp);
     JSObject *obj = JS_THIS_OBJECT(cx, vp);
@@ -1997,7 +1999,7 @@ private:
     JSObject* m_pJSTableViewDataSource;
 };
 
-JSBool js_cocos2dx_CCTableView_setDataSource(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCTableView_setDataSource(JSContext *cx, uint32_t argc, jsval *vp)
 {
     jsval *argv = JS_ARGV(cx, vp);
     JSObject *obj = JS_THIS_OBJECT(cx, vp);
@@ -2019,7 +2021,7 @@ JSBool js_cocos2dx_CCTableView_setDataSource(JSContext *cx, uint32_t argc, jsval
     return JS_FALSE;
 }
 
-JSBool js_cocos2dx_CCTableView_create(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCTableView_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
     jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2245,7 +2247,7 @@ JSBool JSB_CCCatmullRomTo_actionWithDuration(JSContext *cx, uint32_t argc, jsval
 	return js_CatmullRomActions_create<cocos2d::CCCatmullRomTo>(cx, argc, vp);
 }
 
-JSBool js_cocos2dx_ccpAdd(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpAdd(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JSBool ok = JS_TRUE;
 	jsval *argv = JS_ARGV(cx, vp);
@@ -2268,7 +2270,7 @@ JSBool js_cocos2dx_ccpAdd(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_ccpDistance(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpDistance(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JSBool ok = JS_TRUE;
 	jsval *argv = JS_ARGV(cx, vp);
@@ -2291,7 +2293,7 @@ JSBool js_cocos2dx_ccpDistance(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_ccpClamp(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpClamp(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2315,7 +2317,7 @@ JSBool js_cocos2dx_ccpClamp(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_ccpLengthSQ(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpLengthSQ(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2335,7 +2337,7 @@ JSBool js_cocos2dx_ccpLengthSQ(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_ccpLength(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpLength(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2356,7 +2358,7 @@ JSBool js_cocos2dx_ccpLength(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_ccpNeg(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpNeg(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2377,7 +2379,7 @@ JSBool js_cocos2dx_ccpNeg(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_ccpSub(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpSub(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2400,7 +2402,7 @@ JSBool js_cocos2dx_ccpSub(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_ccpMult(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpMult(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2425,7 +2427,7 @@ JSBool js_cocos2dx_ccpMult(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_ccpMidpoint(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpMidpoint(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2449,7 +2451,7 @@ JSBool js_cocos2dx_ccpMidpoint(JSContext *cx, uint32_t argc, jsval *vp)
 }
 
 
-JSBool js_cocos2dx_ccpDot(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpDot(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2472,7 +2474,7 @@ JSBool js_cocos2dx_ccpDot(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_ccpCross(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpCross(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2495,7 +2497,7 @@ JSBool js_cocos2dx_ccpCross(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_ccpPerp(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpPerp(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2517,7 +2519,7 @@ JSBool js_cocos2dx_ccpPerp(JSContext *cx, uint32_t argc, jsval *vp)
 }
 
 
-JSBool js_cocos2dx_ccpRPerp(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpRPerp(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2539,7 +2541,7 @@ JSBool js_cocos2dx_ccpRPerp(JSContext *cx, uint32_t argc, jsval *vp)
 }
 
 
-JSBool js_cocos2dx_ccpProject(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpProject(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2562,7 +2564,7 @@ JSBool js_cocos2dx_ccpProject(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_ccpRotate(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpRotate(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2585,7 +2587,7 @@ JSBool js_cocos2dx_ccpRotate(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-JSBool js_cocos2dx_ccpNormalize(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_ccpNormalize(JSContext *cx, uint32_t argc, jsval *vp)
 {
 	jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2606,40 +2608,9 @@ JSBool js_cocos2dx_ccpNormalize(JSContext *cx, uint32_t argc, jsval *vp)
 	return JS_FALSE;
 }
 
-
-
-extern JSObject* js_cocos2dx_CCNode_prototype;
-extern JSObject* js_cocos2dx_CCLayerColor_prototype;
-extern JSObject* js_cocos2dx_CCSprite_prototype;
-extern JSObject* js_cocos2dx_CCTMXLayer_prototype;
-extern JSObject* js_cocos2dx_CCAction_prototype;
-extern JSObject* js_cocos2dx_CCAnimation_prototype;
-extern JSObject* js_cocos2dx_CCMenuItem_prototype;
-extern JSObject* js_cocos2dx_CCSpriteFrame_prototype;
-extern JSObject* js_cocos2dx_CCSet_prototype;
-extern JSObject* js_cocos2dx_CCSprite_prototype;
-extern JSObject* js_cocos2dx_CCSpriteBatchNode_prototype;
-//extern JSObject* js_cocos2dx_CCMotionStreak_prototype;
-extern JSObject* js_cocos2dx_CCAtlasNode_prototype;
-extern JSObject* js_cocos2dx_CCParticleBatchNode_prototype;
-extern JSObject* js_cocos2dx_CCParticleSystem_prototype;
-extern JSObject* js_cocos2dx_CCCatmullRomBy_prototype;
-extern JSObject* js_cocos2dx_CCCatmullRomTo_prototype;
-extern JSObject* js_cocos2dx_CCCardinalSplineTo_prototype;
-extern JSObject* js_cocos2dx_CCCardinalSplineBy_prototype;
-extern JSObject* js_cocos2dx_CCBezierTo_prototype;
-extern JSObject* js_cocos2dx_CCBezierBy_prototype;
-extern JSObject* js_cocos2dx_CCScheduler_prototype;
-extern JSObject* js_cocos2dx_CCDrawNode_prototype;
-extern JSObject* js_cocos2dx_CCTexture2D_prototype;
-extern JSObject* js_cocos2dx_CCMenu_prototype;
-extern JSObject* js_cocos2dx_CCFileUtils_prototype;
-extern JSObject* js_cocos2dx_CCScrollView_prototype;
-extern JSObject* js_cocos2dx_CCTableView_prototype;
-
 // setBlendFunc
 template<class T>
-JSBool js_cocos2dx_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
 {
     jsval *argv = JS_ARGV(cx, vp);
     JSObject *obj;
@@ -2661,47 +2632,47 @@ JSBool js_cocos2dx_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
     return JS_FALSE;
 }
 
-JSBool js_cocos2dx_CCSprite_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCSprite_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
 {
-    return js_cocos2dx_setBlendFunc<CCSprite>(cx, argc, vp);
+    return jsb_setBlendFunc<CCSprite>(cx, argc, vp);
 }
 
-JSBool js_cocos2dx_CCSpriteBatchNode_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCSpriteBatchNode_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
 {
-    return js_cocos2dx_setBlendFunc<CCSpriteBatchNode>(cx, argc, vp);
+    return jsb_setBlendFunc<CCSpriteBatchNode>(cx, argc, vp);
 }
 
-// JSBool js_cocos2dx_CCMotionStreak_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
+// JSBool jsb_CCMotionStreak_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
 // {
-//     return js_cocos2dx_setBlendFunc<CCMotionStreak>(cx, argc, vp);
+//     return jsb_setBlendFunc<CCMotionStreak>(cx, argc, vp);
 // }
 
-JSBool js_cocos2dx_CCAtlasNode_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCAtlasNode_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
 {
-    return js_cocos2dx_setBlendFunc<CCAtlasNode>(cx, argc, vp);
+    return jsb_setBlendFunc<CCAtlasNode>(cx, argc, vp);
 }
 
-JSBool js_cocos2dx_CCParticleBatchNode_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCParticleBatchNode_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
 {
-    return js_cocos2dx_setBlendFunc<CCParticleBatchNode>(cx, argc, vp);
+    return jsb_setBlendFunc<CCParticleBatchNode>(cx, argc, vp);
 }
 
-JSBool js_cocos2dx_CCLayerColor_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCLayerColor_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
 {
-    return js_cocos2dx_setBlendFunc<CCLayerColor>(cx, argc, vp);
+    return jsb_setBlendFunc<CCLayerColor>(cx, argc, vp);
 }
 
-JSBool js_cocos2dx_CCParticleSystem_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCParticleSystem_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
 {
-    return js_cocos2dx_setBlendFunc<CCParticleSystem>(cx, argc, vp);
+    return jsb_setBlendFunc<CCParticleSystem>(cx, argc, vp);
 }
 
-JSBool js_cocos2dx_CCDrawNode_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCDrawNode_setBlendFunc(JSContext *cx, uint32_t argc, jsval *vp)
 {
-    return js_cocos2dx_setBlendFunc<CCDrawNode>(cx, argc, vp);
+    return jsb_setBlendFunc<CCDrawNode>(cx, argc, vp);
 }
 
-JSBool js_cocos2dx_CCTexture2D_setTexParameters(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCTexture2D_setTexParameters(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
     js_proxy_t *proxy; JS_GET_NATIVE_PROXY(proxy, obj);
@@ -2734,7 +2705,7 @@ JSBool js_cocos2dx_CCTexture2D_setTexParameters(JSContext *cx, uint32_t argc, js
     return JS_FALSE;		
 }
 
-JSBool js_cocos2dx_CCMenu_alignItemsInRows(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCMenu_alignItemsInRows(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JSObject* jsthis = (JSObject *)JS_THIS_OBJECT(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2752,11 +2723,11 @@ JSBool js_cocos2dx_CCMenu_alignItemsInRows(JSContext *cx, uint32_t argc, jsval *
         JS_SET_RVAL(cx, vp, JSVAL_VOID);
         return JS_TRUE;
     }
-    JS_ReportError(cx, "Error in js_cocos2dx_CCMenu_alignItemsInRows");
+    JS_ReportError(cx, "Error in jsb_CCMenu_alignItemsInRows");
     return JS_FALSE;
 }
 
-JSBool js_cocos2dx_CCMenu_alignItemsInColumns(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCMenu_alignItemsInColumns(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JSObject* jsthis = (JSObject *)JS_THIS_OBJECT(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2773,12 +2744,12 @@ JSBool js_cocos2dx_CCMenu_alignItemsInColumns(JSContext *cx, uint32_t argc, jsva
         JS_SET_RVAL(cx, vp, JSVAL_VOID);
         return JS_TRUE;
     }
-    JS_ReportError(cx, "Error in js_cocos2dx_CCMenu_alignItemsInColumns");
+    JS_ReportError(cx, "Error in jsb_CCMenu_alignItemsInColumns");
     return JS_FALSE;
 }
 
 // CCTMXLayer
-JSBool js_cocos2dx_CCTMXLayer_getTileFlagsAt(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCTMXLayer_getTileFlagsAt(JSContext *cx, uint32_t argc, jsval *vp)
 {
     jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2807,7 +2778,7 @@ JSBool js_cocos2dx_CCTMXLayer_getTileFlagsAt(JSContext *cx, uint32_t argc, jsval
 
 // Arguments: Array of points, fill color (ccc4f), width(float), border color (ccc4f)
 // Ret value: void
-JSBool js_cocos2dx_CCDrawNode_drawPolygon(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCDrawNode_drawPolygon(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
     js_proxy_t *proxy; JS_GET_NATIVE_PROXY(proxy, obj);
@@ -2905,7 +2876,7 @@ static jsval string_vector_to_jsval(JSContext* cx, const std::vector<std::string
     return OBJECT_TO_JSVAL(jsretArr);
 }
 
-JSBool js_cocos2dx_CCFileUtils_setSearchResolutionsOrder(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCFileUtils_setSearchResolutionsOrder(JSContext *cx, uint32_t argc, jsval *vp)
 {
     jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2926,7 +2897,7 @@ JSBool js_cocos2dx_CCFileUtils_setSearchResolutionsOrder(JSContext *cx, uint32_t
     return JS_FALSE;
 }
 
-JSBool js_cocos2dx_CCFileUtils_setSearchPaths(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCFileUtils_setSearchPaths(JSContext *cx, uint32_t argc, jsval *vp)
 {
     jsval *argv = JS_ARGV(cx, vp);
     JSBool ok = JS_TRUE;
@@ -2946,7 +2917,7 @@ JSBool js_cocos2dx_CCFileUtils_setSearchPaths(JSContext *cx, uint32_t argc, jsva
     JS_ReportError(cx, "wrong number of arguments: %d, was expecting %d", argc, 1);
     return JS_FALSE;
 }
-JSBool js_cocos2dx_CCFileUtils_getSearchPaths(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCFileUtils_getSearchPaths(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JSObject *obj = JS_THIS_OBJECT(cx, vp);
     js_proxy_t *proxy; JS_GET_NATIVE_PROXY(proxy, obj);
@@ -2963,7 +2934,7 @@ JSBool js_cocos2dx_CCFileUtils_getSearchPaths(JSContext *cx, uint32_t argc, jsva
     JS_ReportError(cx, "wrong number of arguments: %d, was expecting %d", argc, 0);
     return JS_FALSE;
 }
-JSBool js_cocos2dx_CCFileUtils_getSearchResolutionsOrder(JSContext *cx, uint32_t argc, jsval *vp)
+JSBool jsb_CCFileUtils_getSearchResolutionsOrder(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JSObject *obj = JS_THIS_OBJECT(cx, vp);
     js_proxy_t *proxy; JS_GET_NATIVE_PROXY(proxy, obj);
@@ -2996,47 +2967,47 @@ void register_cocos2dx_js_extensions(JSContext* cx, JSObject* global)
 		JS_ValueToObject(cx, nsval, &ns);
 	}
 
-	JS_DefineFunction(cx, global, "__associateObjWithNative", js_cocos2dx_swap_native_object, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, global, "__associateObjWithNative", jsb_swap_native_object, 2, JSPROP_READONLY | JSPROP_PERMANENT);
 	JS_DefineFunction(cx, global, "__getPlatform", js_platform, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 
 	JSObject *tmpObj;
-	JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "getChildren", js_cocos2dx_CCNode_getChildren, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "copy", js_cocos2dx_CCNode_copy, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "onExit", js_doNothing, 1, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "onEnter", js_doNothing, 1, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "onEnterTransitionDidFinish", js_doNothing, 0, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "onExitTransitionDidStart", js_doNothing, 0, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "init", js_doNothing, 0, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_CCNode_prototype, "getChildren", jsb_CCNode_getChildren, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_CCNode_prototype, "copy", jsb_CCNode_copy, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCNode_prototype, "onExit", js_doNothing, 1, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCNode_prototype, "onEnter", js_doNothing, 1, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCNode_prototype, "onEnterTransitionDidFinish", js_doNothing, 0, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCNode_prototype, "onExitTransitionDidStart", js_doNothing, 0, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCNode_prototype, "init", js_doNothing, 0, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
 
-    JS_DefineFunction(cx, js_cocos2dx_CCScheduler_prototype, "resumeTarget", js_cocos2dx_CCScheduler_resumeTarget, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCScheduler_prototype, "pauseTarget", js_cocos2dx_CCScheduler_pauseTarget, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCScheduler_prototype, "resumeTarget", jsb_CCScheduler_resumeTarget, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCScheduler_prototype, "pauseTarget", jsb_CCScheduler_pauseTarget, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 
-    JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "schedule", js_CCNode_schedule, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "scheduleOnce", js_CCNode_scheduleOnce, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "unschedule", js_CCNode_unschedule, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCNode_prototype, "schedule", js_CCNode_schedule, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCNode_prototype, "scheduleOnce", js_CCNode_scheduleOnce, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCNode_prototype, "unschedule", js_CCNode_unschedule, 1, JSPROP_READONLY | JSPROP_PERMANENT);
     
-    JS_DefineFunction(cx, js_cocos2dx_CCScheduler_prototype, "scheduleCallbackForTarget", js_CCScheduler_schedule, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCScheduler_prototype, "unscheduleAllCallbacksForTarget", js_cocos2dx_CCScheduler_unscheduleAllSelectorsForTarget, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCScheduler_prototype, "scheduleCallbackForTarget", js_CCScheduler_schedule, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCScheduler_prototype, "unscheduleAllCallbacksForTarget", jsb_CCScheduler_unscheduleAllSelectorsForTarget, 1, JSPROP_READONLY | JSPROP_PERMANENT);
     
 
     
-    JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "setPosition", js_cocos2dx_CCNode_setPosition, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCNode_prototype, "setPosition", jsb_CCNode_setPosition, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 
-    JS_DefineFunction(cx, js_cocos2dx_CCSprite_prototype, "setPosition", js_cocos2dx_CCSprite_setPosition, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCSprite_prototype, "setPosition", jsb_CCSprite_setPosition, 1, JSPROP_READONLY | JSPROP_PERMANENT);
     
-    JS_DefineFunction(cx, js_cocos2dx_CCTMXLayer_prototype, "getTileFlagsAt", js_cocos2dx_CCTMXLayer_getTileFlagsAt, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCTMXLayer_prototype, "getTileFlagsAt", jsb_CCTMXLayer_getTileFlagsAt, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 
-    JS_DefineFunction(cx, js_cocos2dx_CCDrawNode_prototype, "drawPoly", js_cocos2dx_CCDrawNode_drawPolygon, 4, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCDrawNode_prototype, "setBlendFunc", js_cocos2dx_CCDrawNode_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCDrawNode_prototype, "drawPoly", jsb_CCDrawNode_drawPolygon, 4, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCDrawNode_prototype, "setBlendFunc", jsb_CCDrawNode_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
 
-    JS_DefineFunction(cx, js_cocos2dx_CCTexture2D_prototype, "setTexParameters", js_cocos2dx_CCTexture2D_setTexParameters, 4, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCMenu_prototype, "alignItemsInRows", js_cocos2dx_CCMenu_alignItemsInRows, 1, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCMenu_prototype, "alignItemsInColumns", js_cocos2dx_CCMenu_alignItemsInColumns, 1, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCTexture2D_prototype, "setTexParameters", jsb_CCTexture2D_setTexParameters, 4, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCMenu_prototype, "alignItemsInRows", jsb_CCMenu_alignItemsInRows, 1, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCMenu_prototype, "alignItemsInColumns", jsb_CCMenu_alignItemsInColumns, 1, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
 
-    JS_DefineFunction(cx, js_cocos2dx_CCFileUtils_prototype, "setSearchResolutionsOrder", js_cocos2dx_CCFileUtils_setSearchResolutionsOrder, 1, JSPROP_PERMANENT );
-    JS_DefineFunction(cx, js_cocos2dx_CCFileUtils_prototype, "setSearchPaths", js_cocos2dx_CCFileUtils_setSearchPaths, 1, JSPROP_PERMANENT );
-    JS_DefineFunction(cx, js_cocos2dx_CCFileUtils_prototype, "getSearchPaths", js_cocos2dx_CCFileUtils_getSearchPaths, 0, JSPROP_PERMANENT );
-    JS_DefineFunction(cx, js_cocos2dx_CCFileUtils_prototype, "getSearchResolutionsOrder", js_cocos2dx_CCFileUtils_getSearchResolutionsOrder, 0, JSPROP_PERMANENT );
+    JS_DefineFunction(cx, jsb_CCFileUtils_prototype, "setSearchResolutionsOrder", jsb_CCFileUtils_setSearchResolutionsOrder, 1, JSPROP_PERMANENT );
+    JS_DefineFunction(cx, jsb_CCFileUtils_prototype, "setSearchPaths", jsb_CCFileUtils_setSearchPaths, 1, JSPROP_PERMANENT );
+    JS_DefineFunction(cx, jsb_CCFileUtils_prototype, "getSearchPaths", jsb_CCFileUtils_getSearchPaths, 0, JSPROP_PERMANENT );
+    JS_DefineFunction(cx, jsb_CCFileUtils_prototype, "getSearchResolutionsOrder", jsb_CCFileUtils_getSearchResolutionsOrder, 0, JSPROP_PERMANENT );
 
     
     tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.BezierBy; })()"));
@@ -3057,66 +3028,66 @@ void register_cocos2dx_js_extensions(JSContext* cx, JSObject* global)
     tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.CatmullRomTo; })()"));
     JS_DefineFunction(cx, tmpObj, "create", JSB_CCCatmullRomTo_actionWithDuration, 2, JSPROP_READONLY | JSPROP_PERMANENT);
         
-	JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "retain", js_cocos2dx_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, js_cocos2dx_CCNode_prototype, "release", js_cocos2dx_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_CCNode_prototype, "retain", jsb_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_CCNode_prototype, "release", jsb_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
     
-    JS_DefineFunction(cx, js_cocos2dx_CCSprite_prototype, "setBlendFunc", js_cocos2dx_CCSprite_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCSpriteBatchNode_prototype, "setBlendFunc", js_cocos2dx_CCSpriteBatchNode_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
-    //JS_DefineFunction(cx, js_cocos2dx_CCMotionStreak_prototype, "setBlendFunc", js_cocos2dx_CCMotionStreak_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCAtlasNode_prototype, "setBlendFunc", js_cocos2dx_CCAtlasNode_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCParticleBatchNode_prototype, "setBlendFunc", js_cocos2dx_CCParticleBatchNode_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCLayerColor_prototype, "setBlendFunc", js_cocos2dx_CCLayerColor_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCParticleSystem_prototype, "setBlendFunc", js_cocos2dx_CCParticleSystem_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCSprite_prototype, "setBlendFunc", jsb_CCSprite_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCSpriteBatchNode_prototype, "setBlendFunc", jsb_CCSpriteBatchNode_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+    //JS_DefineFunction(cx, jsb_CCMotionStreak_prototype, "setBlendFunc", jsb_CCMotionStreak_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCAtlasNode_prototype, "setBlendFunc", jsb_CCAtlasNode_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCParticleBatchNode_prototype, "setBlendFunc", jsb_CCParticleBatchNode_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCLayerColor_prototype, "setBlendFunc", jsb_CCLayerColor_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCParticleSystem_prototype, "setBlendFunc", jsb_CCParticleSystem_setBlendFunc, 2, JSPROP_READONLY | JSPROP_PERMANENT);
 
-	JS_DefineFunction(cx, js_cocos2dx_CCAction_prototype, "copy", js_cocos2dx_CCNode_copy, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, js_cocos2dx_CCAction_prototype, "retain", js_cocos2dx_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, js_cocos2dx_CCAction_prototype, "release", js_cocos2dx_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, js_cocos2dx_CCAnimation_prototype, "copy", js_cocos2dx_CCNode_copy, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, js_cocos2dx_CCAnimation_prototype, "retain", js_cocos2dx_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, js_cocos2dx_CCAnimation_prototype, "release", js_cocos2dx_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, js_cocos2dx_CCSpriteFrame_prototype, "retain", js_cocos2dx_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, js_cocos2dx_CCSpriteFrame_prototype, "release", js_cocos2dx_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, js_cocos2dx_CCMenuItem_prototype, "setCallback", js_cocos2dx_CCMenuItem_setCallback, 2, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCTMXLayer_prototype, "getTileFlagsAt", js_cocos2dx_CCTMXLayer_tileFlagsAt, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_CCAction_prototype, "copy", jsb_CCNode_copy, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_CCAction_prototype, "retain", jsb_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_CCAction_prototype, "release", jsb_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_CCAnimation_prototype, "copy", jsb_CCNode_copy, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_CCAnimation_prototype, "retain", jsb_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_CCAnimation_prototype, "release", jsb_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_CCSpriteFrame_prototype, "retain", jsb_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_CCSpriteFrame_prototype, "release", jsb_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_CCMenuItem_prototype, "setCallback", jsb_CCMenuItem_setCallback, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCTMXLayer_prototype, "getTileFlagsAt", jsb_CCTMXLayer_tileFlagsAt, 2, JSPROP_READONLY | JSPROP_PERMANENT);
     
-    JS_DefineFunction(cx, js_cocos2dx_CCScrollView_prototype, "setDelegate", js_cocos2dx_CCScrollView_setDelegate, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCTableView_prototype, "setDelegate", js_cocos2dx_CCTableView_setDelegate, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, js_cocos2dx_CCTableView_prototype, "setDataSource", js_cocos2dx_CCTableView_setDataSource, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCScrollView_prototype, "setDelegate", jsb_CCScrollView_setDelegate, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCTableView_prototype, "setDelegate", jsb_CCTableView_setDelegate, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_CCTableView_prototype, "setDataSource", jsb_CCTableView_setDataSource, 1, JSPROP_READONLY | JSPROP_PERMANENT);
     
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.Node.prototype; })()"));
-    JS_DefineFunction(cx, tmpObj, "unscheduleAllCallbacks", js_cocos2dx_CCNode_unscheduleAllSelectors, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, tmpObj, "copy", js_cocos2dx_CCNode_copy, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, tmpObj, "unscheduleAllCallbacks", jsb_CCNode_unscheduleAllSelectors, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, tmpObj, "copy", jsb_CCNode_copy, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.Menu; })()"));
-	JS_DefineFunction(cx, tmpObj, "create", js_cocos2dx_CCMenu_create, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, tmpObj, "create", jsb_CCMenu_create, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.MenuItem; })()"));
-	JS_DefineFunction(cx, tmpObj, "create", js_cocos2dx_CCMenuItem_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, tmpObj, "create", jsb_CCMenuItem_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.MenuItemSprite; })()"));
-	JS_DefineFunction(cx, tmpObj, "create", js_cocos2dx_CCMenuItemSprite_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, tmpObj, "create", jsb_CCMenuItemSprite_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.MenuItemImage; })()"));
-	JS_DefineFunction(cx, tmpObj, "create", js_cocos2dx_CCMenuItemImage_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, tmpObj, "create", jsb_CCMenuItemImage_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.MenuItemLabel; })()"));
-	JS_DefineFunction(cx, tmpObj, "create", js_cocos2dx_CCMenuItemLabel_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, tmpObj, "create", jsb_CCMenuItemLabel_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.MenuItemAtlasFont; })()"));
-	JS_DefineFunction(cx, tmpObj, "create", js_cocos2dx_CCMenuItemAtlasFont_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, tmpObj, "create", jsb_CCMenuItemAtlasFont_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.MenuItemFont; })()"));
-	JS_DefineFunction(cx, tmpObj, "create", js_cocos2dx_CCMenuItemFont_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, tmpObj, "create", jsb_CCMenuItemFont_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.MenuItemToggle; })()"));
-	JS_DefineFunction(cx, tmpObj, "_create", js_cocos2dx_CCMenuItemToggle_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, tmpObj, "_create", jsb_CCMenuItemToggle_create, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.Sequence; })()"));
-	JS_DefineFunction(cx, tmpObj, "create", js_cocos2dx_CCSequence_create, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, tmpObj, "create", jsb_CCSequence_create, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.Spawn; })()"));
-	JS_DefineFunction(cx, tmpObj, "create", js_cocos2dx_CCSpawn_create, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, tmpObj, "create", jsb_CCSpawn_create, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.Animation; })()"));
-	JS_DefineFunction(cx, tmpObj, "create", js_cocos2dx_CCAnimation_create, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, tmpObj, "create", jsb_CCAnimation_create, 0, JSPROP_READONLY | JSPROP_PERMANENT);
     tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.LayerMultiplex; })()"));
-    JS_DefineFunction(cx, tmpObj, "create", js_cocos2dx_CCLayerMultiplex_create, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, tmpObj, "create", jsb_CCLayerMultiplex_create, 0, JSPROP_READONLY | JSPROP_PERMANENT);
     tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.TableView; })()"));
-	JS_DefineFunction(cx, tmpObj, "create", js_cocos2dx_CCTableView_create, 3, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, tmpObj, "create", jsb_CCTableView_create, 3, JSPROP_READONLY | JSPROP_PERMANENT);
     
-	JS_DefineFunction(cx, ns, "registerTargettedDelegate", js_cocos2dx_JSTouchDelegate_registerTargettedDelegate, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, ns, "registerStandardDelegate", js_cocos2dx_JSTouchDelegate_registerStandardDelegate, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "unregisterTouchDelegate", js_cocos2dx_JSTouchDelegate_unregisterTouchDelegate, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, ns, "registerTargettedDelegate", jsb_JSTouchDelegate_registerTargettedDelegate, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, ns, "registerStandardDelegate", jsb_JSTouchDelegate_registerStandardDelegate, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "unregisterTouchDelegate", jsb_JSTouchDelegate_unregisterTouchDelegate, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 
 	tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return cc.CallFunc; })()"));
 	JS_DefineFunction(cx, tmpObj, "create", js_callFunc, 1, JSPROP_READONLY | JSPROP_PERMANENT);
@@ -3124,25 +3095,25 @@ void register_cocos2dx_js_extensions(JSContext* cx, JSObject* global)
      tmpObj = JSVAL_TO_OBJECT(anonEvaluate(cx, global, "(function () { return this; })()"));
     JS_DefineFunction(cx, tmpObj, "garbageCollect", js_forceGC, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 
-    JS_DefineFunction(cx, ns, "pAdd", js_cocos2dx_ccpAdd, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pDistance", js_cocos2dx_ccpDistance, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pSub", js_cocos2dx_ccpSub, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pNeg", js_cocos2dx_ccpNeg, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pMult", js_cocos2dx_ccpMult, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pMidpoint", js_cocos2dx_ccpMidpoint, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pDot", js_cocos2dx_ccpDot, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pCross", js_cocos2dx_ccpCross, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pPerp", js_cocos2dx_ccpPerp, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pRPerp", js_cocos2dx_ccpRPerp, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pProject", js_cocos2dx_ccpProject, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pRotate", js_cocos2dx_ccpRotate, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pNormalize", js_cocos2dx_ccpNormalize, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pClamp", js_cocos2dx_ccpClamp, 2, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, ns, "pLengthSQ", js_cocos2dx_ccpLengthSQ, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, ns, "pLength", js_cocos2dx_ccpLength, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pAdd", jsb_ccpAdd, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pDistance", jsb_ccpDistance, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pSub", jsb_ccpSub, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pNeg", jsb_ccpNeg, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pMult", jsb_ccpMult, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pMidpoint", jsb_ccpMidpoint, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pDot", jsb_ccpDot, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pCross", jsb_ccpCross, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pPerp", jsb_ccpPerp, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pRPerp", jsb_ccpRPerp, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pProject", jsb_ccpProject, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pRotate", jsb_ccpRotate, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pNormalize", jsb_ccpNormalize, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pClamp", jsb_ccpClamp, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, ns, "pLengthSQ", jsb_ccpLengthSQ, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, ns, "pLength", jsb_ccpLength, 1, JSPROP_READONLY | JSPROP_PERMANENT);
     
     // add constructor for CCSet
-    JSFunction *ccSetConstructor = JS_NewFunction(cx, js_cocos2dx_CCSet_constructor, 0, JSPROP_READONLY | JSPROP_PERMANENT, NULL, "constructor");
+    JSFunction *ccSetConstructor = JS_NewFunction(cx, jsb_CCSet_constructor, 0, JSPROP_READONLY | JSPROP_PERMANENT, NULL, "constructor");
     JSObject *ctor = JS_GetFunctionObject(ccSetConstructor);
-    JS_LinkConstructorAndPrototype(cx, ctor, js_cocos2dx_CCSet_prototype);
+    JS_LinkConstructorAndPrototype(cx, ctor, jsb_CCSet_prototype);
 }

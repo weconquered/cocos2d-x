@@ -111,15 +111,10 @@ public:
     CCSprite* tileAt(const CCPoint& tileCoordinate);
 
     /** returns the tile gid at a given tile coordinate.
-    if it returns 0, it means that the tile is empty.
-    This method requires the the tile map has not been previously released (eg. don't call layer->releaseMap())
-    */
-    unsigned int  tileGIDAt(const CCPoint& tileCoordinate);
-
-    /** returns the tile gid at a given tile coordinate. It also returns the tile flags.
-     This method requires the the tile map has not been previously released (eg. don't call [layer releaseMap])
+     if it returns 0, it means that the tile is empty.
+     This method requires the the tile map has not been previously released (eg. don't call layer->releaseMap())
      */
-    unsigned int tileGIDAt(const CCPoint& tileCoordinate, ccTMXTileFlags* flags);
+    unsigned int tileGIDAt(const CCPoint& tileCoordinate, ccTMXTileFlags* flags = NULL);
 
     /** sets the tile gid (gid = tile global id) at a given tile coordinate.
     The Tile GID can be obtained by using the method "tileGIDAt" or by using the TMX editor -> Tileset Mgr +1.
