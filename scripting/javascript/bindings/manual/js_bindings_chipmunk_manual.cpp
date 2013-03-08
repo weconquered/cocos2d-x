@@ -1628,4 +1628,32 @@ void static freeSpaceChildren(cpSpace *space)
 	cpSpaceEachBody(space, (cpSpaceBodyIteratorFunc)postBodyFree, space);
 }
 
+jsval c_class_to_jsval( JSContext *cx, void* handle, JSObject* object, JSClass *klass, const char* class_name)
+{
+    JSObject *jsobj;
+    
+    jsobj = jsb_get_jsobject_for_proxy(handle);
+    if( !jsobj ) {
+        jsobj = JS_NewObject(cx, klass, object, NULL);
+        CCAssert(jsobj, "Invalid object");
+        jsb_set_c_proxy_for_jsobject(jsobj, handle, JSB_C_FLAG_DO_NOT_CALL_FREE);
+        jsb_set_jsobject_for_proxy(jsobj, handle);
+    }
+    
+    return OBJECT_TO_JSVAL(jsobj);
+}
+
+JSBool jsval_to_c_class( JSContext *cx, jsval vp, void **out_native, struct jsb_c_proxy_s **out_proxy)
+{
+    JSObject *jsobj;
+    JSBool ok = JS_ValueToObject(cx, vp, &jsobj);
+    JSB_PRECONDITION2(ok, cx, JS_FALSE, "Error converting jsval to object");
+    
+    struct jsb_c_proxy_s *proxy = jsb_get_c_proxy_for_jsobject(jsobj);
+    *out_native = proxy->handle;
+    if( out_proxy )
+        *out_proxy = proxy;
+    return JS_TRUE;
+}
+
 #endif // JSB_INCLUDE_CHIPMUNK

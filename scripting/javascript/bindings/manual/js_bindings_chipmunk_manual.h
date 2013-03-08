@@ -98,6 +98,9 @@ extern void register_CCPhysicsDebugNode(JSContext *cx, JSObject *obj);
 JSBool JSB_cpPolyShape_constructor(JSContext *cx, uint32_t argc, jsval *vp);
 void JSB_cpSpace_finalize(JSFreeOp *fop, JSObject *obj);
 
+jsval c_class_to_jsval( JSContext *cx, void* handle, JSObject* object, JSClass *klass, const char* class_name);
+JSBool jsval_to_c_class( JSContext *cx, jsval vp, void **out_native, struct jsb_c_proxy_s **out_proxy);
+
 #endif // JSB_INCLUDE_CHIPMUNK
 
 #endif // __js_bindings_chipmunk_manual
