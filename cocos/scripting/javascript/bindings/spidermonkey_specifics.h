@@ -55,7 +55,7 @@ class TypeTest
 do { \
 	p = (js_proxy_t *)malloc(sizeof(js_proxy_t)); \
 	assert(p); \
-    js_proxy_t* native_obj##js_obj##tmp = NULL; \
+    js_proxy_t* native_obj##js_obj##tmp = NULL, *js_obj##native_obj##tmp = NULL; \
     HASH_FIND_PTR(_native_js_global_ht, &native_obj, native_obj##js_obj##tmp); \
     assert(!native_obj##js_obj##tmp); \
 	p->ptr = native_obj; \
@@ -63,9 +63,8 @@ do { \
 	HASH_ADD_PTR(_native_js_global_ht, ptr, p); \
 	p = (js_proxy_t *)malloc(sizeof(js_proxy_t)); \
 	assert(p); \
-    native_obj##js_obj##tmp = NULL; \
-    HASH_FIND_PTR(_js_native_global_ht, &js_obj, native_obj##js_obj##tmp); \
-    assert(!native_obj##js_obj##tmp); \
+    HASH_FIND_PTR(_js_native_global_ht, &js_obj, js_obj##native_obj##tmp); \
+    assert(!js_obj##native_obj##tmp); \
 	p->ptr = native_obj; \
 	p->obj = js_obj; \
 	HASH_ADD_PTR(_js_native_global_ht, obj, p); \
@@ -83,6 +82,8 @@ do { \
 
 #define JS_REMOVE_PROXY(nproxy, jsproxy) \
 do { \
+    assert(nproxy); \
+    assert(jsproxy); \
 	if (nproxy) { HASH_DEL(_native_js_global_ht, nproxy); free(nproxy); } \
 	if (jsproxy) { HASH_DEL(_js_native_global_ht, jsproxy); free(jsproxy); } \
 } while (0)

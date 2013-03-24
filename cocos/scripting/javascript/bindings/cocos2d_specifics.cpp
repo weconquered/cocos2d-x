@@ -199,7 +199,7 @@ JSObject* bind_menu_item(JSContext *cx, T* nativeObj, jsval callback, jsval this
 
 		// bind nativeObj <-> JSObject
 		js_proxy_t *proxy = jsb_new_proxy(nativeObj, tmp);
-		JS_AddNamedObjectRoot(cx, &proxy->obj, typeid(*nativeObj).name());        
+		//JS_AddNamedObjectRoot(cx, &proxy->obj, typeid(*nativeObj).name());        
 		addCallBackAndThis(tmp, callback, thisObj);
 
 		return tmp;
@@ -642,6 +642,7 @@ JSBool js_cocos2dx_CCAnimation_create(JSContext *cx, uint32_t argc, jsval *vp)
 		} else if (argc == 0) {
             ret = cocos2d::Animation::create();
         }
+        ret->retain();
 		jsval jsret;
 		if (ret) {
 			js_proxy_t *proxy = jsb_get_native_proxy(ret);
@@ -966,7 +967,7 @@ JSScheduleWrapper::~JSScheduleWrapper()
 {
     if (_pPureJSTarget) {
         JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
-        JS_RemoveObjectRoot(cx, &_pPureJSTarget);
+        //JS_RemoveObjectRoot(cx, &_pPureJSTarget);
     }
 }
 
@@ -1310,7 +1311,7 @@ void JSScheduleWrapper::setPureJSTarget(JSObject* pPureJSTarget)
     CCASSERT(_pPureJSTarget == NULL, "The pure js target has been set");
     JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
     _pPureJSTarget = pPureJSTarget;
-    JS_AddNamedObjectRoot(cx, &_pPureJSTarget, "Pure JS target");
+    //JS_AddNamedObjectRoot(cx, &_pPureJSTarget, "Pure JS target");
 }
 
 JSObject* JSScheduleWrapper::getPureJSTarget()
@@ -2321,7 +2322,7 @@ JSBool js_BezierActions_create(JSContext *cx, uint32_t argc, jsval *vp) {
         config.endPosition = arr[2];
         
         T* ret =  T::create(t, config);
-        
+        ret->retain();
         free(arr);
 
         jsval jsret;
@@ -2372,7 +2373,7 @@ JSBool js_CardinalSplineActions_create(JSContext *cx, uint32_t argc, jsval *vp) 
         }
         
         T *ret = T::create(dur, points, ten);
-        
+        ret->retain();
         free(arr);
         
         jsval jsret;
@@ -2420,7 +2421,7 @@ JSBool js_CatmullRomActions_create(JSContext *cx, uint32_t argc, jsval *vp) {
         }
         
         T *ret = T::create(dur, points);
-        
+        ret->retain();
         free(arr);
         
         jsval jsret;

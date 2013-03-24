@@ -439,7 +439,7 @@ static JSBool js_cocos2dx_CCTableView_create(JSContext *cx, uint32_t argc, jsval
         ret->autorelease();
         
         ret->setDataSource(pNativeSource);
-        
+
         jsval jsret;
         do {
             if (ret)

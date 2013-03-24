@@ -417,7 +417,7 @@ void ScriptingCore::addRegisterCallback(sc_register_sth callback) {
 void ScriptingCore::removeAllRoots(JSContext *cx) {
     js_proxy_t *current, *tmp;
     HASH_ITER(hh, _js_native_global_ht, current, tmp) {
-        JS_RemoveObjectRoot(cx, &current->obj);
+//        JS_RemoveObjectRoot(cx, &current->obj);
         HASH_DEL(_js_native_global_ht, current);
         free(current);
     }
@@ -622,16 +622,16 @@ JSBool ScriptingCore::log(JSContext* cx, uint32_t argc, jsval *vp)
 
 void ScriptingCore::removeScriptObjectByObject(Object* pObj)
 {
-    js_proxy_t* nproxy;
-    js_proxy_t* jsproxy;
-    void *ptr = (void*)pObj;
-    nproxy = jsb_get_native_proxy(ptr);
-    if (nproxy) {
-        JSContext *cx = ScriptingCore::getInstance()->getGlobalContext();
-        jsproxy = jsb_get_js_proxy(nproxy->obj);
-        JS_RemoveObjectRoot(cx, &jsproxy->obj);
-        jsb_remove_proxy(nproxy, jsproxy);
-    }
+//    js_proxy_t* nproxy;
+//    js_proxy_t* jsproxy;
+//    void *ptr = (void*)pObj;
+//    nproxy = jsb_get_native_proxy(ptr);
+//    if (nproxy) {
+//        JSContext *cx = ScriptingCore::getInstance()->getGlobalContext();
+//        jsproxy = jsb_get_js_proxy(nproxy->obj);
+//        JS_RemoveObjectRoot(cx, &jsproxy->obj);
+//        jsb_remove_proxy(nproxy, jsproxy);
+//    }
 }
 
 
