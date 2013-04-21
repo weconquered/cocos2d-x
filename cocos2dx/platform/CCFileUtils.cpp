@@ -630,7 +630,7 @@ std::string CCFileUtils::fullPathForFilename(const char* pszFileName)
             {
                 // Using the filename passed in as key.
                 m_fullPathCache.insert(std::pair<std::string, std::string>(pszFileName, fullpath));
-                //CCLOG("Returning path: %s", fullpath.c_str());
+                CCLOG("Returning path: %s", fullpath.c_str());
                 return fullpath;
             }
         }
