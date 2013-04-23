@@ -37,23 +37,22 @@ bool AppDelegate::applicationDidFinishLaunching() {
     CCSize frameSize = pEGLView->getFrameSize();
     CCSize resSize;
     
+    CCBReader::setResolutionScale(4);
     if (frameSize.height > 768)
     {// Ipadhd
         resourceOrders.push_back("resources-ipadhd");
         resSize = CCSizeMake(2048, 1536);
-        pDirector->setContentScaleFactor(1536.0f/designResolution.height);
+        
     }
     else if (frameSize.height > 640)
     {// Ipad
         resourceOrders.push_back("resources-ipad");
         resSize = CCSizeMake(1024, 768);
-        pDirector->setContentScaleFactor(768.0f/designResolution.height);
     }
     else if (frameSize.height > 320)
     {// Iphone-hd 3.5 and 4.0 inch
         resourceOrders.push_back("resources-iphonehd");
         resSize = CCSizeMake(960, 640);
-        pDirector->setContentScaleFactor(640.0f/designResolution.height);
     }
     else
     {// Iphone
@@ -61,7 +60,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
         resSize = CCSizeMake(480, 320);
     }
     
-    pDirector->setContentScaleFactor(resSize.height/designResolution.height);
+   pDirector->setContentScaleFactor(resSize.height/designResolution.height);
     fileUtils->setSearchResolutionsOrder(resourceOrders);
     
     // create a scene. it's an autorelease object
@@ -84,7 +83,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     
     // run
     pDirector->runWithScene(pScene);
-
+    CCSize winSize = CCDirector::sharedDirector()->getWinSize();
+    CCLOG("winsize width = %f, height = %f", winSize.width, winSize.height);
     return true;
 }
 
