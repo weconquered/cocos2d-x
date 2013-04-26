@@ -25,8 +25,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // set FPS. the default value is 1.0/60 if you don't call this
     pDirector->setAnimationInterval(1.0 / 60);
 
-    CCSize designResolution = CCSizeMake(2048, 1536);
-    pEGLView->setDesignResolutionSize(designResolution.width, designResolution.height ,kResolutionFixedHeight);
+
     CCFileUtils* fileUtils = CCFileUtils::sharedFileUtils();
     std::vector<std::string> searchPaths;
     searchPaths.push_back("Published-iOS");
@@ -37,30 +36,37 @@ bool AppDelegate::applicationDidFinishLaunching() {
     CCSize frameSize = pEGLView->getFrameSize();
     CCSize resSize;
     
-    CCBReader::setResolutionScale(4);
+    CCSize designSize = CCSizeMake(480, 320);
+    
     if (frameSize.height > 768)
     {// Ipadhd
         resourceOrders.push_back("resources-ipadhd");
         resSize = CCSizeMake(2048, 1536);
-        
+//        CCBReader::setResolutionScale(4);
     }
     else if (frameSize.height > 640)
     {// Ipad
         resourceOrders.push_back("resources-ipad");
         resSize = CCSizeMake(1024, 768);
+//        CCBReader::setResolutionScale(2);
     }
     else if (frameSize.height > 320)
     {// Iphone-hd 3.5 and 4.0 inch
         resourceOrders.push_back("resources-iphonehd");
         resSize = CCSizeMake(960, 640);
+//        CCBReader::setResolutionScale(2);
     }
     else
     {// Iphone
         resourceOrders.push_back("resources-iphone");
         resSize = CCSizeMake(480, 320);
+//        CCBReader::setResolutionScale(1);
     }
     
-   pDirector->setContentScaleFactor(resSize.height/designResolution.height);
+    
+    pEGLView->setDesignResolutionSize(designSize.width, designSize.height ,kResolutionFixedHeight);
+    
+    pDirector->setContentScaleFactor(resSize.height/designSize.height);
     fileUtils->setSearchResolutionsOrder(resourceOrders);
     
     // create a scene. it's an autorelease object
