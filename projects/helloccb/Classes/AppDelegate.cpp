@@ -42,25 +42,21 @@ bool AppDelegate::applicationDidFinishLaunching() {
     {// Ipadhd
         resourceOrders.push_back("resources-ipadhd");
         resSize = CCSizeMake(2048, 1536);
-//        CCBReader::setResolutionScale(4);
     }
     else if (frameSize.height > 640)
     {// Ipad
         resourceOrders.push_back("resources-ipad");
         resSize = CCSizeMake(1024, 768);
-//        CCBReader::setResolutionScale(2);
     }
     else if (frameSize.height > 320)
     {// Iphone-hd 3.5 and 4.0 inch
         resourceOrders.push_back("resources-iphonehd");
         resSize = CCSizeMake(960, 640);
-//        CCBReader::setResolutionScale(2);
     }
     else
     {// Iphone
         resourceOrders.push_back("resources-iphone");
         resSize = CCSizeMake(480, 320);
-//        CCBReader::setResolutionScale(1);
     }
     
     
