@@ -3,37 +3,42 @@
 import sys
 import subprocess
 import os
-import inspect
+import json
+import copy
 
 class Generator(object):
     """
     JSB Bytecode Generator Class
     """
 
-    def __init__(self, src_dir, dst_dir, use_closure_compiler):
+    def __init__(self, src_dir_arr, dst_dir, use_closure_compiler, config):
         """
 
         Arguments:
-        - `src_dir`:
-        - `dst_dir`:
+        - `src_dir_arr`:
+        - `dst_dir_arr`:
         """
-        self._src_dir = src_dir
-        self._dst_dir = dst_dir == None and src_dir or dst_dir
+        self._current_src_dir = None
+        self._src_dir_arr = src_dir_arr
+        self._dst_dir = dst_dir
         self._use_closure_compiler = use_closure_compiler != 0
+        self._config = config
+
         self._success = []
         self._failure = []
-        self._jsfiles = []
+        self._js_files = {}
         self._compressed_js_path = os.path.join(self._dst_dir, "__cocos2dx_jsb_game_tmpfile__.js")
         self._compressed_jsc_path = os.path.join(self._dst_dir,"game.jsc")
 
-        print "src dir:"+self._src_dir +",dst dir:"+self._dst_dir+",use closure compiler:"+str(self._use_closure_compiler)
-
     def get_relative_path(self, jsfile):
         try:
-            pos = jsfile.index(self._src_dir)
+            print "current src dir: "+self._current_src_dir
+            pos = jsfile.index(self._current_src_dir)
             if pos != 0:
                 raise Exception("cannot find src directory in file path.")
-            return jsfile[len(self._src_dir)+1:]
+            print "origin js path: "+ jsfile
+            print "relative path: "+jsfile[len(self._current_src_dir)+1:]
+            return jsfile[len(self._current_src_dir)+1:]
         except ValueError:
             raise Exception("cannot find src directory in file path.")
 
@@ -41,7 +46,13 @@ class Generator(object):
         """
         """
         # create folder for generated file
-        jsc_filepath = os.path.join(self._dst_dir, self.get_relative_path(jsfile)+"c")
+        jsc_filepath = ""
+        relative_path = self.get_relative_path(jsfile)+"c"
+        if len(self._js_files) > 1:
+            jsc_filepath = os.path.join(self._dst_dir, self._current_src_dir, relative_path)
+        else:
+            jsc_filepath = os.path.join(self._dst_dir, relative_path)
+
         dst_rootpath = os.path.split(jsc_filepath)[0]
         try:
             # print "creating dir (%s)" % (dst_rootpath)
@@ -58,7 +69,6 @@ class Generator(object):
         """
         Compile js file
         """
-        print "test....."
         print "compiling js (%s) to bytecode..." % (jsfile)
 
         ret = subprocess.call(["jsbcc", jsfile, output_file])
@@ -71,12 +81,14 @@ class Generator(object):
     def compress_js(self):
         """
         """
-        jsfiles = " --js ".join(self._jsfiles)
-        compiler_jar_path = os.path.join("closure-compiler", "compiler.jar")
-        print jsfiles
+        jsfiles = ""
+        for src_dir in self._src_dir_arr:
+            print "\n----------src:"+src_dir
+            jsfiles = jsfiles + " --js ".join(self._js_files[src_dir]) + " "
 
+        compiler_jar_path = os.path.join("closure-compiler", "compiler.jar")
         command = "java -jar %s --js %s --js_output_file %s" % (compiler_jar_path, jsfiles, self._compressed_js_path)
-        print command
+        print "command:"+command
         ret = subprocess.call(command, shell=True)
         if ret == 0:
             print "js files were compressed successfully..."
@@ -90,7 +102,87 @@ class Generator(object):
                 self.deep_iterate_dir(path)
             elif os.path.isfile(path):
                 if os.path.splitext(path)[1] == ".js":
-                    self._jsfiles.append(path)
+                    self._js_files[self._current_src_dir].append(path)
+
+
+    def js_filename_pre_order_compare(self, a, b):
+        """
+        """
+        pre_order = self._config["pre_order"]
+
+        if a in pre_order and not b in pre_order:
+            return -1
+        elif not a in pre_order and b in pre_order:
+            return 1
+        elif a in pre_order and b in pre_order:
+            if pre_order.index(a) > pre_order.index(b):
+                return 1
+            elif pre_order.index(a) < pre_order.index(b):
+                return -1
+            else:
+                return 0
+        else:
+            return 0
+
+
+    def js_filename_post_order_compare(self, a, b):
+        """
+        """
+        post_order = self._config["post_order"]
+
+        if a in post_order and not b in post_order:
+            return 1
+        elif not a in post_order and b in post_order:
+            return -1
+        elif a in post_order and b in post_order:
+            if post_order.index(a) > post_order.index(b):
+                return 1
+            elif post_order.index(a) < post_order.index(b):
+                return -1
+            else:
+                return 0
+        else:
+            return 0
+
+    def reorder_js_files(self):
+        if self._config == None:
+            return
+
+        # print "before:"+str(self._js_files)
+
+        for src_dir in self._js_files:
+            # Remove file in exclude list
+            need_remove_arr = []
+            for jsfile in self._js_files[src_dir]:
+                for exclude_file in self._config["exclude"]:
+                    if jsfile.find(exclude_file) != -1:
+                        print "remove:" + jsfile
+                        need_remove_arr.append(jsfile)
+
+            for need_remove in need_remove_arr:
+                self._js_files[src_dir].remove(need_remove)
+
+            self._js_files[src_dir].sort(cmp=self.js_filename_pre_order_compare)
+            self._js_files[src_dir].sort(cmp=self.js_filename_post_order_compare)
+
+        # print '-------------------'
+        # print "after:" + str(self._js_files)
+
+    def handle_all_js_files(self):
+        """
+        Arguments:
+        - `self`:
+        """
+        if self._use_closure_compiler == True:
+            self.compress_js()
+            self.compile_js(self._compressed_js_path, self._compressed_jsc_path)
+            # remove tmp compressed file
+            os.remove(self._compressed_js_path)
+        else:
+            for src_dir in self._src_dir_arr:
+                for jsfile in self._js_files[src_dir]:
+                    self._current_src_dir = src_dir
+                    self.compile_js(jsfile, self.get_output_file_path(jsfile))
 
     def run(self):
         """
@@ -103,22 +195,20 @@ class Generator(object):
                 raise Exception("Error: cannot create folder in "+self._dst_dir)
 
         # deep iterate the src directory
-        self.deep_iterate_dir(self._src_dir)
+        for src_dir in self._src_dir_arr:
+            print "src dir:"+src_dir
+            self._current_src_dir = src_dir
+            self._js_files[self._current_src_dir] = []
+            self.deep_iterate_dir(src_dir)
 
-        if self._use_closure_compiler == True:
-            self.compress_js()
-            self.compile_js(self._compressed_js_path, self._compressed_jsc_path)
-            # remove tmp compressed file
-            os.remove(self._compressed_js_path)
-        else:
-            for jsfile in self._jsfiles:
-                self.compile_js(jsfile, self.get_output_file_path(jsfile))
-
+        self.reorder_js_files()
+        self.handle_all_js_files()
         print "\nCompilation finished, (%d) files succeed, (%d) files fail." % (len(self._success), len(self._failure))
         if len(self._failure) > 0:
             print "Failure files are:"
             print self._failure
         print "------------------------------"
+
 def main():
     """
     """
@@ -126,7 +216,7 @@ def main():
 
     parser = OptionParser("usage: %prog -s src_dir [-d dst_dir -c use_closure_compiler]")
     parser.add_option("-s", "--src",
-                      action="store", type="string", dest="src_dir",
+                      action="append", type="string", dest="src_dir_arr",
                       help="source directory")
 
     parser.add_option("-d", "--dst",
@@ -139,14 +229,22 @@ def main():
 
     (options, args) = parser.parse_args()
 
-    if options.src_dir == None:
-        raise Exception("Please set src folder by \"-s\" or \"-src\", run ./jscompile.py -h for the usage ")
-    elif os.path.exists(options.src_dir) == False:
-        raise Exception("Error: dir (%s) doesn't exist..." % (options.src_dir))
+    if options.src_dir_arr == None:
+        raise Exception("Please set source folder by \"-s\" or \"-src\", run ./jscompile.py -h for the usage ")
+    elif options.dst_dir == None:
+        raise Exception("Please set destination folder by \"-d\" or \"-dst\", run ./jscompile.py -h for the usage ")
+    else:
+        for src_dir in options.src_dir_arr:
+            if os.path.exists(src_dir) == False:
+                raise Exception("Error: dir (%s) doesn't exist..." % (src_dir))
 
-    print options
 
-    generator = Generator(options.src_dir, options.dst_dir, options.use_closure_compiler)
+    f = open("compiler-config.json")
+    config = json.load(f)
+    print config
+    f.close()
+
+    generator = Generator(options.src_dir_arr, options.dst_dir, options.use_closure_compiler, config)
     generator.run()
 
 if __name__ == '__main__':
