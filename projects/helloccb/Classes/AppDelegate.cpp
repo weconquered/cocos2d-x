@@ -1,5 +1,6 @@
 #include "AppDelegate.h"
 #include "MainLayerLoader.h"
+#include "TimelineTestLayerLoader.h"
 
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -65,20 +66,23 @@ bool AppDelegate::applicationDidFinishLaunching() {
     pDirector->setContentScaleFactor(resSize.height/designSize.height);
     fileUtils->setSearchResolutionsOrder(resourceOrders);
     
+    fileUtils->loadFilenameLookupDictionaryFromFile("fileLookup.plist");
+    
     // create a scene. it's an autorelease object
     CCScene *pScene = CCScene::create();
     
     /* Create an autorelease CCNodeLoaderLibrary. */
     CCNodeLoaderLibrary * ccNodeLoaderLibrary = CCNodeLoaderLibrary::newDefaultCCNodeLoaderLibrary();
     
-    ccNodeLoaderLibrary->registerCCNodeLoader("MainLayer", MainLayerLoader::loader());
-    
+//    ccNodeLoaderLibrary->registerCCNodeLoader("MainLayer", MainLayerLoader::loader());
+    ccNodeLoaderLibrary->registerCCNodeLoader("TimelineTestLayer", TimelineTestLayerLoader::loader());
     /* Create an autorelease CCBReader. */
     cocos2d::extension::CCBReader * ccbReader = new cocos2d::extension::CCBReader(ccNodeLoaderLibrary);
-    
+    CCBAnimationManager* manager = ccbReader->getAnimationManager();
     /* Read a ccbi file. */
-    CCNode * node = ccbReader->readNodeGraphFromFile("MainScene.ccbi");
-    
+//    CCNode * node = ccbReader->readNodeGraphFromFile("MainScene.ccbi");
+    CCNode * node = ccbReader->readNodeGraphFromFile("TimelineTest.ccbi");
+    ((TimelineTestLayer*)node)->setAnimationManganger(manager);
     ccbReader->release();
     
     pScene->addChild(node);

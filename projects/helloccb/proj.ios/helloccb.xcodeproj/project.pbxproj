@@ -133,6 +133,7 @@
 		15A3DAED1682F8A6002FB0C5 /* CocosDenshion.m in Sources */ = {isa = PBXBuildFile; fileRef = 15A3DA8B1682F8A6002FB0C5 /* CocosDenshion.m */; };
 		15A3DAEE1682F8A6002FB0C5 /* SimpleAudioEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = 15A3DA8C1682F8A6002FB0C5 /* SimpleAudioEngine.mm */; };
 		15A3DAEF1682F8A6002FB0C5 /* SimpleAudioEngine_objc.m in Sources */ = {isa = PBXBuildFile; fileRef = 15A3DA8E1682F8A6002FB0C5 /* SimpleAudioEngine_objc.m */; };
+		1A0250991748FA6D00AF96AD /* TimelineTestLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0250971748FA6D00AF96AD /* TimelineTestLayer.cpp */; };
 		1A27573F1697CF2B00504026 /* CCEditBoxImplAndroid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A27573D1697CF2B00504026 /* CCEditBoxImplAndroid.cpp */; };
 		1A2B399D1723910E001AFDD5 /* Published-iOS in Resources */ = {isa = PBXBuildFile; fileRef = 1A2B399C1723910E001AFDD5 /* Published-iOS */; };
 		1A2B39A217239236001AFDD5 /* MainLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B39A017239236001AFDD5 /* MainLayer.cpp */; };
@@ -441,6 +442,9 @@
 		15A3DA8C1682F8A6002FB0C5 /* SimpleAudioEngine.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SimpleAudioEngine.mm; sourceTree = "<group>"; };
 		15A3DA8D1682F8A6002FB0C5 /* SimpleAudioEngine_objc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleAudioEngine_objc.h; sourceTree = "<group>"; };
 		15A3DA8E1682F8A6002FB0C5 /* SimpleAudioEngine_objc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleAudioEngine_objc.m; sourceTree = "<group>"; };
+		1A0250961748FA3200AF96AD /* TimelineTestLayerLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimelineTestLayerLoader.h; path = ../Classes/TimelineTestLayerLoader.h; sourceTree = "<group>"; };
+		1A0250971748FA6D00AF96AD /* TimelineTestLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TimelineTestLayer.cpp; path = ../Classes/TimelineTestLayer.cpp; sourceTree = "<group>"; };
+		1A0250981748FA6D00AF96AD /* TimelineTestLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimelineTestLayer.h; path = ../Classes/TimelineTestLayer.h; sourceTree = "<group>"; };
 		1A27573D1697CF2B00504026 /* CCEditBoxImplAndroid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCEditBoxImplAndroid.cpp; sourceTree = "<group>"; };
 		1A27573E1697CF2B00504026 /* CCEditBoxImplAndroid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCEditBoxImplAndroid.h; sourceTree = "<group>"; };
 		1A2B399C1723910E001AFDD5 /* Published-iOS */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "Published-iOS"; path = "HelloCCB/Published-iOS"; sourceTree = "<group>"; };
@@ -995,6 +999,9 @@
 				1A2B399E172391DE001AFDD5 /* MainLayerLoader.h */,
 				1A2B39A017239236001AFDD5 /* MainLayer.cpp */,
 				1A2B39A117239236001AFDD5 /* MainLayer.h */,
+				1A0250961748FA3200AF96AD /* TimelineTestLayerLoader.h */,
+				1A0250971748FA6D00AF96AD /* TimelineTestLayer.cpp */,
+				1A0250981748FA6D00AF96AD /* TimelineTestLayer.h */,
 			);
 			name = Classes;
 			path = ../classes;
@@ -1283,6 +1290,7 @@
 				1AC3624B16D4A1E8000847F2 /* main.m in Sources */,
 				1AFCDA8216D4A25900906EA6 /* RootViewController.mm in Sources */,
 				1A2B39A217239236001AFDD5 /* MainLayer.cpp in Sources */,
+				1A0250991748FA6D00AF96AD /* TimelineTestLayer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
