@@ -19,8 +19,6 @@ script:
 - export PATH=$PATH:$NACL_SDK_ROOT/toolchain/linux_x86_newlib/bin
 - export NDK_ROOT=$HOME/bin/android-ndk
 - ./tools/travis-scripts/run-script.sh
-branches: 
-  only: 
-  - master
+
 before_install: 
 - ./tools/travis-scripts/before-install.sh
