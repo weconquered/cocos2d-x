@@ -67,6 +67,10 @@
 		15C6482D165F3988007D4F18 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15C6482C165F3988007D4F18 /* AudioToolbox.framework */; };
 		15C6482F165F399D007D4F18 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 15C6482E165F399D007D4F18 /* libz.dylib */; };
 		15C64833165F3AFD007D4F18 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15C64832165F3AFD007D4F18 /* Foundation.framework */; };
+		1A0544C217AA9DA100C36577 /* LocalStorageTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0544C017AA9DA100C36577 /* LocalStorageTest.cpp */; };
+		1A0544C317AA9DA100C36577 /* LocalStorageTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0544C017AA9DA100C36577 /* LocalStorageTest.cpp */; };
+		1A0544C917AAA21000C36577 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A035A71117822E9E00987F6C /* libsqlite3.dylib */; };
+		1A0544CB17AAA21700C36577 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A0544CA17AAA21700C36577 /* libsqlite3.dylib */; };
 		1A1197CA1785363400D62A44 /* libcocos2dx iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A07A50FD17839B9C0073F6A7 /* libcocos2dx iOS.a */; };
 		1A1197CB1785363400D62A44 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 15C6482E165F399D007D4F18 /* libz.dylib */; };
 		1A1197CC1785363400D62A44 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A07A52B91783AE900073F6A7 /* OpenGLES.framework */; };
@@ -2278,6 +2282,9 @@
 		15C6482C165F3988007D4F18 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
 		15C6482E165F399D007D4F18 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/libz.dylib; sourceTree = DEVELOPER_DIR; };
 		15C64832165F3AFD007D4F18 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		1A0544C017AA9DA100C36577 /* LocalStorageTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LocalStorageTest.cpp; path = ExtensionsTest/LocalStorageTest/LocalStorageTest.cpp; sourceTree = "<group>"; };
+		1A0544C117AA9DA100C36577 /* LocalStorageTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocalStorageTest.h; path = ExtensionsTest/LocalStorageTest/LocalStorageTest.h; sourceTree = "<group>"; };
+		1A0544CA17AAA21700C36577 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/usr/lib/libsqlite3.dylib; sourceTree = DEVELOPER_DIR; };
 		1A1197D71785363400D62A44 /* Hello lua iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Hello lua iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A1197E71785376400D62A44 /* AppDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppDelegate.cpp; sourceTree = "<group>"; };
 		1A1197E81785376400D62A44 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -3080,6 +3087,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A0544C917AAA21000C36577 /* libsqlite3.dylib in Frameworks */,
 				A07A511C17839FF90073F6A7 /* libbox2d Mac.a in Frameworks */,
 				A07A511D17839FF90073F6A7 /* libchipmunk Mac.a in Frameworks */,
 				A07A511E17839FF90073F6A7 /* libcocos2dx Mac.a in Frameworks */,
@@ -3430,6 +3438,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A0544CB17AAA21700C36577 /* libsqlite3.dylib in Frameworks */,
 				B36FB10917990F13005F39FB /* libcocos2dx iOS.a in Frameworks */,
 				A07A522B1783A1EC0073F6A7 /* libbox2d iOS.a in Frameworks */,
 				A07A522C1783A1EC0073F6A7 /* libchipmunk iOS.a in Frameworks */,
@@ -3494,6 +3503,16 @@
 				1A6FB7B31785614200CDF010 /* Test lua Mac.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1A0544BD17AA9D4400C36577 /* LocalStorageTest */ = {
+			isa = PBXGroup;
+			children = (
+				1A0544C017AA9DA100C36577 /* LocalStorageTest.cpp */,
+				1A0544C117AA9DA100C36577 /* LocalStorageTest.h */,
+			);
+			name = LocalStorageTest;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		1A1197E51785374900D62A44 /* HelloLua */ = {
@@ -3725,6 +3744,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1A0544CA17AAA21700C36577 /* libsqlite3.dylib */,
 				A035A71117822E9E00987F6C /* libsqlite3.dylib */,
 				1A9F808C177E98A600D9A1CB /* libcurl.dylib */,
 				15C6482E165F399D007D4F18 /* libz.dylib */,
@@ -4203,6 +4223,7 @@
 		A03599D517821D9B00987F6C /* ExtensionsTest */ = {
 			isa = PBXGroup;
 			children = (
+				1A0544BD17AA9D4400C36577 /* LocalStorageTest */,
 				A03599D617821D9B00987F6C /* ArmatureTest */,
 				A03599D917821D9B00987F6C /* CocosBuilderTest */,
 				A0359A0017821D9B00987F6C /* ComponentsTest */,
@@ -6900,6 +6921,7 @@
 				A07A52601783A3D90073F6A7 /* main.m in Sources */,
 				1ACD13F3178E487D00682DBD /* Scale9SpriteTest.cpp in Sources */,
 				1A96FFCD1791701800E3AF98 /* SocketIOTest.cpp in Sources */,
+				1A0544C217AA9DA100C36577 /* LocalStorageTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7179,6 +7201,7 @@
 				A07A524C1783A3A90073F6A7 /* main.m in Sources */,
 				1ACD13F4178E487D00682DBD /* Scale9SpriteTest.cpp in Sources */,
 				1A96FFCE1791701800E3AF98 /* SocketIOTest.cpp in Sources */,
+				1A0544C317AA9DA100C36577 /* LocalStorageTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

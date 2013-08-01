@@ -20,6 +20,7 @@
 #endif
 
 #include "Scale9SpriteTest/Scale9SpriteTest.h"
+#include "LocalStorageTest/LocalStorageTest.h"
 
 enum
 {
@@ -58,6 +59,7 @@ static struct {
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_EMSCRIPTEN) && (CC_TARGET_PLATFORM != CC_PLATFORM_NACL)
 	{ "HttpClientTest", [](Object *sender){ runHttpClientTest();}
 	},
+    { "LocalStorageTest", [](Object *sender){ runLocalStorageTest();} },
 #endif
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) || (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID) || (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 	{ "WebSocketTest", [](Object *sender){ runWebSocketTest();}

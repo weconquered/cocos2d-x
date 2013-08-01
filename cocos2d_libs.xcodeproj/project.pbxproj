@@ -1879,6 +1879,8 @@
 		15A055B81797EBAC0040AC39 /* Deprecated.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Deprecated.lua; sourceTree = "<group>"; };
 		15CBC6F1178A57DC00D8BBA7 /* LuaScriptHandlerMgr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LuaScriptHandlerMgr.cpp; sourceTree = "<group>"; };
 		15CBC6F2178A57DC00D8BBA7 /* LuaScriptHandlerMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LuaScriptHandlerMgr.h; sourceTree = "<group>"; };
+		1A0544C417AAA12500C36577 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		1A0544C717AAA16D00C36577 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/usr/lib/libsqlite3.dylib; sourceTree = DEVELOPER_DIR; };
 		1A1195931785201F00D62A44 /* CCBProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCBProxy.cpp; sourceTree = "<group>"; };
 		1A1195941785201F00D62A44 /* CCBProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBProxy.h; sourceTree = "<group>"; };
 		1A1195951785201F00D62A44 /* CCLuaBridge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCLuaBridge.cpp; sourceTree = "<group>"; };
@@ -3031,6 +3033,8 @@
 		1551A334158F2AB200E66CFE = {
 			isa = PBXGroup;
 			children = (
+				1A0544C717AAA16D00C36577 /* libsqlite3.dylib */,
+				1A0544C417AAA12500C36577 /* libsqlite3.dylib */,
 				1A11958117851F4200D62A44 /* lua */,
 				A03F320217814803006731B9 /* javascript */,
 				A03F2FD7178145F2006731B9 /* extensions */,
