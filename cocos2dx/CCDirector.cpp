@@ -163,6 +163,7 @@ bool Director::init(void)
     // create autorelease pool
     PoolManager::sharedPoolManager()->push();
 
+    _callbackAtLoopEnd = nullptr;
     return true;
 }
     
@@ -341,10 +342,17 @@ void Director::calculateDeltaTime()
 
     *_lastUpdate = now;
 }
+
 float Director::getDeltaTime() const
 {
 	return _deltaTime;
 }
+
+void Director::setCallbackAtLoopEnd(std::function<void()> func)
+{
+    _callbackAtLoopEnd = func;
+}
+
 void Director::setOpenGLView(EGLView *pobOpenGLView)
 {
     CCASSERT(pobOpenGLView, "opengl view should not be null");
@@ -1069,7 +1077,11 @@ void DisplayLinkDirector::mainLoop()
         drawScene();
      
         // release the objects
-        PoolManager::sharedPoolManager()->pop();        
+        PoolManager::sharedPoolManager()->pop();
+        if (_callbackAtLoopEnd)
+        {
+            _callbackAtLoopEnd();
+        }
     }
 }
 

@@ -69,6 +69,10 @@ static void serverEntryPoint(void);
 js_proxy_t *_native_js_global_ht = NULL;
 js_proxy_t *_js_native_global_ht = NULL;
 js_type_class_t *_js_global_type_ht = NULL;
+
+std::vector<std::shared_ptr<cocos2d::Object>> _globalSharedPtrVector;
+std::map<void*, std::weak_ptr<cocos2d::Object>> _globalWeakPtrMap;
+
 static char *_js_log_buf = NULL;
 
 static std::vector<sc_register_sth> registrationList;
@@ -2023,6 +2027,7 @@ js_proxy_t* jsb_get_js_proxy(JSObject* jsObj)
 
 void jsb_remove_proxy(js_proxy_t* nativeProxy, js_proxy_t* jsProxy)
 {
+    _globalWeakPtrMap.erase(jsProxy->ptr);
     JS_REMOVE_PROXY(nativeProxy, jsProxy);
 }
 

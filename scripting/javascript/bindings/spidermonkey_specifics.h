@@ -13,6 +13,10 @@ typedef struct js_proxy {
 extern js_proxy_t *_native_js_global_ht;
 extern js_proxy_t *_js_native_global_ht;
 
+extern std::vector<std::shared_ptr<cocos2d::Object>> _globalSharedPtrVector;
+extern std::map<void*, std::weak_ptr<cocos2d::Object>> _globalWeakPtrMap;
+
+
 typedef struct js_type_class {
 	uint32_t type;
 	JSClass *jsclass;

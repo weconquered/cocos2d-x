@@ -381,9 +381,12 @@ public:
      */
     void setAccelerometer(Accelerometer* acc);
 
-    /* Gets delta time since last tick to main loop */
+    /** Gets delta time since last tick to main loop */
 	float getDeltaTime() const;
 
+    /** Sets callback at the end of frame */
+    void setCallbackAtLoopEnd(std::function<void()> func);
+    
 protected:
     void purgeDirector();
     bool _purgeDirecotorInNextLoop; // this flag will be set to true in end()
@@ -495,6 +498,7 @@ protected:
     /* Projection protocol delegate */
     DirectorDelegate *_projectionDelegate;
     
+    std::function<void()> _callbackAtLoopEnd;
     // EGLViewProtocol will recreate stats labels to fit visible rect
     friend class EGLViewProtocol;
 };

@@ -140,6 +140,9 @@
 		1A2E824C17952ECE0058E421 /* jsb_deprecated.js in Resources */ = {isa = PBXBuildFile; fileRef = 1A2E823A1793EED50058E421 /* jsb_deprecated.js */; };
 		1A2E824D17952ED70058E421 /* jsb_deprecated.js in Resources */ = {isa = PBXBuildFile; fileRef = 1A2E823A1793EED50058E421 /* jsb_deprecated.js */; };
 		1A2E824E17952EDF0058E421 /* jsb_deprecated.js in Resources */ = {isa = PBXBuildFile; fileRef = 1A2E823A1793EED50058E421 /* jsb_deprecated.js */; };
+		1A38A09C17BB8BCD001B4ECB /* autogentestbindings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A38A09917BB8BCD001B4ECB /* autogentestbindings.cpp */; };
+		1A38A09D17BB8BCD001B4ECB /* autogentestbindings_api.js in Sources */ = {isa = PBXBuildFile; fileRef = 1A38A09B17BB8BCD001B4ECB /* autogentestbindings_api.js */; };
+		1A38A0AD17BC8711001B4ECB /* simple_class.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A38A0AB17BC8711001B4ECB /* simple_class.cpp */; };
 		1A6FB4DE17854A6A00CDF010 /* animations in Resources */ = {isa = PBXBuildFile; fileRef = 1A6FB4C417854A6A00CDF010 /* animations */; };
 		1A6FB4DF17854A6A00CDF010 /* armature in Resources */ = {isa = PBXBuildFile; fileRef = 1A6FB4C517854A6A00CDF010 /* armature */; };
 		1A6FB4E017854A6A00CDF010 /* background-music-aac.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1A6FB4C617854A6A00CDF010 /* background-music-aac.wav */; };
@@ -2328,6 +2331,11 @@
 		1A119C9117853D8D00D62A44 /* Opengl.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Opengl.lua; path = ../scripting/lua/script/Opengl.lua; sourceTree = "<group>"; };
 		1A119C9217853D8D00D62A44 /* OpenglConstants.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = OpenglConstants.lua; path = ../scripting/lua/script/OpenglConstants.lua; sourceTree = "<group>"; };
 		1A2E823A1793EED50058E421 /* jsb_deprecated.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = jsb_deprecated.js; sourceTree = "<group>"; };
+		1A38A09917BB8BCD001B4ECB /* autogentestbindings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = autogentestbindings.cpp; sourceTree = "<group>"; };
+		1A38A09A17BB8BCD001B4ECB /* autogentestbindings.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = autogentestbindings.hpp; sourceTree = "<group>"; };
+		1A38A09B17BB8BCD001B4ECB /* autogentestbindings_api.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = autogentestbindings_api.js; sourceTree = "<group>"; };
+		1A38A0AB17BC8711001B4ECB /* simple_class.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simple_class.cpp; sourceTree = "<group>"; };
+		1A38A0AC17BC8711001B4ECB /* simple_class.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = simple_class.h; sourceTree = "<group>"; };
 		1A6FB4C417854A6A00CDF010 /* animations */ = {isa = PBXFileReference; lastKnownFileType = folder; name = animations; path = Cpp/TestCpp/Resources/animations; sourceTree = SOURCE_ROOT; };
 		1A6FB4C517854A6A00CDF010 /* armature */ = {isa = PBXFileReference; lastKnownFileType = folder; name = armature; path = Cpp/TestCpp/Resources/armature; sourceTree = SOURCE_ROOT; };
 		1A6FB4C617854A6A00CDF010 /* background-music-aac.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "background-music-aac.wav"; path = "Cpp/TestCpp/Resources/background-music-aac.wav"; sourceTree = SOURCE_ROOT; };
@@ -3648,6 +3656,27 @@
 			name = "Lua Common";
 			sourceTree = "<group>";
 		};
+		1A38A09817BB8BCD001B4ECB /* simple_test_bindings */ = {
+			isa = PBXGroup;
+			children = (
+				1A38A09917BB8BCD001B4ECB /* autogentestbindings.cpp */,
+				1A38A09A17BB8BCD001B4ECB /* autogentestbindings.hpp */,
+				1A38A09B17BB8BCD001B4ECB /* autogentestbindings_api.js */,
+			);
+			name = simple_test_bindings;
+			path = "../../../tools/bindings-generator/test/simple_test_bindings";
+			sourceTree = "<group>";
+		};
+		1A38A0AA17BC8711001B4ECB /* simple_test */ = {
+			isa = PBXGroup;
+			children = (
+				1A38A0AB17BC8711001B4ECB /* simple_class.cpp */,
+				1A38A0AC17BC8711001B4ECB /* simple_class.h */,
+			);
+			name = simple_test;
+			path = "../../../tools/bindings-generator/test/simple_test";
+			sourceTree = "<group>";
+		};
 		1A6FB57C1785513C00CDF010 /* en.lproj */ = {
 			isa = PBXGroup;
 			children = (
@@ -4812,6 +4841,8 @@
 		A035A5F21782296200987F6C /* TestJavascript */ = {
 			isa = PBXGroup;
 			children = (
+				1A38A0AA17BC8711001B4ECB /* simple_test */,
+				1A38A09817BB8BCD001B4ECB /* simple_test_bindings */,
 				A035A6321782296200987F6C /* proj.mac */,
 				A01E17741784C0DF00B0CA4A /* proj.ios */,
 				A035A6F517822A8E00987F6C /* JS common */,
@@ -7001,6 +7032,9 @@
 				A035A6731782296200987F6C /* AppController.mm in Sources */,
 				A035A6781782296200987F6C /* main.m in Sources */,
 				1A2E823B1793EED50058E421 /* jsb_deprecated.js in Sources */,
+				1A38A09C17BB8BCD001B4ECB /* autogentestbindings.cpp in Sources */,
+				1A38A09D17BB8BCD001B4ECB /* autogentestbindings_api.js in Sources */,
+				1A38A0AD17BC8711001B4ECB /* simple_class.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
