@@ -71,7 +71,6 @@ js_proxy_t *_js_native_global_ht = NULL;
 js_type_class_t *_js_global_type_ht = NULL;
 
 std::vector<std::shared_ptr<cocos2d::Object>> _globalSharedPtrVector;
-std::map<void*, std::weak_ptr<cocos2d::Object>> _globalWeakPtrMap;
 
 static char *_js_log_buf = NULL;
 
