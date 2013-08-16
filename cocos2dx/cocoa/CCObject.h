@@ -61,7 +61,7 @@ public:
     }
 };
 
-class CC_DLL Object
+class CC_DLL Object : public std::enable_shared_from_this<Object>
 {
 public:
     // object id, ScriptSupport need public _ID
@@ -76,6 +76,11 @@ protected:
 public:
     Object(void);
     virtual ~Object(void);
+    
+    std::shared_ptr<Object> getSharedPtr()
+    {
+        return shared_from_this();
+    }
     
     void release(void);
     void retain(void);
