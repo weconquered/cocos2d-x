@@ -40,6 +40,10 @@
 
 /* Some mozilla code uses JS-friend APIs that depend on JS_METHODJIT being
    correct. */
-/* #undef JS_METHODJIT */
+#define JS_METHODJIT 1
+
+/* MOZILLA JSAPI version number components */
+#define MOZJS_MAJOR_VERSION 24
+#define MOZJS_MINOR_VERSION 0
 
 #endif /* js_config_h___ */
