@@ -129,6 +129,12 @@ void Scene::addChild(Node* child, int zOrder, int tag)
     addChildToPhysicsWorld(child);
 }
 
+void Scene::onExit()
+{
+    CCLOG("%s", "scene onExit...");
+    Node::onExit();
+}
+
 void Scene::addChildToPhysicsWorld(Node* child)
 {
     if (_physicsWorld)

@@ -73,6 +73,8 @@ public:
     virtual void addChild(Node* child, int zOrder) override;
     virtual void addChild(Node* child, int zOrder, int tag) override;
     
+    virtual void onExit() override;
+    
     /*
      * Update method will be called automatically every frame if "scheduleUpdate" is called, and the node is "live"
      */

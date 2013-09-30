@@ -966,6 +966,7 @@ void Node::onEnterTransitionDidFinish()
 void Node::onExitTransitionDidStart()
 {
     arrayMakeObjectsPerformSelector(_children, onExitTransitionDidStart, Node*);
+    
     if (_scriptType != kScriptTypeNone)
     {
         int action = kNodeOnExitTransitionDidStart;

@@ -472,7 +472,7 @@ void ScriptingCore::createGlobalContext() {
     
     JS_SetErrorReporter(this->_cx, ScriptingCore::reportError);
 #if defined(JS_GC_ZEAL) && defined(DEBUG)
-    //JS_SetGCZeal(this->_cx, 2, JS_DEFAULT_ZEAL_FREQ);
+    //JS_SetGCZeal(this->cx_, 2, JS_DEFAULT_ZEAL_FREQ);
 #endif
     this->_global = NewGlobalObject(_cx);
 
