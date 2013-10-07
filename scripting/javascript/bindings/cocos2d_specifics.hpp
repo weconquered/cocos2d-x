@@ -65,7 +65,7 @@ inline js_proxy_t *js_get_or_create_proxy(JSContext *cx, T *native_obj) {
             CCLOGINFO("Could not find the type of native object.");
             return NULL;
         }
-        
+        JSAutoCompartment ac(cx, ScriptingCore::getInstance()->getGlobalObject());
         JSObject* js_obj = JS_NewObject(cx, typeProxy->jsclass, typeProxy->proto, typeProxy->parentProto);
         proxy = jsb_new_proxy(native_obj, js_obj);
 #ifdef DEBUG
@@ -113,6 +113,7 @@ public:
         jsval retval = JSVAL_NULL;
         
         if(!JSVAL_IS_VOID(_jsCallback)  && !JSVAL_IS_VOID(_jsThisObj)) {
+            JSAutoCompartment ac(cx, JSVAL_TO_OBJECT(_jsThisObj));
             JS_CallFunctionValue(cx, JSVAL_TO_OBJECT(_jsThisObj), _jsCallback, 0, NULL, &retval);
         }
     }

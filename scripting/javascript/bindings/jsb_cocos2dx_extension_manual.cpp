@@ -258,6 +258,7 @@ public:
         if (ok) 
         {
             JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+            JSAutoCompartment ac(cx, ScriptingCore::getInstance()->getGlobalObject());
             Size size;
             JSBool isSucceed = jsval_to_ccsize(cx, ret, &size);
             if (isSucceed) return size;
@@ -294,6 +295,7 @@ public:
         {
             JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
             uint32_t count = 0;
+            JSAutoCompartment ac(cx, ScriptingCore::getInstance()->getGlobalObject());
             JSBool isSucceed = jsval_to_uint32(cx, ret, &count);
             if (isSucceed) return count;
         }
@@ -328,6 +330,8 @@ private:
         JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
         JSObject* obj = _JSTableViewDataSource;
         
+        JSAutoCompartment ac(cx, ScriptingCore::getInstance()->getGlobalObject());
+        
         if (JS_HasProperty(cx, obj, jsFunctionName.c_str(), &hasAction) && hasAction)
         {
             if(!JS_GetProperty(cx, obj, jsFunctionName.c_str(), &temp_retval))
@@ -361,6 +365,8 @@ private:
         
         JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
         JSObject* obj = _JSTableViewDataSource;
+        
+        JSAutoCompartment ac(cx, ScriptingCore::getInstance()->getGlobalObject());
         
         if (JS_HasProperty(cx, obj, jsFunctionName.c_str(), &hasAction) && hasAction)
         {
@@ -532,6 +538,7 @@ public:
         jsval dataVal[2];
         dataVal[0] = OBJECT_TO_JSVAL(p->obj);
         std::string arg1 = text;
+        
         dataVal[1] = std_string_to_jsval(ScriptingCore::getInstance()->getGlobalContext(), arg1);
         
         ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(_JSDelegate), "editBoxTextChanged", 2, dataVal, NULL);
@@ -639,7 +646,9 @@ public:
         int arg1 = (int)event;
         dataVal[1] = INT_TO_JSVAL(arg1);
         jsval jsRet;
-
+        
+        JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+        JSAutoCompartment ac(cx, _jsTarget);
         ScriptingCore::getInstance()->executeJSFunctionWithThisObj(OBJECT_TO_JSVAL(_jsTarget), OBJECT_TO_JSVAL(_jsFunc), 2, dataVal, &jsRet);
     }
     

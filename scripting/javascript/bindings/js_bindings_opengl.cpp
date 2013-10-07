@@ -10,7 +10,8 @@ void GLNode::draw() {
     JSObject *jsObj = proxy->obj;
     if (jsObj) {
       JSBool found;
-      JSB_ENSURE_AUTOCOMPARTMENT(cx, jsObj);
+//      JSB_ENSURE_AUTOCOMPARTMENT(cx, jsObj);
+        JSAutoCompartment ac(cx, jsObj);
       JS_HasProperty(cx, jsObj, "draw", &found);
       if (found == JS_TRUE) {
 	jsval rval, fval;
