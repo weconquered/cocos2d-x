@@ -68,6 +68,7 @@ public:
         if (!p) return;
         
         JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+        JSAutoCompartment ac(cx, ScriptingCore::getInstance()->getGlobalObject());
         JSObject* jsobj = JS_NewObject(cx, NULL, NULL, NULL);
         jsval vp = c_string_to_jsval(cx, "open");
         JS_SetProperty(cx, jsobj, "type", &vp);
@@ -83,6 +84,7 @@ public:
         if (!p) return;
         
         JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+        JSAutoCompartment ac(cx, ScriptingCore::getInstance()->getGlobalObject());
         JSObject* jsobj = JS_NewObject(cx, NULL, NULL, NULL);
         jsval vp = c_string_to_jsval(cx, "message");
         JS_SetProperty(cx, jsobj, "type", &vp);
@@ -112,6 +114,7 @@ public:
         if (!p) return;
         
         JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+        JSAutoCompartment ac(cx, ScriptingCore::getInstance()->getGlobalObject());
         JSObject* jsobj = JS_NewObject(cx, NULL, NULL, NULL);
         jsval vp = c_string_to_jsval(cx, "close");
         JS_SetProperty(cx, jsobj, "type", &vp);
@@ -131,6 +134,7 @@ public:
         if (!p) return;
         
         JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+        JSAutoCompartment ac(cx, ScriptingCore::getInstance()->getGlobalObject());
         JSObject* jsobj = JS_NewObject(cx, NULL, NULL, NULL);
         jsval vp = c_string_to_jsval(cx, "error");
         JS_SetProperty(cx, jsobj, "type", &vp);
@@ -308,7 +312,7 @@ JSBool js_cocos2dx_extension_WebSocket_constructor(JSContext *cx, uint32_t argc,
 	return JS_FALSE;
 }
 
-static JSBool js_cocos2dx_extension_WebSocket_get_readyState(JSContext *cx, JSHandleObject obj, JSHandleId id, JSMutableHandleValue vp)
+static JSBool js_cocos2dx_extension_WebSocket_get_readyState(JSContext *cx, JS::HandleObject obj, JS::HandleId id, JS::MutableHandleValue vp)
 {
     JSObject* jsobj = obj.get();
 	js_proxy_t *proxy = jsb_get_js_proxy(jsobj);

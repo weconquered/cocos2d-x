@@ -232,6 +232,7 @@ void MinXmlHttpRequest::handle_requestResponse(cocos2d::extension::HttpClient *s
         if (_onreadystateCallback)
         {
             //JS_IsExceptionPending(cx) && JS_ReportPendingException(cx);
+            JSAutoCompartment ac(cx, ScriptingCore::getInstance()->getGlobalObject());
             jsval fval = OBJECT_TO_JSVAL(_onreadystateCallback);
             jsval out;
             JS_CallFunctionValue(cx, NULL, fval, 0, NULL, &out);
@@ -498,7 +499,7 @@ JS_BINDED_PROP_GET_IMPL(MinXmlHttpRequest, statusText)
 {
     jsval strVal = std_string_to_jsval(cx, _statusText);
     
-    if (strVal != JSVAL_NULL)
+    if (!strVal.isNullOrUndefined())
     {
         vp.set(strVal);
         return JS_TRUE;
@@ -563,7 +564,7 @@ JS_BINDED_PROP_GET_IMPL(MinXmlHttpRequest, response)
     
     if (_responseType == ResponseType::JSON)
     {
-        jsval outVal;
+        JS::Rooted<JS::Value> outVal(cx);
         
         jsval strVal = std_string_to_jsval(cx, _data.str());
         if (JS_ParseJSON(cx, JS_GetStringCharsZ(cx, JSVAL_TO_STRING(strVal)), _dataSize, &outVal))

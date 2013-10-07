@@ -895,6 +895,13 @@ void JSCallFuncWrapper::callbackFunc(Node *node) {
     JSContext *cx = ScriptingCore::getInstance()->getGlobalContext();
     js_proxy_t *proxy = js_get_or_create_proxy<cocos2d::Node>(cx, node);
 
+    JSObject* obj = thisObj;
+    if (obj == nullptr)
+    {
+        obj = ScriptingCore::getInstance()->getGlobalObject();
+    }
+    JSAutoCompartment ac(cx, obj);
+    
     jsval retval;
     if(_jsCallback != JSVAL_VOID)
     {
@@ -905,14 +912,14 @@ void JSCallFuncWrapper::callbackFunc(Node *node) {
             valArr[1] = _extraData;
 
             JS_AddValueRoot(cx, valArr);
-            JS_CallFunctionValue(cx, thisObj, _jsCallback, 2, valArr, &retval);
+            JS_CallFunctionValue(cx, obj, _jsCallback, 2, valArr, &retval);
             JS_RemoveValueRoot(cx, valArr);
         }
         else
         {
             jsval senderVal = OBJECT_TO_JSVAL(proxy->obj);
             JS_AddValueRoot(cx, &senderVal);
-            JS_CallFunctionValue(cx, thisObj, _jsCallback, 1, &senderVal, &retval);
+            JS_CallFunctionValue(cx, obj, _jsCallback, 1, &senderVal, &retval);
             JS_RemoveValueRoot(cx, &senderVal);
         }
     }
