@@ -148,6 +148,8 @@ bool Director::init(void)
     // create autorelease pool
     PoolManager::sharedPoolManager()->push();
 
+    _mainLoopEndCallback = nullptr;
+    
     return true;
 }
     
@@ -1015,7 +1017,10 @@ void DisplayLinkDirector::mainLoop()
         drawScene();
      
         // release the objects
-        PoolManager::sharedPoolManager()->pop();        
+        PoolManager::sharedPoolManager()->pop();
+        
+        if (_mainLoopEndCallback)
+            _mainLoopEndCallback();
     }
 }
 

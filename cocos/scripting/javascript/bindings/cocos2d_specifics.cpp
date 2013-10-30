@@ -763,28 +763,6 @@ JSBool js_cocos2dx_JSTouchDelegate_unregisterTouchDelegate(JSContext *cx, uint32
     return JS_FALSE;
 }
 
-JSBool js_cocos2dx_swap_native_object(JSContext *cx, uint32_t argc, jsval *vp)
-{
-	if (argc == 2) {
-		// get the native object from the second object to the first object
-		jsval *argv = JS_ARGV(cx, vp);
-		JSObject *one = JSVAL_TO_OBJECT(argv[0]);
-		JSObject *two = JSVAL_TO_OBJECT(argv[1]);
-		js_proxy_t *jsproxy = jsb_get_js_proxy(two);
-		void *ptrTwo = (jsproxy ? jsproxy->ptr : NULL);
-		if (jsproxy) {
-			js_proxy_t *nproxy = jsb_get_native_proxy(ptrTwo);
-			if (nproxy) {
-//                JS_RemoveObjectRoot(cx, &jsproxy->obj);
-				jsb_remove_proxy(nproxy, jsproxy);
-                jsproxy = jsb_new_proxy(ptrTwo, one);
-//                JS_AddNamedObjectRoot(cx, &jsproxy->obj, typeid(*((Object*)jsproxy->ptr)).name());
-			}
-		}
-	}
-	return JS_TRUE;
-}
-
 template <class T>
 JSBool js_cocos2dx_clone(JSContext *cx, uint32_t argc, jsval *vp)
 {
@@ -794,6 +772,26 @@ JSBool js_cocos2dx_clone(JSContext *cx, uint32_t argc, jsval *vp)
 		T *clonable = (T *)(proxy ? proxy->ptr : NULL);
 		TEST_NATIVE_OBJECT(cx, clonable)
 		cocos2d::Object *ret = clonable->clone();
+        ret->retain();
+        proxy = js_get_or_create_proxy<cocos2d::Object>(cx, ret);
+		if (ret && proxy) {
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(proxy->obj));
+			return JS_TRUE;
+		}
+	}
+    JS_ReportError(cx, "wrong number of arguments");
+	return JS_FALSE;
+}
+
+template <class T>
+JSBool js_cocos2dx_reverse(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	if (argc == 0) {
+		JSObject *obj = JS_THIS_OBJECT(cx, vp);
+		js_proxy_t *proxy = jsb_get_js_proxy(obj);
+		T *clonable = (T *)(proxy ? proxy->ptr : NULL);
+		TEST_NATIVE_OBJECT(cx, clonable)
+		cocos2d::Object *ret = clonable->reverse();
         ret->retain();
         proxy = js_get_or_create_proxy<cocos2d::Object>(cx, ret);
 		if (ret && proxy) {
@@ -912,6 +910,8 @@ void JSCallFuncWrapper::callbackFunc(Node *node) {
     JSContext *cx = ScriptingCore::getInstance()->getGlobalContext();
     js_proxy_t *proxy = js_get_or_create_proxy<cocos2d::Node>(cx, node);
 
+    
+    
     jsval retval;
     if(_jsCallback != JSVAL_VOID)
     {
@@ -920,7 +920,7 @@ void JSCallFuncWrapper::callbackFunc(Node *node) {
             jsval valArr[2];
             valArr[0] = OBJECT_TO_JSVAL(proxy->obj);
             valArr[1] = _extraData;
-
+            
             JS_AddValueRoot(cx, valArr);
             JS_CallFunctionValue(cx, thisObj, _jsCallback, 2, valArr, &retval);
             JS_RemoveValueRoot(cx, valArr);
@@ -928,6 +928,7 @@ void JSCallFuncWrapper::callbackFunc(Node *node) {
         else
         {
             jsval senderVal = OBJECT_TO_JSVAL(proxy->obj);
+            
             JS_AddValueRoot(cx, &senderVal);
             JS_CallFunctionValue(cx, thisObj, _jsCallback, 1, &senderVal, &retval);
             JS_RemoveValueRoot(cx, &senderVal);
@@ -2143,38 +2144,28 @@ JSBool js_doNothing(JSContext *cx, uint32_t argc, jsval *vp) {
     return JS_TRUE;
 }
 
+JSBool js_onEnter(JSContext *cx, uint32_t argc, jsval *vp) {
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
+    
+    js_proxy_t* p = jsb_get_js_proxy(obj);
+    JS_AddNamedObjectRoot(cx, &p->obj, "node");
+    
+    return JS_TRUE;
+}
+
+JSBool js_onExit(JSContext *cx, uint32_t argc, jsval *vp) {
+    JSObject *obj = JS_THIS_OBJECT(cx, vp);
+    
+    js_proxy_t* p = jsb_get_js_proxy(obj);
+    JS_RemoveObjectRoot(cx, &p->obj);
+    
+    return JS_TRUE;
+}
+
 JSBool js_forceGC(JSContext *cx, uint32_t argc, jsval *vp) {
     JSRuntime *rt = JS_GetRuntime(cx);
     JS_GC(rt);
     return JS_TRUE;
-}
-
-JSBool js_cocos2dx_retain(JSContext *cx, uint32_t argc, jsval *vp)
-{
-	JSObject *thisObj = JS_THIS_OBJECT(cx, vp);
-	if (thisObj) {
-		js_proxy_t *proxy = jsb_get_js_proxy(thisObj);
-		if (proxy) {
-			((Object *)proxy->ptr)->retain();
-			return JS_TRUE;
-		}
-	}
-    JS_ReportError(cx, "Invalid Native Object.");
-	return JS_FALSE;
-}
-
-JSBool js_cocos2dx_release(JSContext *cx, uint32_t argc, jsval *vp)
-{
-	JSObject *thisObj = JS_THIS_OBJECT(cx, vp);
-	if (thisObj) {
-		js_proxy_t *proxy = jsb_get_js_proxy(thisObj);
-		if (proxy) {
-			((Object *)proxy->ptr)->release();
-			return JS_TRUE;
-		}
-	}
-    JS_ReportError(cx, "Invalid Native Object.");
-	return JS_FALSE;
 }
 
 JSBool js_cocos2dx_CCSet_constructor(JSContext *cx, uint32_t argc, jsval *vp)
@@ -3978,18 +3969,18 @@ void register_cocos2dx_js_extensions(JSContext* cx, JSObject* global)
 		JS_ValueToObject(cx, nsval, &ns);
 	}
 
-	JS_DefineFunction(cx, global, "__associateObjWithNative", js_cocos2dx_swap_native_object, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, global, "__associateObjWithNative", js_doNothing, 2, JSPROP_READONLY | JSPROP_PERMANENT);
 	JS_DefineFunction(cx, global, "__getPlatform", js_platform, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 
 	JSObject *tmpObj;
 
-    JS_DefineFunction(cx, jsb_Node_prototype, "retain", js_cocos2dx_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, jsb_Node_prototype, "release", js_cocos2dx_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_Node_prototype, "retain", js_doNothing, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_Node_prototype, "release", js_doNothing, 0, JSPROP_READONLY | JSPROP_PERMANENT);
     
-    JS_DefineFunction(cx, jsb_GLProgram_prototype, "retain", js_cocos2dx_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, jsb_GLProgram_prototype, "release", js_cocos2dx_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, jsb_Node_prototype, "onExit", js_doNothing, 1, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
-    JS_DefineFunction(cx, jsb_Node_prototype, "onEnter", js_doNothing, 1, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_GLProgram_prototype, "retain", js_doNothing, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_GLProgram_prototype, "release", js_doNothing, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_Node_prototype, "onEnter", js_onEnter, 1, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_Node_prototype, "onExit", js_onExit, 1, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
     JS_DefineFunction(cx, jsb_Node_prototype, "onEnterTransitionDidFinish", js_doNothing, 0, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
     JS_DefineFunction(cx, jsb_Node_prototype, "onExitTransitionDidStart", js_doNothing, 0, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
     JS_DefineFunction(cx, jsb_Node_prototype, "init", js_doNothing, 0, JSPROP_ENUMERATE  | JSPROP_PERMANENT);
@@ -4082,14 +4073,15 @@ void register_cocos2dx_js_extensions(JSContext* cx, JSObject* global)
     JS_DefineFunction(cx, jsb_Camera_prototype, "getEye", js_cocos2dx_CCCamera_getEye, 0, JSPROP_READONLY | JSPROP_PERMANENT);
     
 
-	JS_DefineFunction(cx, jsb_Action_prototype, "clone", js_cocos2dx_clone<cocos2d::Action>, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, jsb_Action_prototype, "retain", js_cocos2dx_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, jsb_Action_prototype, "release", js_cocos2dx_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_Action_prototype, "clone", js_cocos2dx_clone<cocos2d::Action>, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsb_Action_prototype, "reverse", js_cocos2dx_reverse<cocos2d::Action>, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_Action_prototype, "retain", js_doNothing, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_Action_prototype, "release", js_doNothing, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 	JS_DefineFunction(cx, jsb_Animation_prototype, "clone", js_cocos2dx_clone<cocos2d::Animation>, 1, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, jsb_Animation_prototype, "retain", js_cocos2dx_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, jsb_Animation_prototype, "release", js_cocos2dx_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, jsb_SpriteFrame_prototype, "retain", js_cocos2dx_retain, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-	JS_DefineFunction(cx, jsb_SpriteFrame_prototype, "release", js_cocos2dx_release, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_Animation_prototype, "retain", js_doNothing, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_Animation_prototype, "release", js_doNothing, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_SpriteFrame_prototype, "retain", js_doNothing, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(cx, jsb_SpriteFrame_prototype, "release", js_doNothing, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 	JS_DefineFunction(cx, jsb_MenuItem_prototype, "setCallback", js_cocos2dx_CCMenuItem_setCallback, 2, JSPROP_READONLY | JSPROP_PERMANENT);
     JS_DefineFunction(cx, jsb_TMXLayer_prototype, "getTileFlagsAt", js_cocos2dx_CCTMXLayer_tileFlagsAt, 2, JSPROP_READONLY | JSPROP_PERMANENT);
     JS_DefineFunction(cx, jsb_TMXLayer_prototype, "getTiles", js_cocos2dx_CCTMXLayer_getTiles, 0, JSPROP_READONLY | JSPROP_PERMANENT);

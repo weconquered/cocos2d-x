@@ -30,6 +30,8 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
+Object::RefHookFunc Object::s_refHook = nullptr;
+
 Object::Object()
 : _luaID(0)
 , _reference(1) // when the object is created, the reference count of it is 1
@@ -62,6 +64,11 @@ Object::~Object()
             pEngine->removeScriptObjectByObject(this);
         }
     }
+}
+
+void Object::setReferenceHook(RefHookFunc hook)
+{
+    s_refHook = hook;
 }
 
 Object* Object::autorelease()

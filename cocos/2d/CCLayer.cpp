@@ -470,6 +470,16 @@ LayerGradient* LayerGradient::create()
     return pRet;
 }
 
+LayerGradient::LayerGradient()
+{
+    CCLOG("in the constructor of LayerGradient.");
+}
+
+LayerGradient::~LayerGradient()
+{
+    CCLOG("in the destructor of LayerGradient.");
+}
+
 bool LayerGradient::init()
 {
 	return initWithColor(Color4B(0, 0, 0, 255), Color4B(0, 0, 0, 255));

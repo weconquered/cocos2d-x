@@ -289,6 +289,9 @@ public:
     /** Creates a full-screen Layer with a gradient between start and end in the direction of v. */
     static LayerGradient* create(const Color4B& start, const Color4B& end, const Point& v);
 
+    LayerGradient();
+    virtual ~LayerGradient();
+    
     virtual bool init();
     /** Initializes the Layer with a gradient between start and end. 
      * @js init

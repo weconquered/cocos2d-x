@@ -347,17 +347,53 @@ static JSClass global_class = {
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
 
+//void GCLoop::forceGC(float dt)
+//{
+//    auto cx = ScriptingCore::getInstance()->getGlobalContext();
+////    JSRuntime *rt = JS_GetRuntime(cx);
+////    JS_GC(rt);
+//    JS_MaybeGC(cx);
+//}
+
 ScriptingCore::ScriptingCore()
 : _rt(nullptr)
 , _cx(nullptr)
 , _global(nullptr)
 , _debugGlobal(nullptr)
+, _runLoop(nullptr)
 {
     // set utf8 strings internally (we don't need utf16)
     // XXX: Removed in SpiderMonkey 19.0
     //JS_SetCStringsAreUTF8();
     this->addRegisterCallback(registerDefaultClasses);
-    this->_runLoop = new SimpleRunLoop();
+    
+    Director::getInstance()->setMainLoopEndCallback([](){
+        static int count = 0;
+        ++count;
+        if (count >= 4)
+        {
+            count = 0;
+            auto cx = ScriptingCore::getInstance()->getGlobalContext();
+            JSRuntime *rt = JS_GetRuntime(cx);
+            JS_GC(rt);
+            //        JS_MaybeGC(cx);
+        }
+    });
+    
+    Object::setReferenceHook([](Object* obj, bool isRetain){
+        if (isRetain)
+        {
+            CCLOG("obj %p retain, ref count = %d", obj, obj->retainCount());
+        }
+        else
+        {
+            CCLOG("obj %p release, ref count = %d", obj, obj->retainCount());
+        }
+    });
+    
+//    _gcLoop = new GCLoop();
+//    auto scheduler = Director::getInstance()->getScheduler();
+//    scheduler->scheduleSelector(schedule_selector(GCLoop::forceGC), _gcLoop, 0.5f, false);
 }
 
 void ScriptingCore::string_report(jsval val) {
@@ -669,12 +705,12 @@ JSBool ScriptingCore::executeScript(JSContext *cx, uint32_t argc, jsval *vp)
 
 JSBool ScriptingCore::forceGC(JSContext *cx, uint32_t argc, jsval *vp)
 {
-    JSRuntime *rt = JS_GetRuntime(cx);
-    JS_GC(rt);
+//    JSRuntime *rt = JS_GetRuntime(cx);
+//    JS_GC(rt);
     return JS_TRUE;
 }
 
-//static void dumpNamedRoot(const char *name, void *addr,  JSGCRootType type, void *data)
+//static void dumpNamedRoot(const char *name, void *addr,  jS::GCRootType type, void *data)
 //{
 //    CCLOG("Root: '%s' at %p", name, addr);
 //}
@@ -683,12 +719,12 @@ JSBool ScriptingCore::dumpRoot(JSContext *cx, uint32_t argc, jsval *vp)
 {
     // JS_DumpNamedRoots is only available on DEBUG versions of SpiderMonkey.
     // Mac and Simulator versions were compiled with DEBUG.
-#if DEBUG
-//    JSContext *_cx = ScriptingCore::getInstance()->getGlobalContext();
-//    JSRuntime *rt = JS_GetRuntime(_cx);
-//    JS_DumpNamedRoots(rt, dumpNamedRoot, NULL);
+//#if DEBUG
+//    JSRuntime *rt = JS_GetRuntime(cx);
+////    JS_DumpNamedRoots(rt, dumpNamedRoot, NULL);
 //    JS_DumpHeap(rt, stdout, NULL, JSTRACE_OBJECT, NULL, 2, NULL);
-#endif
+//#endif
+    
     return JS_TRUE;
 }
 
@@ -848,7 +884,7 @@ int ScriptingCore::handleTouchesEvent(void* data)
     getTouchesFuncName(eventType, funcName);
 
     JSObject *jsretArr = JS_NewArrayObject(this->_cx, 0, NULL);
-
+    
     JS_AddNamedObjectRoot(this->_cx, &jsretArr, "touchArray");
     int count = 0;
     
@@ -1102,7 +1138,7 @@ int ScriptingCore::sendEvent(ScriptEvent* evt)
     if (NULL == evt)
         return 0;
  
-    JSAutoCompartment ac(_cx, _global);
+ //   JSAutoCompartment ac(_cx, _global);
     
     switch (evt->type)
     {
@@ -1916,7 +1952,7 @@ jsval FontDefinition_to_jsval(JSContext* cx, const FontDefinition& t)
 
 #pragma mark - Debug
 
-void SimpleRunLoop::update(float dt)
+void DebuggerServerRunLoop::update(float dt)
 {
     g_qMutex.lock();
     size_t size = g_queue.size();
@@ -2145,6 +2181,8 @@ JSBool JSBDebug_BufferWrite(JSContext* cx, unsigned argc, jsval* vp)
 
 void ScriptingCore::enableDebugger()
 {
+    this->_runLoop = new DebuggerServerRunLoop();
+    
     JS_SetDebugMode(_cx, JS_TRUE);
     
     if (_debugGlobal == NULL)
@@ -2225,28 +2263,61 @@ JSBool jsb_get_reserved_slot(JSObject *obj, uint32_t idx, jsval& ret)
 
 js_proxy_t* jsb_new_proxy(void* nativeObj, JSObject* jsObj)
 {
-    js_proxy_t* p;
-    JS_NEW_PROXY(p, nativeObj, jsObj);
+    js_proxy_t* p = (js_proxy_t *)malloc(sizeof(js_proxy_t));
+	assert(p);
+    js_proxy_t* found = nullptr;
+    HASH_FIND_PTR(_native_js_global_ht, &nativeObj, found);
+    assert(!found);
+	p->ptr = nativeObj;
+	p->obj = jsObj;
+	HASH_ADD_PTR(_native_js_global_ht, ptr, p);
+	p = (js_proxy_t *)malloc(sizeof(js_proxy_t));
+	assert(p);
+    found = nullptr;
+    HASH_FIND_PTR(_js_native_global_ht, &jsObj, found);
+    assert(!found);
+	p->ptr = nativeObj;
+	p->obj = jsObj;
+	HASH_ADD_PTR(_js_native_global_ht, obj, p);
+    
     return p;
 }
 
 js_proxy_t* jsb_get_native_proxy(void* nativeObj)
 {
-    js_proxy_t* p;
-    JS_GET_PROXY(p, nativeObj);
+    if (nativeObj == nullptr)
+        return nullptr;
+    
+    js_proxy_t* p = nullptr;
+    HASH_FIND_PTR(_native_js_global_ht, &nativeObj, p);
     return p;
 }
 
 js_proxy_t* jsb_get_js_proxy(JSObject* jsObj)
 {
-    js_proxy_t* p;
-    JS_GET_NATIVE_PROXY(p, jsObj);
+    if (jsObj == nullptr)
+        return nullptr;
+    
+    js_proxy_t* p = nullptr;
+    HASH_FIND_PTR(_js_native_global_ht, &jsObj, p);
     return p;
 }
 
-void jsb_remove_proxy(js_proxy_t* nativeProxy, js_proxy_t* jsProxy)
+void jsb_remove_proxy(js_proxy_t* nproxy, js_proxy_t* jsproxy)
 {
-    JS_REMOVE_PROXY(nativeProxy, jsProxy);
+    assert(nproxy);
+    assert(jsproxy);
+	if (nproxy)
+    {
+        HASH_DEL(_native_js_global_ht, nproxy);
+        free(nproxy);
+    }
+    
+	if (jsproxy)
+    {
+        HASH_DEL(_js_native_global_ht, jsproxy);
+        free(jsproxy);
+    }
 }
 
 static Color3B getColorFromJSObject(JSContext *cx, JSObject *colorObject)

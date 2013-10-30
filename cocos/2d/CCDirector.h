@@ -114,6 +114,8 @@ public:
 
     // attribute
 
+    inline void setMainLoopEndCallback(std::function<void()> cb) { _mainLoopEndCallback = cb; };
+    
     /** Get current running Scene. Director can only run one Scene at a time */
     inline Scene* getRunningScene() { return _runningScene; }
 
@@ -461,6 +463,9 @@ protected:
 
     /* Projection protocol delegate */
     DirectorDelegate *_projectionDelegate;
+    
+    /* Mainloop end callback */
+    std::function<void()> _mainLoopEndCallback;
     
     // EGLViewProtocol will recreate stats labels to fit visible rect
     friend class EGLViewProtocol;

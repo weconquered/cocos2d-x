@@ -28,11 +28,17 @@ typedef void (*sc_register_sth)(JSContext* cx, JSObject* global);
 void registerDefaultClasses(JSContext* cx, JSObject* global);
 
 
-class SimpleRunLoop : public Object
+class DebuggerServerRunLoop : public Object
 {
 public:
 	void update(float d);
 };
+
+//class GCLoop : public Object
+//{
+//public:
+//    void forceGC(float dt);
+//};
 
 class ScriptingCore : public ScriptEngineProtocol
 {
@@ -40,8 +46,8 @@ class ScriptingCore : public ScriptEngineProtocol
 	JSContext *_cx;
 	JSObject  *_global;
 	JSObject  *_debugGlobal;
-	SimpleRunLoop* _runLoop;
-
+	DebuggerServerRunLoop* _runLoop;
+//    GCLoop* _gcLoop;
 	ScriptingCore();
 public:
 	~ScriptingCore();

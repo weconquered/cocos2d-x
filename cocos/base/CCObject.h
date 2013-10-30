@@ -32,6 +32,8 @@ THE SOFTWARE.
 #include <GLES2/gl2.h>
 #endif // EMSCRIPTEN
 
+#include <functional>
+
 NS_CC_BEGIN
 
 /**
@@ -77,6 +79,8 @@ protected:
     unsigned int        _reference;
     /// count of autorelease
     unsigned int        _autoReleaseCount;
+    typedef std::function<void(Object*, bool)> RefHookFunc;
+    static RefHookFunc s_refHook;
 public:
     /**
      * Constructor
@@ -91,6 +95,9 @@ public:
      * @lua NA
      */
     virtual ~Object();
+    
+    
+    static void setReferenceHook(RefHookFunc hook);
     
     /**
      * Release the ownership immediately.
@@ -107,7 +114,10 @@ public:
     {
         CCASSERT(_reference > 0, "reference count should greater than 0");
         --_reference;
-
+        if (s_refHook && _reference != 0)
+        {
+            s_refHook(this, false);
+        }
         if (_reference == 0)
             delete this;
     }
@@ -124,6 +134,10 @@ public:
     {
         CCASSERT(_reference > 0, "reference count should greater than 0");
         ++_reference;
+        if (s_refHook)
+        {
+            s_refHook(this, true);
+        }
     }
 
     /**
