@@ -640,10 +640,11 @@ Object* CCBAnimationManager::actionForCallbackChannel(CCBSequenceProperty* chann
 	
         if(_jsControlled) {
             String* callbackName = String::createWithFormat("%d:%s", selectorTarget, selectorName.c_str());
-            CallFunc *callback = ((CallFunc*)(_keyframeCallFuncs->objectForKey(callbackName->getCString())))->clone();
+            CallFunc *callback = static_cast<CallFunc*>(_keyframeCallFuncs->objectForKey(callbackName->getCString()));
 
-            if(callback != NULL) {
-                actions->addObject(callback);
+            if(callback != NULL)
+            {
+                actions->addObject(callback->clone());
             }
         }
         else
