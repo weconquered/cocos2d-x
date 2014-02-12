@@ -32,9 +32,11 @@ THE SOFTWARE.
 
 #include <algorithm>
 #include <vector>
+#include <map>
 #include <string>
 #include <sstream>
 #include <fontconfig/fontconfig.h>
+#include "platform/CCFileUtils.h"
 
 #include "ft2build.h"
 #include FT_FREETYPE_H
@@ -294,11 +296,11 @@ public:
 	/**
 	 * compute the start pos of every line
 	 */
-	int computeLineStart(FT_Face face, Image::TextAlign eAlignMask, int line) {
+	int computeLineStart(FT_Face face, Device::TextAlign eAlignMask, int line) {
 				int lineWidth = textLines.at(line).lineWidth;
-		if (eAlignMask == Image::TextAlign::CENTER || eAlignMask == Image::TextAlign::TOP || eAlignMask == Image::TextAlign::BOTTOM) {
+		if (eAlignMask == Device::TextAlign::CENTER || eAlignMask == Device::TextAlign::TOP || eAlignMask == Device::TextAlign::BOTTOM) {
 			return (iMaxLineWidth - lineWidth) / 2;
-		} else if (eAlignMask == Image::TextAlign::RIGHT || eAlignMask == Image::TextAlign::TOP_RIGHT || eAlignMask == Image::TextAlign::BOTTOM_RIGHT) {
+		} else if (eAlignMask == Device::TextAlign::RIGHT || eAlignMask == Device::TextAlign::TOP_RIGHT || eAlignMask == Device::TextAlign::BOTTOM_RIGHT) {
 			return (iMaxLineWidth - lineWidth);
 		}
 
@@ -306,12 +308,12 @@ public:
 		return 0;
 	}
 
-	int computeLineStartY( FT_Face face, Image::TextAlign eAlignMask, int txtHeight, int borderHeight ){
+	int computeLineStartY( FT_Face face, Device::TextAlign eAlignMask, int txtHeight, int borderHeight ){
 		int baseLinePos = ceilf(FT_MulFix( face->bbox.yMax, face->size->metrics.y_scale )/64.0f);
-		if (eAlignMask == Image::TextAlign::CENTER || eAlignMask == Image::TextAlign::LEFT || eAlignMask == Image::TextAlign::RIGHT) {
+		if (eAlignMask == Device::TextAlign::CENTER || eAlignMask == Device::TextAlign::LEFT || eAlignMask == Device::TextAlign::RIGHT) {
 			//vertical center
 			return (borderHeight - txtHeight) / 2 + baseLinePos;
-		} else if (eAlignMask == Image::TextAlign::BOTTOM_RIGHT || eAlignMask == Image::TextAlign::BOTTOM || eAlignMask == Image::TextAlign::BOTTOM_LEFT) {
+		} else if (eAlignMask == Device::TextAlign::BOTTOM_RIGHT || eAlignMask == Device::TextAlign::BOTTOM || eAlignMask == Device::TextAlign::BOTTOM_LEFT) {
 			//vertical bottom
 			return borderHeight - txtHeight + baseLinePos;
 		}
@@ -367,7 +369,7 @@ public:
     	return family_name;
     }
 
-	bool getBitmap(const char *text, int nWidth, int nHeight, Image::TextAlign eAlignMask, const char * pFontName, float fontSize) {
+	bool getBitmap(const char *text, int nWidth, int nHeight, Device::TextAlign eAlignMask, const char * pFontName, float fontSize) {
 		if (libError) {
 			return false;
 		}
