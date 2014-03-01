@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "cocostudio/CCSpriteFrameCacheHelper.h"
 #include "cocostudio/CCArmatureDataManager.h"
 #include "cocostudio/CCTransformHelp.h"
-
+#include "CCAutoreleasePool.h"
 #include "CCParticleSystemQuad.h"
 
 using namespace cocos2d;
@@ -131,7 +131,7 @@ void DisplayFactory::updateDisplay(Bone *bone, float dt, bool dirty)
 void DisplayFactory::addSpriteDisplay(Bone *bone, DecorativeDisplay *decoDisplay, DisplayData *displayData)
 {
     SpriteDisplayData *sdp = SpriteDisplayData::create();
-    sdp->copy((SpriteDisplayData *)displayData);
+    sdp->copy(displayData);
     decoDisplay->setDisplayData(sdp);
     createSpriteDisplay(bone, decoDisplay);
 }
@@ -180,7 +180,7 @@ void DisplayFactory::createSpriteDisplay(Bone *bone, DecorativeDisplay *decoDisp
         }
         else
         {
-            skin->setSkinData(*bone->getBoneData());
+            skin->setSkinData(bone->getBoneData());
         }
     }
 
@@ -271,14 +271,15 @@ void DisplayFactory::createParticleDisplay(Bone *bone, DecorativeDisplay *decoDi
 
     decoDisplay->setDisplay(system);
 }
+    
 void DisplayFactory::updateParticleDisplay(Bone *bone, Node *display, float dt)
 {
     ParticleSystem *system = (ParticleSystem *)display;
-    BaseData node;
-    TransformHelp::matrixToNode(bone->getNodeToArmatureTransform(), node);
-    system->setPosition(node.x, node.y);
-    system->setScaleX(node.scaleX);
-    system->setScaleY(node.scaleY);
+    BaseData* node = BaseData::create();
+    TransformHelp::matrixToNode(bone->getNodeToArmatureTransform(), *node);
+    system->setPosition(node->x, node->y);
+    system->setScaleX(node->scaleX);
+    system->setScaleY(node->scaleY);
     system->update(dt);
 }
 

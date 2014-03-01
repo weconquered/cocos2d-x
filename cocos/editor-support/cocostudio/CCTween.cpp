@@ -70,8 +70,8 @@ Tween::Tween()
 
 Tween::~Tween(void)
 {
-    CC_SAFE_DELETE( _from );
-    CC_SAFE_DELETE( _between );
+    CC_SAFE_RELEASE( _from );
+    CC_SAFE_RELEASE( _between );
 }
 
 
@@ -80,8 +80,10 @@ bool Tween::init(Bone *bone)
     bool bRet = false;
     do
     {
-        _from = new FrameData();
-        _between = new FrameData();
+        _from = FrameData::create();
+        CC_SAFE_RETAIN(_from);
+        _between = FrameData::create();
+        CC_SAFE_RETAIN(_between);
 
         _bone = bone;
         _tweenData = _bone->getTweenData();

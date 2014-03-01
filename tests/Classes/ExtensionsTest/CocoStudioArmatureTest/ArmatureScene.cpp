@@ -630,24 +630,24 @@ void TestParticleDisplay::onEnter()
     addChild(armature);
 
 
-    ParticleSystem *p1 = CCParticleSystemQuad::create("Particles/SmallSun.plist");
-    ParticleSystem *p2 = CCParticleSystemQuad::create("Particles/SmallSun.plist");
+    ParticleSystem *p1 = ParticleSystemQuad::create("Particles/SmallSun.plist");
+    ParticleSystem *p2 = ParticleSystemQuad::create("Particles/SmallSun.plist");
 
-    Bone *bone  = Bone::create("p1");
-    bone->addDisplay(p1, 0);
-    bone->changeDisplayWithIndex(0, true);
-    bone->setIgnoreMovementBoneData(true);
-    bone->setLocalZOrder(100);
-    bone->setScale(1.2f);
-    armature->addBone(bone, "bady-a3");
-
-    bone  = Bone::create("p2");
-    bone->addDisplay(p2, 0);
-    bone->changeDisplayWithIndex(0, true);
-    bone->setIgnoreMovementBoneData(true);
-    bone->setLocalZOrder(100);
-    bone->setScale(1.2f);
-    armature->addBone(bone, "bady-a30");
+//    Bone *bone  = Bone::create("p1");
+//    bone->addDisplay(p1, 0);
+//    bone->changeDisplayWithIndex(0, true);
+//    bone->setIgnoreMovementBoneData(true);
+//    bone->setLocalZOrder(100);
+//    bone->setScale(1.2f);
+//    armature->addBone(bone, "bady-a3");
+//
+//    bone  = Bone::create("p2");
+//    bone->addDisplay(p2, 0);
+//    bone->changeDisplayWithIndex(0, true);
+//    bone->setIgnoreMovementBoneData(true);
+//    bone->setLocalZOrder(100);
+//    bone->setScale(1.2f);
+//    armature->addBone(bone, "bady-a30");
 }
 
 void TestParticleDisplay::onExit()

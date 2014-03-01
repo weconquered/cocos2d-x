@@ -61,7 +61,7 @@ ActionNode::~ActionNode()
 		CC_SAFE_RELEASE_NULL(_action);
 	}
 
-    for (auto object : _frameArray)
+    for (auto& object : _frameArray)
     {
         object->clear();
         CC_SAFE_DELETE(object);

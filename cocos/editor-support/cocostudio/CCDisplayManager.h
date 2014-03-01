@@ -42,12 +42,12 @@ class  DisplayManager : public cocos2d::Ref
 public:
     static DisplayManager *create(Bone *bone);
 
-public:
+protected:
     DisplayManager();
     ~DisplayManager();
 
     bool init(Bone *bone);
-
+public:
     /**
      * Use BoneData to init the display list.
      * If display is a sprite, and it have texture info in the TexutreData, then use TexutreData to init the display's anchor point

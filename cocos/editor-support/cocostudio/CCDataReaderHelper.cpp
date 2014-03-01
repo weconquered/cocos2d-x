@@ -35,6 +35,8 @@ THE SOFTWARE.
 #include "cocostudio/CCArmatureDefine.h"
 #include "cocostudio/CCDatas.h"
 
+#include "CCAutoreleasePool.h"
+
 using namespace cocos2d;
 
 
@@ -516,7 +518,7 @@ void DataReaderHelper::addDataFromCache(const std::string& pFileContent, DataInf
             _dataReaderHelper->_addDataMutex.lock();
         }
         ArmatureDataManager::getInstance()->addArmatureData(armatureData->name.c_str(), armatureData, dataInfo->filename.c_str());
-        armatureData->release();
+
         if (dataInfo->asyncStruct)
         {
             _dataReaderHelper->_addDataMutex.unlock();
@@ -539,7 +541,7 @@ void DataReaderHelper::addDataFromCache(const std::string& pFileContent, DataInf
             _dataReaderHelper->_addDataMutex.lock();
         }
         ArmatureDataManager::getInstance()->addAnimationData(animationData->name.c_str(), animationData, dataInfo->filename.c_str());
-        animationData->release();
+
         if (dataInfo->asyncStruct)
         {
             _dataReaderHelper->_addDataMutex.unlock();
@@ -562,7 +564,7 @@ void DataReaderHelper::addDataFromCache(const std::string& pFileContent, DataInf
             _dataReaderHelper->_addDataMutex.lock();
         }
         ArmatureDataManager::getInstance()->addTextureData(textureData->name.c_str(), textureData, dataInfo->filename.c_str());
-        textureData->release();
+
         if (dataInfo->asyncStruct)
         {
             _dataReaderHelper->_addDataMutex.unlock();
@@ -573,8 +575,7 @@ void DataReaderHelper::addDataFromCache(const std::string& pFileContent, DataInf
 
 ArmatureData *DataReaderHelper::decodeArmature(tinyxml2::XMLElement *armatureXML, DataInfo *dataInfo)
 {
-    ArmatureData *armatureData = new ArmatureData();
-    armatureData->init();
+    ArmatureData *armatureData = ArmatureData::create();
 
     armatureData->name = armatureXML->Attribute(A_NAME);
 
@@ -604,7 +605,6 @@ ArmatureData *DataReaderHelper::decodeArmature(tinyxml2::XMLElement *armatureXML
 
         BoneData *boneData = decodeBone(boneXML, parentXML, dataInfo);
         armatureData->addBoneData(boneData);
-        boneData->release();
 
         boneXML = boneXML->NextSiblingElement(BONE);
     }
@@ -614,8 +614,7 @@ ArmatureData *DataReaderHelper::decodeArmature(tinyxml2::XMLElement *armatureXML
 
 BoneData *DataReaderHelper::decodeBone(tinyxml2::XMLElement *boneXML, tinyxml2::XMLElement *parentXml, DataInfo *dataInfo)
 {
-    BoneData *boneData = new BoneData();
-    boneData->init();
+    BoneData *boneData = BoneData::create();
 
     std::string name = boneXML->Attribute(A_NAME);
     boneData->name = name;
@@ -632,7 +631,6 @@ BoneData *DataReaderHelper::decodeBone(tinyxml2::XMLElement *boneXML, tinyxml2::
     {
         DisplayData *displayData = decodeBoneDisplay(displayXML, dataInfo);
         boneData->addDisplayData(displayData);
-        displayData->release();
 
         displayXML = displayXML->NextSiblingElement(DISPLAY);
     }
@@ -650,19 +648,19 @@ DisplayData *DataReaderHelper::decodeBoneDisplay(tinyxml2::XMLElement *displayXM
     {
         if(!_isArmature)
         {
-            displayData = new SpriteDisplayData();
+            displayData = SpriteDisplayData::create();
             displayData->displayType  = CS_DISPLAY_SPRITE;
         }
         else
         {
-            displayData = new ArmatureDisplayData();
+            displayData = ArmatureDisplayData::create();
             displayData->displayType  = CS_DISPLAY_ARMATURE;
         }
 
     }
     else
     {
-        displayData = new SpriteDisplayData();
+        displayData = SpriteDisplayData::create();
         displayData->displayType  = CS_DISPLAY_SPRITE;
     }
 
@@ -685,7 +683,7 @@ DisplayData *DataReaderHelper::decodeBoneDisplay(tinyxml2::XMLElement *displayXM
 
 AnimationData *DataReaderHelper::decodeAnimation(tinyxml2::XMLElement *animationXML, DataInfo *dataInfo)
 {
-    AnimationData *aniData =  new AnimationData();
+    AnimationData *aniData =  AnimationData::create();
 
     const char	*name = animationXML->Attribute(A_NAME);
 
@@ -699,7 +697,6 @@ AnimationData *DataReaderHelper::decodeAnimation(tinyxml2::XMLElement *animation
     {
         MovementData *movementData = decodeMovement(movementXML, armatureData, dataInfo);
         aniData->addMovement(movementData);
-        movementData->release();
 
         movementXML = movementXML->NextSiblingElement(MOVEMENT);
 
@@ -710,7 +707,7 @@ AnimationData *DataReaderHelper::decodeAnimation(tinyxml2::XMLElement *animation
 
 MovementData *DataReaderHelper::decodeMovement(tinyxml2::XMLElement *movementXML, ArmatureData *armatureData, DataInfo *dataInfo)
 {
-    MovementData *movementData = new MovementData();
+    MovementData *movementData = MovementData::create();
 
     const char *movName = movementXML->Attribute(A_NAME);
     movementData->name = movName;
@@ -786,7 +783,6 @@ MovementData *DataReaderHelper::decodeMovement(tinyxml2::XMLElement *movementXML
 
         MovementBoneData *moveBoneData = decodeMovementBone(movBoneXml, parentXml, boneData, dataInfo);
         movementData->addMovementBoneData(moveBoneData);
-        moveBoneData->release();
 
         movBoneXml = movBoneXml->NextSiblingElement(BONE);
     }
@@ -797,8 +793,7 @@ MovementData *DataReaderHelper::decodeMovement(tinyxml2::XMLElement *movementXML
 
 MovementBoneData *DataReaderHelper::decodeMovementBone(tinyxml2::XMLElement *movBoneXml, tinyxml2::XMLElement *parentXml, BoneData *boneData, DataInfo *dataInfo)
 {
-    MovementBoneData *movBoneData = new MovementBoneData();
-    movBoneData->init();
+    MovementBoneData *movBoneData = MovementBoneData::create();
 
     float scale, delay;
 
@@ -871,7 +866,6 @@ MovementBoneData *DataReaderHelper::decodeMovementBone(tinyxml2::XMLElement *mov
 
         FrameData *frameData = decodeFrame( frameXML, parentFrameXML, boneData, dataInfo);
         movBoneData->addFrameData(frameData);
-        frameData->release();
 
         frameData->frameID = totalDuration;
         totalDuration += frameData->duration;
@@ -904,11 +898,10 @@ MovementBoneData *DataReaderHelper::decodeMovementBone(tinyxml2::XMLElement *mov
 
 
     //
-    FrameData *frameData = new FrameData();
+    FrameData *frameData = FrameData::create();
     frameData->copy((FrameData *)movBoneData->frameList.back());
     frameData->frameID = movBoneData->duration;
     movBoneData->addFrameData(frameData);
-    frameData->release();
 
     return movBoneData;
 }
@@ -918,7 +911,7 @@ FrameData *DataReaderHelper::decodeFrame(tinyxml2::XMLElement *frameXML,  tinyxm
     float x = 0, y = 0, scale_x = 0, scale_y = 0, skew_x = 0, skew_y = 0, tweenRotate = 0;
     int duration = 0, displayIndex = 0, zOrder = 0, tweenEasing = 0, blendType = 0;
 
-    FrameData *frameData = new FrameData();
+    FrameData *frameData = FrameData::create();
 
     if(frameXML->Attribute(A_MOVEMENT) != nullptr)
     {
@@ -1086,35 +1079,34 @@ FrameData *DataReaderHelper::decodeFrame(tinyxml2::XMLElement *frameXML,  tinyxm
         /*
         *  recalculate frame data from parent frame data, use for translate matrix
         */
-        BaseData helpNode;
+        BaseData* helpNode = BaseData::create();
         if (dataInfo->flashToolVersion >= VERSION_2_0)
         {
-            parentFrameXml->QueryFloatAttribute(A_COCOS2DX_X, &helpNode.x);
-            parentFrameXml->QueryFloatAttribute(A_COCOS2DX_Y, &helpNode.y);
+            parentFrameXml->QueryFloatAttribute(A_COCOS2DX_X, &helpNode->x);
+            parentFrameXml->QueryFloatAttribute(A_COCOS2DX_Y, &helpNode->y);
         }
         else
         {
-            parentFrameXml->QueryFloatAttribute(A_X, &helpNode.x);
-            parentFrameXml->QueryFloatAttribute(A_Y, &helpNode.y);
+            parentFrameXml->QueryFloatAttribute(A_X, &helpNode->x);
+            parentFrameXml->QueryFloatAttribute(A_Y, &helpNode->y);
         }
 
 
-        parentFrameXml->QueryFloatAttribute(A_SKEW_X, &helpNode.skewX);
-        parentFrameXml->QueryFloatAttribute(A_SKEW_Y, &helpNode.skewY);
+        parentFrameXml->QueryFloatAttribute(A_SKEW_X, &helpNode->skewX);
+        parentFrameXml->QueryFloatAttribute(A_SKEW_Y, &helpNode->skewY);
 
-        helpNode.y = -helpNode.y;
-        helpNode.skewX = CC_DEGREES_TO_RADIANS(helpNode.skewX);
-        helpNode.skewY = CC_DEGREES_TO_RADIANS(-helpNode.skewY);
+        helpNode->y = -helpNode->y;
+        helpNode->skewX = CC_DEGREES_TO_RADIANS(helpNode->skewX);
+        helpNode->skewY = CC_DEGREES_TO_RADIANS(-helpNode->skewY);
 
-        TransformHelp::transformFromParent(*frameData, helpNode);
+        TransformHelp::transformFromParent(*frameData, *helpNode);
     }
     return frameData;
 }
 
 TextureData *DataReaderHelper::decodeTexture(tinyxml2::XMLElement *textureXML, DataInfo *dataInfo)
 {
-    TextureData *textureData = new TextureData();
-    textureData->init();
+    TextureData *textureData = TextureData::create();
 
     if( textureXML->Attribute(A_NAME) != nullptr)
     {
@@ -1149,7 +1141,6 @@ TextureData *DataReaderHelper::decodeTexture(tinyxml2::XMLElement *textureXML, D
     {
         ContourData *contourData = decodeContour(contourXML, dataInfo);
         textureData->addContourData(contourData);
-        contourData->release();
 
         contourXML = contourXML->NextSiblingElement(CONTOUR);
     }
@@ -1159,8 +1150,7 @@ TextureData *DataReaderHelper::decodeTexture(tinyxml2::XMLElement *textureXML, D
 
 ContourData *DataReaderHelper::decodeContour(tinyxml2::XMLElement *contourXML, DataInfo *dataInfo)
 {
-    ContourData *contourData = new ContourData();
-    contourData->init();
+    ContourData *contourData = ContourData::create();
 
     tinyxml2::XMLElement *vertexDataXML = contourXML->FirstChildElement(CONTOUR_VERTEX);
 
@@ -1205,7 +1195,7 @@ void DataReaderHelper::addDataFromJsonCache(const std::string& fileContent, Data
             _dataReaderHelper->_addDataMutex.lock();
         }
         ArmatureDataManager::getInstance()->addArmatureData(armatureData->name.c_str(), armatureData);
-        armatureData->release();
+
         if (dataInfo->asyncStruct)
         {
             _dataReaderHelper->_addDataMutex.unlock();
@@ -1224,7 +1214,7 @@ void DataReaderHelper::addDataFromJsonCache(const std::string& fileContent, Data
             _dataReaderHelper->_addDataMutex.lock();
         }
         ArmatureDataManager::getInstance()->addAnimationData(animationData->name.c_str(), animationData);
-        animationData->release();
+
         if (dataInfo->asyncStruct)
         {
             _dataReaderHelper->_addDataMutex.unlock();
@@ -1243,7 +1233,7 @@ void DataReaderHelper::addDataFromJsonCache(const std::string& fileContent, Data
             _dataReaderHelper->_addDataMutex.lock();
         }
         ArmatureDataManager::getInstance()->addTextureData(textureData->name.c_str(), textureData);
-        textureData->release();
+
         if (dataInfo->asyncStruct)
         {
             _dataReaderHelper->_addDataMutex.unlock();
@@ -1284,8 +1274,7 @@ void DataReaderHelper::addDataFromJsonCache(const std::string& fileContent, Data
 
 ArmatureData *DataReaderHelper::decodeArmature(const rapidjson::Value& json, DataInfo *dataInfo)
 {
-    ArmatureData *armatureData = new ArmatureData();
-    armatureData->init();
+    ArmatureData *armatureData = ArmatureData::create();
 
 	const char *name = DICTOOL->getStringValue_json(json, A_NAME);
     if(name != nullptr)
@@ -1301,7 +1290,6 @@ ArmatureData *DataReaderHelper::decodeArmature(const rapidjson::Value& json, Dat
         const rapidjson::Value &dic = DICTOOL->getSubDictionary_json(json, BONE_DATA, i); //json[BONE_DATA][i];
         BoneData *boneData = decodeBone(dic, dataInfo);
         armatureData->addBoneData(boneData);
-        boneData->release();
 
     }
 
@@ -1310,8 +1298,7 @@ ArmatureData *DataReaderHelper::decodeArmature(const rapidjson::Value& json, Dat
 
 BoneData *DataReaderHelper::decodeBone(const rapidjson::Value& json, DataInfo *dataInfo)
 {
-    BoneData *boneData = new BoneData();
-    boneData->init();
+    BoneData *boneData = BoneData::create();
 
     decodeNode(boneData, json, dataInfo);
 
@@ -1334,8 +1321,6 @@ BoneData *DataReaderHelper::decodeBone(const rapidjson::Value& json, DataInfo *d
         const rapidjson::Value &dic = DICTOOL->getSubDictionary_json(json, DISPLAY_DATA, i); 
         DisplayData *displayData = decodeBoneDisplay(dic, dataInfo);
         boneData->addDisplayData(displayData);
-        displayData->release();
-
     }
 
     return boneData;
@@ -1351,7 +1336,7 @@ DisplayData *DataReaderHelper::decodeBoneDisplay(const rapidjson::Value& json, D
     {
     case CS_DISPLAY_SPRITE:
     {
-        displayData = new SpriteDisplayData();
+        displayData = SpriteDisplayData::create();
 
 		const char *name =  DICTOOL->getStringValue_json(json, A_NAME);
         if(name != NULL)
@@ -1366,15 +1351,15 @@ DisplayData *DataReaderHelper::decodeBoneDisplay(const rapidjson::Value& json, D
 			if (!dic.IsNull())
 			{
 				SpriteDisplayData *sdd = (SpriteDisplayData *)displayData;
-				sdd->skinData.x = DICTOOL->getFloatValue_json(dic, A_X) * s_PositionReadScale;
-				sdd->skinData.y = DICTOOL->getFloatValue_json(dic, A_Y) * s_PositionReadScale;
-				sdd->skinData.scaleX = DICTOOL->getFloatValue_json(dic, A_SCALE_X, 1.0f);
-				sdd->skinData.scaleY = DICTOOL->getFloatValue_json(dic, A_SCALE_Y, 1.0f);
-				sdd->skinData.skewX = DICTOOL->getFloatValue_json(dic, A_SKEW_X, 1.0f);
-				sdd->skinData.skewY = DICTOOL->getFloatValue_json(dic, A_SKEW_Y, 1.0f);
+				sdd->skinData->x = DICTOOL->getFloatValue_json(dic, A_X) * s_PositionReadScale;
+				sdd->skinData->y = DICTOOL->getFloatValue_json(dic, A_Y) * s_PositionReadScale;
+				sdd->skinData->scaleX = DICTOOL->getFloatValue_json(dic, A_SCALE_X, 1.0f);
+				sdd->skinData->scaleY = DICTOOL->getFloatValue_json(dic, A_SCALE_Y, 1.0f);
+				sdd->skinData->skewX = DICTOOL->getFloatValue_json(dic, A_SKEW_X, 1.0f);
+				sdd->skinData->skewY = DICTOOL->getFloatValue_json(dic, A_SKEW_Y, 1.0f);
 
-                sdd->skinData.x *= dataInfo->contentScale;
-                sdd->skinData.y *= dataInfo->contentScale;
+                sdd->skinData->x *= dataInfo->contentScale;
+                sdd->skinData->y *= dataInfo->contentScale;
 			}
         }
     }
@@ -1382,7 +1367,7 @@ DisplayData *DataReaderHelper::decodeBoneDisplay(const rapidjson::Value& json, D
     break;
     case CS_DISPLAY_ARMATURE:
     {
-        displayData = new ArmatureDisplayData();
+        displayData = ArmatureDisplayData::create();
 
         const char *name = DICTOOL->getStringValue_json(json, A_NAME);
         if(name != nullptr)
@@ -1393,7 +1378,7 @@ DisplayData *DataReaderHelper::decodeBoneDisplay(const rapidjson::Value& json, D
     break;
     case CS_DISPLAY_PARTICLE:
     {
-        displayData = new ParticleDisplayData();
+        displayData = ParticleDisplayData::create();
 
         const char *plist = DICTOOL->getStringValue_json(json, A_PLIST);
         if(plist != nullptr)
@@ -1410,7 +1395,7 @@ DisplayData *DataReaderHelper::decodeBoneDisplay(const rapidjson::Value& json, D
     }
     break;
     default:
-        displayData = new SpriteDisplayData();
+        displayData = SpriteDisplayData::create();
 
         break;
     }
@@ -1423,7 +1408,7 @@ DisplayData *DataReaderHelper::decodeBoneDisplay(const rapidjson::Value& json, D
 
 AnimationData *DataReaderHelper::decodeAnimation(const rapidjson::Value& json, DataInfo *dataInfo)
 {
-    AnimationData *aniData = new AnimationData();
+    AnimationData *aniData = AnimationData::create();
 
     const char *name = DICTOOL->getStringValue_json(json, A_NAME);
     if(name != nullptr)
@@ -1438,7 +1423,6 @@ AnimationData *DataReaderHelper::decodeAnimation(const rapidjson::Value& json, D
         const rapidjson::Value &dic = DICTOOL->getSubDictionary_json(json, MOVEMENT_DATA, i);
         MovementData *movementData = decodeMovement(dic, dataInfo);
         aniData->addMovement(movementData);
-        movementData->release();
 
     }
 
@@ -1447,7 +1431,7 @@ AnimationData *DataReaderHelper::decodeAnimation(const rapidjson::Value& json, D
 
 MovementData *DataReaderHelper::decodeMovement(const rapidjson::Value& json, DataInfo *dataInfo)
 {
-    MovementData *movementData = new MovementData();
+    MovementData *movementData = MovementData::create();
 
 	movementData->loop = DICTOOL->getBooleanValue_json(json, A_LOOP, true);
 	movementData->durationTween = DICTOOL->getIntValue_json(json, A_DURATION_TWEEN, 0);
@@ -1475,7 +1459,6 @@ MovementData *DataReaderHelper::decodeMovement(const rapidjson::Value& json, Dat
 		const rapidjson::Value &dic = DICTOOL->getSubDictionary_json(json, MOVEMENT_BONE_DATA, i);
         MovementBoneData *movementBoneData = decodeMovementBone(dic, dataInfo);
         movementData->addMovementBoneData(movementBoneData);
-        movementBoneData->release();
     }
 
     return movementData;
@@ -1483,8 +1466,7 @@ MovementData *DataReaderHelper::decodeMovement(const rapidjson::Value& json, Dat
 
 MovementBoneData *DataReaderHelper::decodeMovementBone(const rapidjson::Value& json, DataInfo *dataInfo)
 {
-    MovementBoneData *movementBoneData = new MovementBoneData();
-    movementBoneData->init();
+    MovementBoneData *movementBoneData = MovementBoneData::create();
 
 	movementBoneData->delay = DICTOOL->getFloatValue_json(json, A_MOVEMENT_DELAY);
 
@@ -1501,7 +1483,6 @@ MovementBoneData *DataReaderHelper::decodeMovementBone(const rapidjson::Value& j
         FrameData *frameData = decodeFrame(dic, dataInfo);
 
         movementBoneData->addFrameData(frameData);
-        frameData->release();
 
         if (dataInfo->cocoStudioVersion < VERSION_COMBINED)
         {
@@ -1539,10 +1520,9 @@ MovementBoneData *DataReaderHelper::decodeMovementBone(const rapidjson::Value& j
     {
         if (movementBoneData->frameList.size() > 0)
         {
-            FrameData *frameData = new FrameData();
+            FrameData *frameData = FrameData::create();
             frameData->copy((FrameData *)movementBoneData->frameList.back());
             movementBoneData->addFrameData(frameData);
-            frameData->release();
 
             frameData->frameID = movementBoneData->duration;
         }
@@ -1553,7 +1533,7 @@ MovementBoneData *DataReaderHelper::decodeMovementBone(const rapidjson::Value& j
 
 FrameData *DataReaderHelper::decodeFrame(const rapidjson::Value& json, DataInfo *dataInfo)
 {
-    FrameData *frameData = new FrameData();
+    FrameData *frameData = FrameData::create();
 
     decodeNode(frameData, json, dataInfo);
 
@@ -1595,8 +1575,7 @@ FrameData *DataReaderHelper::decodeFrame(const rapidjson::Value& json, DataInfo 
 
 TextureData *DataReaderHelper::decodeTexture(const rapidjson::Value& json)
 {
-    TextureData *textureData = new TextureData();
-    textureData->init();
+    TextureData *textureData = TextureData::create();
 
 	const char *name = DICTOOL->getStringValue_json(json, A_NAME);
     if(name != nullptr)
@@ -1615,7 +1594,6 @@ TextureData *DataReaderHelper::decodeTexture(const rapidjson::Value& json)
         const rapidjson::Value &dic = DICTOOL->getSubDictionary_json(json, CONTOUR_DATA, i);
         ContourData *contourData = decodeContour(dic);
         textureData->contourDataList.pushBack(contourData);
-        contourData->release();
     }
 
     return textureData;
@@ -1623,8 +1601,7 @@ TextureData *DataReaderHelper::decodeTexture(const rapidjson::Value& json)
 
 ContourData *DataReaderHelper::decodeContour(const rapidjson::Value& json)
 {
-    ContourData *contourData = new ContourData();
-	contourData->init();
+    ContourData *contourData = ContourData::create();
 
 	int length = DICTOOL->getArrayCount_json(json, VERTEX_POINT);
     for (int i = length - 1; i >= 0; i--)

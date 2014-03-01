@@ -87,8 +87,15 @@ Skin::Skin()
     , _displayName("")
 {
     kmMat4Identity(&_skinTransform);
+    _skinData = BaseData::create();
+    CC_SAFE_RETAIN(_skinData);
 }
 
+Skin::~Skin()
+{
+    CC_SAFE_RELEASE(_skinData);
+}
+    
 bool Skin::initWithSpriteFrameName(const std::string& spriteFrameName)
 {
     CCAssert(spriteFrameName != "", "");
@@ -120,21 +127,21 @@ bool Skin::initWithFile(const std::string& filename)
     return ret;
 }
 
-void Skin::setSkinData(const BaseData &var)
+void Skin::setSkinData(BaseData* var)
 {
-    _skinData = var;
+    _skinData->copy(var);
 
-    setScaleX(_skinData.scaleX);
-    setScaleY(_skinData.scaleY);
-    setRotationX(CC_RADIANS_TO_DEGREES(_skinData.skewX));
-    setRotationY(CC_RADIANS_TO_DEGREES(-_skinData.skewY));
-    setPosition(Point(_skinData.x, _skinData.y));
+    setScaleX(_skinData->scaleX);
+    setScaleY(_skinData->scaleY);
+    setRotationX(CC_RADIANS_TO_DEGREES(_skinData->skewX));
+    setRotationY(CC_RADIANS_TO_DEGREES(-_skinData->skewY));
+    setPosition(Point(_skinData->x, _skinData->y));
 
     _skinTransform = getNodeToParentTransform();
     updateArmatureTransform();
 }
 
-const BaseData &Skin::getSkinData() const
+BaseData* Skin::getSkinData() const
 {
     return _skinData;
 }

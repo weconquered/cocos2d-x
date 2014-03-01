@@ -98,7 +98,7 @@ Armature::~Armature(void)
     _boneDic.clear();
     _topBoneList.clear();
 
-    CC_SAFE_DELETE(_animation);
+    CC_SAFE_RELEASE(_animation);
 }
 
 
@@ -115,7 +115,7 @@ bool Armature::init(const std::string& name)
     {
         removeAllChildren();
 
-        CC_SAFE_DELETE(_animation);
+        CC_SAFE_RELEASE(_animation);
         _animation = new ArmatureAnimation();
         _animation->init(this);
 

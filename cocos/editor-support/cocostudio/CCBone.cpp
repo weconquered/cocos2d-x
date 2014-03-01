@@ -85,10 +85,10 @@ Bone::Bone()
 
 Bone::~Bone(void)
 {
-    CC_SAFE_DELETE(_tweenData);
-    CC_SAFE_DELETE(_tween);
-    CC_SAFE_DELETE(_displayManager);
-    CC_SAFE_DELETE(_worldInfo);
+    CC_SAFE_RELEASE(_tweenData);
+    CC_SAFE_RELEASE(_tween);
+    CC_SAFE_RELEASE(_displayManager);
+    CC_SAFE_RELEASE(_worldInfo);
 
     CC_SAFE_RELEASE_NULL(_boneData);
 
@@ -109,22 +109,25 @@ bool Bone::init(const std::string& name)
 
         _name = name;
 
-        CC_SAFE_DELETE(_tweenData);
-        _tweenData = new FrameData();
+        CC_SAFE_RELEASE(_tweenData);
+        _tweenData = FrameData::create();
+        CC_SAFE_RETAIN(_tweenData);
 
-        CC_SAFE_DELETE(_tween);
-        _tween = new Tween();
-        _tween->init(this);
+        CC_SAFE_RELEASE(_tween);
+        _tween = Tween::create(this);
+        CC_SAFE_RETAIN(_tween);
 
-        CC_SAFE_DELETE(_displayManager);
-        _displayManager = new DisplayManager();
-        _displayManager->init(this);
+        CC_SAFE_RELEASE(_displayManager);
+        _displayManager = DisplayManager::create(this);
+        CC_SAFE_RETAIN(_displayManager);
+        
+        CC_SAFE_RELEASE(_worldInfo);
+        _worldInfo = BaseData::create();
+        CC_SAFE_RETAIN(_worldInfo);
 
-        CC_SAFE_DELETE(_worldInfo);
-        _worldInfo = new BaseData();
-
-        CC_SAFE_DELETE(_boneData);
-        _boneData  = new BoneData();
+        CC_SAFE_RELEASE(_boneData);
+        _boneData = BoneData::create();
+        CC_SAFE_RETAIN(_boneData);
 
         bRet = true;
     }

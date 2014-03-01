@@ -65,8 +65,7 @@ DisplayManager::~DisplayManager()
     if( _displayRenderNode )
     {
         _displayRenderNode->removeFromParentAndCleanup(true);
-        if(_displayRenderNode->getReferenceCount() > 0)
-            CC_SAFE_RELEASE_NULL(_displayRenderNode);
+        CC_SAFE_RELEASE_NULL(_displayRenderNode);
     }
 
 }
@@ -160,7 +159,7 @@ void DisplayManager::addDisplay(Node *display, int index)
 
             if (!find)
             {
-                BaseData baseData;
+                BaseData* baseData = BaseData::create();
                 skin->setSkinData(baseData);
             }
         }

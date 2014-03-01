@@ -52,10 +52,10 @@ enum AnimationType
  */
 class  ProcessBase : public cocos2d::Ref
 {
-public:
+protected:
     ProcessBase(void);
     virtual ~ProcessBase(void);
-
+public:
     /**
      * Play animation by animation name.
      *

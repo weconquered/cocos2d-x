@@ -47,7 +47,8 @@ public:
      * @param bone the Bone Tween will bind to
      */
     static Tween *create(Bone *bone);
-public:
+    
+protected:
     Tween(void);
     virtual ~Tween(void);
 
@@ -57,6 +58,7 @@ public:
      */
     virtual bool init(Bone *bone);
 
+public:
     using ProcessBase::play;
     /**
      * Start the Process

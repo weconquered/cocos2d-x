@@ -35,7 +35,7 @@ AffineTransform TransformHelp::helpMatrix2;
 Point TransformHelp::helpPoint1;
 Point TransformHelp::helpPoint2;
 
-BaseData helpParentNode;
+static BaseData* helpParentNode = nullptr;
 
 TransformHelp::TransformHelp()
 {
@@ -65,13 +65,17 @@ void TransformHelp::transformToParent(BaseData &node, const BaseData &parentNode
 
 void TransformHelp::transformFromParentWithoutScale(BaseData &node, const BaseData &parentNode)
 {
-
-    helpParentNode.copy(&parentNode);
-    helpParentNode.scaleX = 1;
-    helpParentNode.scaleY = 1;
+    if (helpParentNode == nullptr)
+    {
+        helpParentNode = BaseData::create();
+    }
+    
+    helpParentNode->copy(const_cast<BaseData*>(&parentNode));
+    helpParentNode->scaleX = 1;
+    helpParentNode->scaleY = 1;
 
     nodeToMatrix(node, helpMatrix1);
-    nodeToMatrix(helpParentNode, helpMatrix2);
+    nodeToMatrix(*helpParentNode, helpMatrix2);
 
     helpMatrix2 = AffineTransformInvert(helpMatrix2);
     helpMatrix1 = AffineTransformConcat(helpMatrix1, helpMatrix2);
@@ -81,13 +85,16 @@ void TransformHelp::transformFromParentWithoutScale(BaseData &node, const BaseDa
 
 void TransformHelp::transformToParentWithoutScale(BaseData &node, const BaseData &parentNode)
 {
-
-    helpParentNode.copy(&parentNode);
-    helpParentNode.scaleX = 1;
-    helpParentNode.scaleY = 1;
+    if (helpParentNode == nullptr)
+    {
+        helpParentNode = BaseData::create();
+    }
+    helpParentNode->copy(const_cast<BaseData*>(&parentNode));
+    helpParentNode->scaleX = 1;
+    helpParentNode->scaleY = 1;
 
     nodeToMatrix(node, helpMatrix1);
-    nodeToMatrix(helpParentNode, helpMatrix2);
+    nodeToMatrix(*helpParentNode, helpMatrix2);
 
     helpMatrix1 = AffineTransformConcat(helpMatrix1, helpMatrix2);
 

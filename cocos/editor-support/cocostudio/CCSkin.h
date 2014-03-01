@@ -39,15 +39,17 @@ public:
     static Skin *create();
     static Skin *createWithSpriteFrameName(const std::string& pszSpriteFrameName);
     static Skin *create(const std::string& pszFileName);
-public:
+protected:
     /**
      *  @js ctor
      */
     Skin();
+    virtual ~Skin();
 
     virtual bool initWithSpriteFrameName(const std::string& spriteFrameName) override;
     virtual bool initWithFile(const std::string& filename) override;
 
+public:
     void updateArmatureTransform();
     void updateTransform() override;
 
@@ -60,19 +62,19 @@ public:
      *  @js NA
      *  @lua NA
      */
-    virtual void setSkinData(const BaseData &data);
+    virtual void setSkinData(BaseData* data);
     /**
      *  @js NA
      *  @lua NA
      */
-    virtual const BaseData &getSkinData() const;
+    virtual BaseData* getSkinData() const;
 
     virtual void setBone(Bone *bone);
     virtual Bone *getBone() const;
 
     virtual const std::string &getDisplayName() const { return _displayName; }
 protected:
-    BaseData _skinData;
+    BaseData* _skinData;
     Bone *_bone;
     Armature *_armature;
     kmMat4 _skinTransform;

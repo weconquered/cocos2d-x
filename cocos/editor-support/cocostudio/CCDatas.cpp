@@ -55,27 +55,26 @@ BaseData::~BaseData()
 {
 }
 
-void BaseData::copy(const BaseData *node )
+void BaseData::copy(BaseData* other)
 {
-    x = node->x;
-    y = node->y;
-    zOrder = node->zOrder;
-
-    scaleX = node->scaleX;
-    scaleY = node->scaleY;
-    skewX = node->skewX;
-    skewY = node->skewY;
-
-    tweenRotate = node->tweenRotate;
-
-    isUseColorInfo = node->isUseColorInfo;
-    r = node->r;
-    g = node->g;
-    b = node->b;
-    a = node->a;
+    this->x = other->x;
+    this->y = other->y;
+    this->zOrder = other->zOrder;
+    
+    this->scaleX = other->scaleX;
+    this->scaleY = other->scaleY;
+    this->skewX = other->skewX;
+    this->skewY = other->skewY;
+    
+    this->tweenRotate = other->tweenRotate;
+    
+    this->isUseColorInfo = other->isUseColorInfo;
+    this->r = other->r;
+    this->g = other->g;
+    this->b = other->b;
+    this->a = other->a;
 }
-
-
+    
 void BaseData::subtract(BaseData *from, BaseData *to, bool limit)
 {
     x = to->x - from->x;
@@ -142,6 +141,14 @@ Color4B BaseData::getColor()
     return Color4B(r, g, b, a);
 }
 
+//
+
+void DisplayData::copy(DisplayData* other)
+{
+    this->displayName = other->displayName;
+    this->displayType = other->displayType;
+}
+    
 const std::string DisplayData::changeDisplayToTexture(const std::string& displayName)
 {
     // remove .xxx
@@ -162,25 +169,27 @@ DisplayData::DisplayData(void)
 {
 }
 
-void DisplayData::copy(DisplayData *displayData)
-{
-    displayName = displayData->displayName;
-    displayType = displayData->displayType;
-}
-
-SpriteDisplayData::SpriteDisplayData(void)
+SpriteDisplayData::SpriteDisplayData()
 {
     displayType = CS_DISPLAY_SPRITE;
+    skinData = BaseData::create();
+    CC_SAFE_RETAIN(skinData);
 }
 
-
+SpriteDisplayData::~SpriteDisplayData()
+{
+    CC_SAFE_RELEASE(skinData);
+}
+ 
 void SpriteDisplayData::copy(DisplayData *displayData)
 {
     DisplayData::copy(displayData);
-
-    if (SpriteDisplayData *sdd = dynamic_cast<SpriteDisplayData*>(displayData))
+    BaseData* skinData_ = dynamic_cast<SpriteDisplayData*>(displayData)->skinData;
+    if (skinData_)
     {
-        skinData = sdd->skinData;
+        CC_SAFE_RETAIN(skinData_);
+        CC_SAFE_RELEASE(this->skinData);
+        this->skinData = skinData_;
     }
 }
 
@@ -189,12 +198,11 @@ ArmatureDisplayData::ArmatureDisplayData(void)
     displayType = CS_DISPLAY_ARMATURE;
 }
 
+
 ParticleDisplayData::ParticleDisplayData(void)
 {
     displayType = CS_DISPLAY_PARTICLE;
 }
-
-
 
 BoneData::BoneData(void)
     : name("")
@@ -265,10 +273,10 @@ FrameData::FrameData(void)
 
 FrameData::~FrameData(void)
 {
-    CC_SAFE_DELETE(easingParams);
+    CC_SAFE_DELETE_ARRAY(easingParams);
 }
 
-void FrameData::copy(const BaseData *baseData)
+void FrameData::copy(BaseData *baseData)
 {
     BaseData::copy(baseData);
     
@@ -280,7 +288,7 @@ void FrameData::copy(const BaseData *baseData)
         tweenEasing = frameData->tweenEasing;
         easingParamNumber = frameData->easingParamNumber;
         
-        CC_SAFE_DELETE(easingParams);
+        CC_SAFE_DELETE_ARRAY(easingParams);
         if (easingParamNumber != 0)
         {
             easingParams = new float[easingParamNumber];
