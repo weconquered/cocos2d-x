@@ -28,6 +28,8 @@ THE SOFTWARE.
 
 #include "cocostudio/CCProcessBase.h"
 #include "cocostudio/CCTween.h"
+#include "CCVector.h"
+
 #include <queue>
 
 namespace cocostudio {
@@ -195,16 +197,11 @@ public:
     void setMovementEventCallFunc(std::function<void(Armature *armature, MovementEventType movementType, const std::string& movementID)> listener);
     void setFrameEventCallFunc(std::function<void(Bone *bone, const std::string& frameEventName, int originFrameIndex, int currentFrameIndex)> listener);
 
-    virtual void setAnimationData(AnimationData *data) 
+    virtual void setAnimationData(const AnimationData& data)
     {
-        if (_animationData != data)
-        {
-            CC_SAFE_RETAIN(data);
-            CC_SAFE_RELEASE(_animationData);
-            _animationData = data; 
-        }
+        _animationData = data;
     }
-    virtual AnimationData *getAnimationData() const { return _animationData; }
+    virtual const AnimationData& getAnimationData() const { return _animationData; }
 
 
     /** 
@@ -269,12 +266,12 @@ protected:
     friend class Tween;
 protected:
     //! AnimationData save all MovementDatas this animation used.
-    AnimationData *_animationData;
+    AnimationData _animationData;
 
     //! Scale the animation speed
     float _speedScale;
 
-    MovementData *_movementData;				//! MovementData save all MovementFrameDatas this animation used.
+    MovementData _movementData;				//! MovementData save all MovementFrameDatas this animation used.
 
     Armature *_armature;						//! A weak reference of armature
 

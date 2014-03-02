@@ -29,6 +29,8 @@ THE SOFTWARE.
 #include "cocostudio/CCDecorativeDisplay.h"
 #include "cocostudio/CCDatas.h"
 
+#include "CCVector.h"
+
 namespace cocostudio {
 
 class Bone;
@@ -53,7 +55,7 @@ public:
      * If display is a sprite, and it have texture info in the TexutreData, then use TexutreData to init the display's anchor point
      * If the display is a Armature, then create a new Armature
      */
-    virtual void initDisplayList(BoneData *boneData);
+    virtual void initDisplayList(const BoneData& boneData);
 
     /**
      * Add display and use  _DisplayData init the display.

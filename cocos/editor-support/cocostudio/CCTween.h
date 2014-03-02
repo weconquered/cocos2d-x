@@ -90,8 +90,8 @@ public:
     virtual void gotoAndPlay(int frameIndex);
     virtual void gotoAndPause(int frameIndex);
 
-    virtual void setMovementBoneData(MovementBoneData *data) { _movementBoneData = data; }
-    virtual const MovementBoneData *getMovementBoneData() const { return _movementBoneData; }
+    virtual void setMovementBoneData(const MovementBoneData& data) { _movementBoneData = data; }
+    virtual const MovementBoneData& getMovementBoneData() const { return _movementBoneData; }
 protected:
 
     /**
@@ -107,17 +107,17 @@ protected:
     /**
      * Calculate the between value of _from and _to, and give it to between frame data
      */
-    virtual void setBetween(FrameData *from, FrameData *to, bool limit = true);
+    virtual void setBetween(const FrameData& from, const FrameData& to, bool limit = true);
 
     /**
      * According to the percent to calculate current FrameData with tween effect
      */
-    virtual FrameData *tweenNodeTo(float percent, FrameData *node = nullptr);
+    virtual FrameData tweenNodeTo(float percent, const FrameData& node);
 
     /**
      * According to the percent to calculate current color with tween effect
      */
-    virtual void tweenColorTo(float percent, FrameData *node);
+    virtual void tweenColorTo(float percent, const FrameData& node);
 
     /**
      * Update display index and process the key frame event when arrived a key frame
@@ -125,12 +125,12 @@ protected:
     virtual void arriveKeyFrame(FrameData *keyFrameData);
 protected:
     //! A weak reference to the current MovementBoneData. The data is in the data pool
-    MovementBoneData *_movementBoneData;
+    MovementBoneData _movementBoneData;
 
-    FrameData *_tweenData;          //! The computational tween frame data, //! A weak reference to the Bone's tweenData
-    FrameData *_from;               //! From frame data, used for calculate between value
-    FrameData *_to;                 //! To frame data, used for calculate between value
-    FrameData *_between;            //! Between frame data, used for calculate current FrameData(m_pNode) value
+    FrameData _tweenData;          //! The computational tween frame data, //! A weak reference to the Bone's tweenData
+    FrameData _from;               //! From frame data, used for calculate between value
+    FrameData _to;                 //! To frame data, used for calculate between value
+    FrameData _between;            //! Between frame data, used for calculate current FrameData(m_pNode) value
 
 
     Bone *_bone;                    //! A weak reference to the Bone

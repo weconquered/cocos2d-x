@@ -32,6 +32,8 @@ THE SOFTWARE.
 #include "cocostudio/CCSpriteFrameCacheHelper.h"
 #include "cocostudio/CCArmatureDataManager.h"
 
+#include "CCMap.h"
+
 class b2Body;
 struct cpBody;
 

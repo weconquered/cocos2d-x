@@ -338,16 +338,12 @@ DecorativeDisplay *DisplayManager::getDecorativeDisplayByIndex( int index) const
     return _decoDisplayList.at(index);
 }
 
-void DisplayManager::initDisplayList(BoneData *boneData)
+void DisplayManager::initDisplayList(const BoneData& boneData)
 {
     _decoDisplayList.clear();
 
-    CS_RETURN_IF(!boneData);
-
-    for(auto& object : boneData->displayDataList)
+    for(auto& displayData : boneData.displayDataList)
     {
-        DisplayData *displayData = static_cast<DisplayData *>(object);
-
         DecorativeDisplay *decoDisplay = DecorativeDisplay::create();
         decoDisplay->setDisplayData(displayData);
 

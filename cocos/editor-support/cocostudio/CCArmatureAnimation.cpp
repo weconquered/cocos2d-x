@@ -48,9 +48,7 @@ ArmatureAnimation *ArmatureAnimation::create(Armature *armature)
 
 
 ArmatureAnimation::ArmatureAnimation()
-    : _animationData(nullptr)
-    , _speedScale(1)
-    , _movementData(nullptr)
+    : _speedScale(1)
     , _armature(nullptr)
     , _movementID("")
     , _toIndex(0)
@@ -73,8 +71,6 @@ ArmatureAnimation::ArmatureAnimation()
 
 ArmatureAnimation::~ArmatureAnimation(void)
 {
-    CC_SAFE_RELEASE_NULL(_animationData);
-
     CC_SAFE_RELEASE_NULL(_userObject);
 }
 
@@ -143,7 +139,7 @@ void ArmatureAnimation::setSpeedScale(float speedScale)
 
     _speedScale = speedScale;
 
-    _processScale = !_movementData ? _speedScale : _speedScale * _movementData->scale;
+    _processScale = !_movementData ? _speedScale : _speedScale * _movementData.scale;
 
     const Map<std::string, Bone*>& map = _armature->getBoneDic();
     for(auto& element : map)
@@ -166,25 +162,22 @@ float ArmatureAnimation::getSpeedScale() const
 
 void ArmatureAnimation::play(const std::string& animationName, int durationTo,  int loop)
 {
-    CCASSERT(_animationData, "_animationData can not be null");
-
-    _movementData = _animationData->getMovement(animationName.c_str());
-    CCASSERT(_movementData, "_movementData can not be null");
+    _movementData = _animationData.getMovement(animationName.c_str());
 
     //! Get key frame count
-    _rawDuration = _movementData->duration;
+    _rawDuration = _movementData.duration;
 
     _movementID = animationName;
 
-    _processScale = _speedScale * _movementData->scale;
+    _processScale = _speedScale * _movementData.scale;
 
     //! Further processing parameters
-    durationTo = (durationTo == -1) ? _movementData->durationTo : durationTo;
+    durationTo = (durationTo == -1) ? _movementData.durationTo : durationTo;
 
-    int durationTween = _movementData->durationTween == 0 ? _rawDuration : _movementData->durationTween;
+    int durationTween = _movementData.durationTween == 0 ? _rawDuration : _movementData.durationTween;
 
-    cocos2d::tweenfunc::TweenType tweenEasing = _movementData->tweenEasing;
-    loop = (loop < 0) ? _movementData->loop : loop;
+    cocos2d::tweenfunc::TweenType tweenEasing = _movementData.tweenEasing;
+    loop = (loop < 0) ? _movementData.loop : loop;
 
     _onMovementList = false;
 
@@ -215,13 +208,13 @@ void ArmatureAnimation::play(const std::string& animationName, int durationTo,  
     for(auto& element : map)
     {
         Bone *bone = element.second;
-        movementBoneData = static_cast<MovementBoneData *>(_movementData->movBoneDataDic.at(bone->getName()));
+        movementBoneData = static_cast<MovementBoneData *>(_movementData.movBoneDataDic.at(bone->getName()));
 
         Tween *tween = bone->getTween();
         if(movementBoneData && movementBoneData->frameList.size() > 0)
         {
             _tweenList.pushBack(tween);
-            movementBoneData->duration = _movementData->duration;
+            movementBoneData->duration = _movementData.duration;
             tween->play(movementBoneData, durationTo, durationTween, loop, tweenEasing);
 
             tween->setProcessScale(_processScale);
@@ -295,7 +288,7 @@ void ArmatureAnimation::playWithIndexes(const std::vector<int>& movementIndexes,
 
 void ArmatureAnimation::gotoAndPlay(int frameIndex)
 {
-    if (!_movementData || frameIndex < 0 || frameIndex >= _movementData->duration)
+    if (!_movementData || frameIndex < 0 || frameIndex >= _movementData.duration)
     {
         CCLOG("Please ensure you have played a movement, and the frameIndex is in the range.");
         return;
@@ -308,7 +301,7 @@ void ArmatureAnimation::gotoAndPlay(int frameIndex)
     _isComplete = _isPause = false;
 
     ProcessBase::gotoFrame(frameIndex);
-    _currentPercent = (float)_curFrameIndex / ((float)_movementData->duration-1);
+    _currentPercent = (float)_curFrameIndex / ((float)_movementData.duration-1);
     _currentFrame = _nextFrameIndex * _currentPercent;
 
     

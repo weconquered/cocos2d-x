@@ -205,7 +205,7 @@ void TransformHelp::matrixToNode(const kmMat4 &matrix, BaseData &node)
 }
 
 
-void TransformHelp::nodeConcat(BaseData &target, BaseData &source)
+void TransformHelp::nodeConcat(BaseData &target, const BaseData &source)
 {
     target.x += source.x;
     target.y += source.y;
@@ -215,7 +215,7 @@ void TransformHelp::nodeConcat(BaseData &target, BaseData &source)
     target.scaleY += source.scaleY;
 }
 
-void TransformHelp::nodeSub(BaseData &target, BaseData &source)
+void TransformHelp::nodeSub(BaseData &target, const BaseData &source)
 {
     target.x -= source.x;
     target.y -= source.y;

@@ -169,8 +169,8 @@ public:
     virtual ColliderFilter *getColliderFilter();
 #endif
 
-    virtual void setBoneData(BoneData *boneData);
-    virtual BoneData *getBoneData() const;
+    virtual void setBoneData(const BoneData& boneData);
+    virtual const BoneData& getBoneData() const;
 
     virtual void setArmature(Armature *armature);
     virtual Armature *getArmature() const;
@@ -204,12 +204,12 @@ public:
     virtual void setBlendDirty(bool dirty) { _blendDirty = dirty; }
     virtual bool isBlendDirty(void) { return _blendDirty; }
 
-    virtual FrameData *getTweenData() const { return _tweenData; }
+    virtual const FrameData& getTweenData() const { return _tweenData; }
 
     virtual void setName(const std::string &name) { _name = name; }
     virtual const std::string getName() const { return _name; }
 
-    virtual BaseData *getWorldInfo() const { return _worldInfo; }
+    virtual const BaseData& getWorldInfo() const { return _worldInfo; }
 protected:
     void applyParentTransform(Bone *parent);
 
@@ -217,7 +217,7 @@ protected:
      *  The origin state of the Bone. Display's state is effected by _boneData, m_pNode, _tweenData
      *  when call setData function, it will copy from the BoneData.
      */
-    BoneData *_boneData;
+    BoneData _boneData;
 
     //! A weak reference to the Armature
     Armature *_armature;
@@ -239,7 +239,7 @@ protected:
     Tween *_tween;				//! Calculate tween effect
 
     //! Used for making tween effect in every frame
-    FrameData *_tweenData;
+    FrameData _tweenData;
 
     std::string _name;
 
@@ -249,7 +249,7 @@ protected:
     //! self Transform, use this to change display's state
     kmMat4 _worldTransform;
 
-    BaseData *_worldInfo;
+    BaseData _worldInfo;
     
     //! Armature's parent bone
     Bone *_armatureParentBone;

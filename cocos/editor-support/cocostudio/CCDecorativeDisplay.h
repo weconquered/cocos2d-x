@@ -56,16 +56,11 @@ public:
     virtual void setDisplay(cocos2d::Node *display);
     virtual cocos2d::Node *getDisplay() const { return _display; }
 
-    virtual void setDisplayData(DisplayData *data)
+    virtual void setDisplayData(const DisplayData& data)
     {
-        if (_displayData != data)
-        {
-            CC_SAFE_RETAIN(data);
-            CC_SAFE_RELEASE(_displayData);
-            _displayData = data; 
-        }
+        _displayData = data;
     }
-    virtual DisplayData *getDisplayData() const { return _displayData; }
+    virtual const DisplayData& getDisplayData() const { return _displayData; }
 
 #if ENABLE_PHYSICS_BOX2D_DETECT || ENABLE_PHYSICS_CHIPMUNK_DETECT || ENABLE_PHYSICS_SAVE_CALCULATED_VERTEX
     virtual void setColliderDetector(ColliderDetector *detector)
@@ -81,7 +76,7 @@ public:
 #endif
 protected:
     cocos2d::Node *_display;
-    DisplayData *_displayData;
+    DisplayData _displayData;
 
 #if ENABLE_PHYSICS_BOX2D_DETECT || ENABLE_PHYSICS_CHIPMUNK_DETECT || ENABLE_PHYSICS_SAVE_CALCULATED_VERTEX
     ColliderDetector *_colliderDetector;

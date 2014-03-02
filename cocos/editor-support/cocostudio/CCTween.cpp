@@ -290,72 +290,69 @@ void Tween::updateHandler()
     }
 }
 
-void Tween::setBetween(FrameData *from, FrameData *to, bool limit)
+void Tween::setBetween(const FrameData& from, const FrameData& to, bool limit)
 {
     do
     {
-        if(from->displayIndex < 0 && to->displayIndex >= 0)
+        if(from.displayIndex < 0 && to.displayIndex >= 0)
         {
-            _from->copy(to);
-            _between->subtract(to, to, limit);
+            _from = to;
+            _between.subtract(to, to, limit);
             break;
         }
-        else if(to->displayIndex < 0 && from->displayIndex >= 0)
+        else if(to.displayIndex < 0 && from.displayIndex >= 0)
         {
-            _from->copy(from);
-            _between->subtract(to, to, limit);
+            _from = from;
+            _between.subtract(to, to, limit);
             break;
         }
 
-        _from->copy(from);
-        _between->subtract(from, to, limit);
+        _from = from;
+        _between.subtract(from, to, limit);
     }
     while (0);
 
-    if (!from->isTween)
+    if (!from.isTween)
     {
-        _tweenData->copy(from);
-        _tweenData->isTween = true;
+        _tweenData = from;
+        _tweenData.isTween = true;
     }
 
     arriveKeyFrame(from);
 }
 
 
-void Tween::arriveKeyFrame(FrameData *keyFrameData)
+void Tween::arriveKeyFrame(const FrameData& keyFrameData)
 {
-    if(keyFrameData)
+    DisplayManager *displayManager = _bone->getDisplayManager();
+
+    //! Change bone's display
+    int displayIndex = keyFrameData->displayIndex;
+
+    if (!displayManager->isForceChangeDisplay())
     {
-        DisplayManager *displayManager = _bone->getDisplayManager();
+        displayManager->changeDisplayWithIndex(displayIndex, false);
+    }
 
-        //! Change bone's display
-        int displayIndex = keyFrameData->displayIndex;
+    //! Update bone zorder, bone's zorder is determined by frame zorder and bone zorder
+    _tweenData->zOrder = keyFrameData->zOrder;
+    _bone->updateZOrder();
 
-        if (!displayManager->isForceChangeDisplay())
+    //! Update blend type
+    _bone->setBlendFunc(keyFrameData->blendFunc);
+
+    //! Update child armature's movement
+    Armature *childAramture = _bone->getChildArmature();
+    if(childAramture)
+    {
+        if(keyFrameData->strMovement.length() != 0)
         {
-            displayManager->changeDisplayWithIndex(displayIndex, false);
-        }
-
-        //! Update bone zorder, bone's zorder is determined by frame zorder and bone zorder
-        _tweenData->zOrder = keyFrameData->zOrder;
-        _bone->updateZOrder();
-
-        //! Update blend type
-        _bone->setBlendFunc(keyFrameData->blendFunc);
-
-        //! Update child armature's movement
-        Armature *childAramture = _bone->getChildArmature();
-        if(childAramture)
-        {
-            if(keyFrameData->strMovement.length() != 0)
-            {
-                childAramture->getAnimation()->play(keyFrameData->strMovement.c_str());
-            }
+            childAramture->getAnimation()->play(keyFrameData->strMovement.c_str());
         }
     }
 }
 
-FrameData *Tween::tweenNodeTo(float percent, FrameData *node)
+FrameData Tween::tweenNodeTo(float percent, const FrameData& node)
 {
     node = node == nullptr ? _tweenData : node;
 

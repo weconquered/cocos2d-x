@@ -50,46 +50,22 @@ BaseData::BaseData()
     , b(255)
 {
 }
-
-BaseData::~BaseData()
+    
+void BaseData::subtract(const BaseData& from, const BaseData& to, bool limit)
 {
-}
+    x = to.x - from.x;
+    y = to.y - from.y;
+    scaleX = to.scaleX - from.scaleX;
+    scaleY = to.scaleY - from.scaleY;
+    skewX = to.skewX - from.skewX;
+    skewY = to.skewY - from.skewY;
 
-void BaseData::copy(BaseData* other)
-{
-    this->x = other->x;
-    this->y = other->y;
-    this->zOrder = other->zOrder;
-    
-    this->scaleX = other->scaleX;
-    this->scaleY = other->scaleY;
-    this->skewX = other->skewX;
-    this->skewY = other->skewY;
-    
-    this->tweenRotate = other->tweenRotate;
-    
-    this->isUseColorInfo = other->isUseColorInfo;
-    this->r = other->r;
-    this->g = other->g;
-    this->b = other->b;
-    this->a = other->a;
-}
-    
-void BaseData::subtract(BaseData *from, BaseData *to, bool limit)
-{
-    x = to->x - from->x;
-    y = to->y - from->y;
-    scaleX = to->scaleX - from->scaleX;
-    scaleY = to->scaleY - from->scaleY;
-    skewX = to->skewX - from->skewX;
-    skewY = to->skewY - from->skewY;
-
-    if(isUseColorInfo || from->isUseColorInfo || to->isUseColorInfo)
+    if(isUseColorInfo || from.isUseColorInfo || to.isUseColorInfo)
     {
-        a = to->a - from->a;
-        r = to->r - from->r;
-        g = to->g - from->g;
-        b = to->b - from->b;
+        a = to.a - from.a;
+        r = to.r - from.r;
+        g = to.g - from.g;
+        b = to.b - from.b;
 
         isUseColorInfo = true;
     }
@@ -120,10 +96,10 @@ void BaseData::subtract(BaseData *from, BaseData *to, bool limit)
         }
     }
 
-    if (to->tweenRotate)
+    if (to.tweenRotate)
     {
-        skewX += to->tweenRotate * M_PI * 2;
-        skewY -= to->tweenRotate * M_PI * 2;
+        skewX += to.tweenRotate * M_PI * 2;
+        skewY -= to.tweenRotate * M_PI * 2;
     }
 	
 }
@@ -142,12 +118,6 @@ Color4B BaseData::getColor()
 }
 
 //
-
-void DisplayData::copy(DisplayData* other)
-{
-    this->displayName = other->displayName;
-    this->displayType = other->displayType;
-}
     
 const std::string DisplayData::changeDisplayToTexture(const std::string& displayName)
 {
@@ -172,32 +142,13 @@ DisplayData::DisplayData(void)
 SpriteDisplayData::SpriteDisplayData()
 {
     displayType = CS_DISPLAY_SPRITE;
-    skinData = BaseData::create();
-    CC_SAFE_RETAIN(skinData);
 }
 
-SpriteDisplayData::~SpriteDisplayData()
-{
-    CC_SAFE_RELEASE(skinData);
-}
- 
-void SpriteDisplayData::copy(DisplayData *displayData)
-{
-    DisplayData::copy(displayData);
-    BaseData* skinData_ = dynamic_cast<SpriteDisplayData*>(displayData)->skinData;
-    if (skinData_)
-    {
-        CC_SAFE_RETAIN(skinData_);
-        CC_SAFE_RELEASE(this->skinData);
-        this->skinData = skinData_;
-    }
-}
 
 ArmatureDisplayData::ArmatureDisplayData(void)
 {
     displayType = CS_DISPLAY_ARMATURE;
 }
-
 
 ParticleDisplayData::ParticleDisplayData(void)
 {
@@ -210,21 +161,13 @@ BoneData::BoneData(void)
 {
 }
 
-BoneData::~BoneData(void)
+
+void BoneData::addDisplayData(const DisplayData& displayData)
 {
+    displayDataList.push_back(displayData);
 }
 
-bool BoneData::init()
-{
-    return true;
-}
-
-void BoneData::addDisplayData(DisplayData *displayData)
-{
-    displayDataList.pushBack(displayData);
-}
-
-DisplayData *BoneData::getDisplayData(int index)
+const DisplayData& BoneData::getDisplayData(int index) const
 {
     return displayDataList.at(index);
 }
@@ -235,23 +178,14 @@ ArmatureData::ArmatureData()
 {
 }
 
-ArmatureData::~ArmatureData()
+void ArmatureData::addBoneData(const BoneData& boneData)
 {
+    boneDataDic[boneData.name] = boneData;
 }
 
-bool ArmatureData::init()
+const BoneData& ArmatureData::getBoneData(const std::string& boneName) const
 {
-    return true;
-}
-
-void ArmatureData::addBoneData(BoneData *boneData)
-{
-    boneDataDic.insert(boneData->name, boneData);
-}
-
-BoneData *ArmatureData::getBoneData(const std::string& boneName)
-{
-    return static_cast<BoneData*>(boneDataDic.at(boneName));
+    return boneDataDic.at(boneName);
 }
 
 FrameData::FrameData(void)
@@ -271,37 +205,6 @@ FrameData::FrameData(void)
 {
 }
 
-FrameData::~FrameData(void)
-{
-    CC_SAFE_DELETE_ARRAY(easingParams);
-}
-
-void FrameData::copy(BaseData *baseData)
-{
-    BaseData::copy(baseData);
-    
-    if (const FrameData *frameData = dynamic_cast<const FrameData*>(baseData))
-    {
-        duration = frameData->duration;
-        displayIndex = frameData->displayIndex;
-        
-        tweenEasing = frameData->tweenEasing;
-        easingParamNumber = frameData->easingParamNumber;
-        
-        CC_SAFE_DELETE_ARRAY(easingParams);
-        if (easingParamNumber != 0)
-        {
-            easingParams = new float[easingParamNumber];
-            for (int i = 0; i<easingParamNumber; i++)
-            {
-                easingParams[i] = frameData->easingParams[i];
-            }
-        }
-
-        blendFunc = frameData->blendFunc;
-    }
-}
-
 MovementBoneData::MovementBoneData()
     : delay(0.0f)
     , scale(1.0f)
@@ -310,26 +213,15 @@ MovementBoneData::MovementBoneData()
 {
 }
 
-MovementBoneData::~MovementBoneData(void)
+void MovementBoneData::addFrameData(const FrameData& frameData)
 {
+    frameList.push_back(frameData);
 }
 
-bool MovementBoneData::init()
-{
-    return true;
-}
-
-void MovementBoneData::addFrameData(FrameData *frameData)
-{
-    frameList.pushBack(frameData);
-}
-
-FrameData *MovementBoneData::getFrameData(int index)
+const FrameData& MovementBoneData::getFrameData(int index) const
 {
     return frameList.at(index);
 }
-
-
 
 MovementData::MovementData(void)
     : name("")
@@ -342,62 +234,35 @@ MovementData::MovementData(void)
 {
 }
 
-MovementData::~MovementData(void)
+void MovementData::addMovementBoneData(const MovementBoneData& movBoneData)
 {
+    movBoneDataDic[movBoneData.name] = movBoneData;
 }
 
-void MovementData::addMovementBoneData(MovementBoneData *movBoneData)
-{
-    movBoneDataDic.insert(movBoneData->name, movBoneData);
-}
-
-MovementBoneData *MovementData::getMovementBoneData(const std::string& boneName)
+const MovementBoneData& MovementData::getMovementBoneData(const std::string& boneName) const
 {
     return movBoneDataDic.at(boneName);
 }
 
 
-
-AnimationData::AnimationData(void)
+void AnimationData::addMovement(const MovementData& movData)
 {
+    movementDataDic[movData.name] = movData;
+    movementNames.push_back(movData.name);
 }
 
-AnimationData::~AnimationData(void)
-{
-}
-
-void AnimationData::addMovement(MovementData *movData)
-{
-    movementDataDic.insert(movData->name, movData);
-    movementNames.push_back(movData->name);
-}
-
-MovementData *AnimationData::getMovement(const std::string& movementName)
+const MovementData& AnimationData::getMovement(const std::string& movementName) const
 {
     return movementDataDic.at(movementName);
 }
 
-ssize_t AnimationData::getMovementCount()
+ssize_t AnimationData::getMovementCount() const
 {
     return movementDataDic.size();
 }
 
 
-
-ContourData::ContourData()
-{
-}
-
-ContourData::~ContourData()
-{
-}
-
-bool ContourData::init()
-{
-    return true;
-}
-
-void ContourData::addVertex(Point &vertex)
+void ContourData::addVertex(const Point &vertex)
 {
     vertexList.push_back(vertex);
 }
@@ -411,21 +276,12 @@ TextureData::TextureData()
 {
 }
 
-TextureData::~TextureData()
+void TextureData::addContourData(const ContourData& contourData)
 {
+    contourDataList.push_back(contourData);
 }
 
-bool TextureData::init()
-{
-    return true;
-}
-
-void TextureData::addContourData(ContourData *contourData)
-{
-    contourDataList.pushBack(contourData);
-}
-
-ContourData *TextureData::getContourData(int index)
+const ContourData& TextureData::getContourData(int index) const
 {
     return contourDataList.at(index);
 }

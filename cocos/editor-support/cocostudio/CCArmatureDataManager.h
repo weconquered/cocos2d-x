@@ -168,9 +168,9 @@ public:
     bool isAutoLoadSpriteFile();
 
 
-    const cocos2d::Map<std::string, ArmatureData*>&     getArmatureDatas() const;
-    const cocos2d::Map<std::string, AnimationData*>&    getAnimationDatas() const;
-    const cocos2d::Map<std::string, TextureData*>&      getTextureDatas() const;
+    const std::unordered_map<std::string, ArmatureData>&     getArmatureDatas() const;
+    const std::unordered_map<std::string, AnimationData>&    getAnimationDatas() const;
+    const std::unordered_map<std::string, TextureData>&      getTextureDatas() const;
 
 protected:
     void addRelativeData(const std::string& configFilePath);
@@ -181,21 +181,21 @@ private:
      *  @key	std::string
      *  @value	ArmatureData *
      */
-    cocos2d::Map<std::string, ArmatureData*> _armarureDatas;
+    std::unordered_map<std::string, ArmatureData> _armarureDatas;
 
     /**
      *	@brief	save animation datas
      *  @key	std::string
      *  @value	AnimationData *
      */
-    cocos2d::Map<std::string, AnimationData*> _animationDatas;
+    std::unordered_map<std::string, AnimationData> _animationDatas;
 
     /**
      *	@brief	save texture datas
      *  @key	std::string
      *  @value	TextureData *
      */
-    cocos2d::Map<std::string, TextureData*> _textureDatas;
+    std::unordered_map<std::string, TextureData> _textureDatas;
 
     bool _autoLoadSpriteFile;
 

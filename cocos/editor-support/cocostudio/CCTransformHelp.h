@@ -51,8 +51,8 @@ public:
     static void matrixToNode(const cocos2d::AffineTransform &_matrix, BaseData &_node);
     static void matrixToNode(const kmMat4 &_matrix, BaseData &_node);
 
-    static void nodeConcat(BaseData &target, BaseData &source);
-    static void nodeSub(BaseData &target, BaseData &source);
+    static void nodeConcat(BaseData &target, const BaseData &source);
+    static void nodeSub(BaseData &target, const BaseData &source);
 public:
     static cocos2d::AffineTransform helpMatrix1;
     static cocos2d::AffineTransform helpMatrix2;

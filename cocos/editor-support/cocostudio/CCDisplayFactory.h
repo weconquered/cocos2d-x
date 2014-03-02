@@ -28,6 +28,11 @@ THE SOFTWARE.
 #include "cocostudio/CCArmatureDefine.h"
 #include "cocostudio/CCDatas.h"
 
+namespace cocos2d
+{
+    class Node;
+};
+
 namespace cocostudio {
 
 class Skin;

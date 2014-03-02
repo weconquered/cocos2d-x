@@ -62,11 +62,9 @@ Bone *Bone::create(const std::string& name)
 
 Bone::Bone()
 {
-    _tweenData = nullptr;
     _parentBone = nullptr;
     _armature = nullptr;
     _childArmature = nullptr;
-    _boneData = nullptr;
     _tween = nullptr;
     _tween = nullptr;
     _displayManager = nullptr;
@@ -76,7 +74,6 @@ Bone::Bone()
     _boneTransformDirty = true;
     _blendFunc = BlendFunc::ALPHA_NON_PREMULTIPLIED;
     _blendDirty = false;
-    _worldInfo = nullptr;
 
     _armatureParentBone = nullptr;
     _dataVersion = 0;
@@ -85,12 +82,8 @@ Bone::Bone()
 
 Bone::~Bone(void)
 {
-    CC_SAFE_RELEASE(_tweenData);
     CC_SAFE_RELEASE(_tween);
     CC_SAFE_RELEASE(_displayManager);
-    CC_SAFE_RELEASE(_worldInfo);
-
-    CC_SAFE_RELEASE_NULL(_boneData);
 
     CC_SAFE_RELEASE(_childArmature);
 }
@@ -109,10 +102,6 @@ bool Bone::init(const std::string& name)
 
         _name = name;
 
-        CC_SAFE_RELEASE(_tweenData);
-        _tweenData = FrameData::create();
-        CC_SAFE_RETAIN(_tweenData);
-
         CC_SAFE_RELEASE(_tween);
         _tween = Tween::create(this);
         CC_SAFE_RETAIN(_tween);
@@ -120,14 +109,6 @@ bool Bone::init(const std::string& name)
         CC_SAFE_RELEASE(_displayManager);
         _displayManager = DisplayManager::create(this);
         CC_SAFE_RETAIN(_displayManager);
-        
-        CC_SAFE_RELEASE(_worldInfo);
-        _worldInfo = BaseData::create();
-        CC_SAFE_RETAIN(_worldInfo);
-
-        CC_SAFE_RELEASE(_boneData);
-        _boneData = BoneData::create();
-        CC_SAFE_RETAIN(_boneData);
 
         bRet = true;
     }
@@ -136,24 +117,17 @@ bool Bone::init(const std::string& name)
     return bRet;
 }
 
-void Bone::setBoneData(BoneData *boneData)
+void Bone::setBoneData(const BoneData& boneData)
 {
-    CCASSERT(nullptr != boneData, "_boneData must not be nullptr");
+    _boneData = boneData;
 
-    if (_boneData != boneData)
-    {
-        CC_SAFE_RETAIN(boneData);
-        CC_SAFE_RELEASE(_boneData);
-        _boneData = boneData;
-    }
-
-    _name = _boneData->name;
-    _localZOrder = _boneData->zOrder;
+    _name = _boneData.name;
+    _localZOrder = _boneData.zOrder;
 
     _displayManager->initDisplayList(boneData);
 }
 
-BoneData *Bone::getBoneData() const
+const BoneData& Bone::getBoneData() const
 {
     return _boneData;
 }
@@ -193,19 +167,19 @@ void Bone::update(float delta)
     {
         if (_dataVersion >= VERSION_COMBINED)
         {
-            TransformHelp::nodeConcat(*_tweenData, *_boneData);
-            _tweenData->scaleX -= 1;
-            _tweenData->scaleY -= 1;
+            TransformHelp::nodeConcat(*_tweenData, _boneData);
+            _tweenData.scaleX -= 1;
+            _tweenData.scaleY -= 1;
         }
 
-        _worldInfo->copy(_tweenData);
+        _worldInfo.copy(_tweenData);
 
-        _worldInfo->x = _tweenData->x + _position.x;
-        _worldInfo->y = _tweenData->y + _position.y;
-        _worldInfo->scaleX = _tweenData->scaleX * _scaleX;
-        _worldInfo->scaleY = _tweenData->scaleY * _scaleY;
-        _worldInfo->skewX = _tweenData->skewX + _skewX + _rotationX;
-        _worldInfo->skewY = _tweenData->skewY + _skewY - _rotationY;
+        _worldInfo.x = _tweenData.x + _position.x;
+        _worldInfo.y = _tweenData.y + _position.y;
+        _worldInfo.scaleX = _tweenData.scaleX * _scaleX;
+        _worldInfo.scaleY = _tweenData.scaleY * _scaleY;
+        _worldInfo.skewX = _tweenData.skewX + _skewX + _rotationX;
+        _worldInfo.skewY = _tweenData.skewY + _skewY - _rotationY;
 
         if(_parentBone)
         {
@@ -239,14 +213,14 @@ void Bone::update(float delta)
 
 void Bone::applyParentTransform(Bone *parent) 
 {
-    float x = _worldInfo->x;
-    float y = _worldInfo->y;
-    _worldInfo->x = x * parent->_worldTransform.mat[0] + y * parent->_worldTransform.mat[4] + parent->_worldInfo->x;
-    _worldInfo->y = x * parent->_worldTransform.mat[1] + y * parent->_worldTransform.mat[5] + parent->_worldInfo->y;
-    _worldInfo->scaleX = _worldInfo->scaleX * parent->_worldInfo->scaleX;
-    _worldInfo->scaleY = _worldInfo->scaleY * parent->_worldInfo->scaleY;
-    _worldInfo->skewX = _worldInfo->skewX + parent->_worldInfo->skewX;
-    _worldInfo->skewY = _worldInfo->skewY + parent->_worldInfo->skewY;
+    float x = _worldInfo.x;
+    float y = _worldInfo.y;
+    _worldInfo.x = x * parent->_worldTransform.mat[0] + y * parent->_worldTransform.mat[4] + parent->_worldInfo.x;
+    _worldInfo.y = x * parent->_worldTransform.mat[1] + y * parent->_worldTransform.mat[5] + parent->_worldInfo.y;
+    _worldInfo.scaleX = _worldInfo.scaleX * parent->_worldInfo.scaleX;
+    _worldInfo.scaleY = _worldInfo.scaleY * parent->_worldInfo.scaleY;
+    _worldInfo.skewX = _worldInfo.skewX + parent->_worldInfo.skewX;
+    _worldInfo.skewY = _worldInfo.skewY + parent->_worldInfo.skewY;
 }
 
 
@@ -276,8 +250,8 @@ void Bone::updateColor()
     Node *display = _displayManager->getDisplayRenderNode();
     if(display != nullptr)
     {
-        display->setColor(Color3B(_displayedColor.r * _tweenData->r / 255, _displayedColor.g * _tweenData->g / 255, _displayedColor.b * _tweenData->b / 255));
-        display->setOpacity(_displayedOpacity * _tweenData->a / 255);
+        display->setColor(Color3B(_displayedColor.r * _tweenData.r / 255, _displayedColor.g * _tweenData.g / 255, _displayedColor.b * _tweenData.b / 255));
+        display->setOpacity(_displayedOpacity * _tweenData.a / 255);
     }
 }
 
@@ -285,12 +259,12 @@ void Bone::updateZOrder()
 {
     if (_dataVersion >= VERSION_COMBINED)
     {
-        int zorder = _tweenData->zOrder + _boneData->zOrder;
+        int zorder = _tweenData.zOrder + _boneData->zOrder;
         setLocalZOrder(zorder);
     }
     else
     {
-        setLocalZOrder(_tweenData->zOrder);
+        setLocalZOrder(_tweenData.zOrder);
     }
 }
 

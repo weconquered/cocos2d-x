@@ -27,6 +27,8 @@ THE SOFTWARE.
 
 #include "cocostudio/CCArmatureDefine.h"
 #include "cocostudio/CCDatas.h"
+#include "CCRef.h"
+#include "CCVector.h"
 
 #ifndef PT_RATIO
 #define PT_RATIO 32
@@ -38,7 +40,6 @@ THE SOFTWARE.
 #elif ENABLE_PHYSICS_BOX2D_DETECT
 #include "Box2D/Box2D.h"
 #endif
-
 
 namespace cocostudio {
 
@@ -88,10 +89,10 @@ protected:
 class ColliderBody : public cocos2d::Ref
 {
 public:
-    ColliderBody(ContourData *contourData);
+    ColliderBody(const ContourData& contourData);
     ~ColliderBody();
 
-    inline ContourData *getContourData() { return _contourData; }
+    inline const ContourData& getContourData() { return _contourData; }
 
 #if ENABLE_PHYSICS_BOX2D_DETECT || ENABLE_PHYSICS_CHIPMUNK_DETECT 
     void setColliderFilter(ColliderFilter *filter);
@@ -120,7 +121,7 @@ private:
     std::vector<cocos2d::Point> _calculatedVertexList;
 #endif
 
-    ContourData *_contourData;
+    ContourData _contourData;
 
     friend class ColliderDetector;
 };
@@ -150,7 +151,7 @@ public:
     virtual bool init(Bone *bone);
 
     void addContourData(ContourData *contourData);
-    void addContourDataList(cocos2d::Vector<ContourData*> &contourDataList);
+    void addContourDataList(const std::vector<ContourData> &contourDataList);
 
     void removeContourData(ContourData *contourData);
     void removeAll();
