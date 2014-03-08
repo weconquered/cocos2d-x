@@ -364,6 +364,10 @@ struct ScriptEvent
 class CC_DLL ScriptEngineProtocol
 {
 public:
+    ScriptEngineProtocol()
+    : _callFromScript(false)
+    {};
+    
     /**
      * @js NA
      * @lua NA
@@ -435,6 +439,9 @@ public:
      */
     virtual bool handleAssert(const char *msg) = 0;
     
+    void setCalledFromScript(bool callFromScript) { _callFromScript = callFromScript; };
+    bool isCalledFromScript() { return _callFromScript; };
+    
     enum class ConfigType
     {
         NONE,
@@ -442,6 +449,9 @@ public:
     };
     /** Parse configuration file */
     virtual bool parseConfig(ConfigType type, const std::string& str) = 0;
+    
+private:
+    bool _callFromScript;
 };
 
 /**

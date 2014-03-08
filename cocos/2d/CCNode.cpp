@@ -984,21 +984,34 @@ kmMat4 Node::transform(const kmMat4& parentTransform)
 
 void Node::onEnter()
 {
-    _isTransitionFinished = false;
-
 #if CC_ENABLE_SCRIPT_BINDING
     if (_scriptType != kScriptTypeNone)
     {
-        int action = kNodeOnEnter;
-        BasicScriptData data(this,(void*)&action);
-        ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
-        ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
+        auto scriptEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+        if (!scriptEngine->isCalledFromScript())
+        {
+            int action = kNodeOnEnter;
+            BasicScriptData data(this,(void*)&action);
+            ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
+            
+            scriptEngine->setCalledFromScript(false);
+            
+            int ret = ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
+            if (ret)
+                return;
+            else
+                log("ret = 0");
+        }
     }
+    
 #endif
+    
+    log("native node onenter. %p", this);
+    _isTransitionFinished = false;
     
     for( const auto &child: _children)
         child->onEnter();
-
+    
     this->resume();
     
     _running = true;
@@ -1006,56 +1019,73 @@ void Node::onEnter()
 
 void Node::onEnterTransitionDidFinish()
 {
-    _isTransitionFinished = true;
-
 #if CC_ENABLE_SCRIPT_BINDING
     if (_scriptType != kScriptTypeNone)
     {
-        int action = kNodeOnEnterTransitionDidFinish;
-        BasicScriptData data(this,(void*)&action);
-        ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
-        ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
+        auto scriptEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+        if (!scriptEngine->isCalledFromScript())
+        {
+            int action = kNodeOnEnterTransitionDidFinish;
+            BasicScriptData data(this,(void*)&action);
+            ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
+            scriptEngine->setCalledFromScript(false);
+            int ret = ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
+            if (ret)
+                return;
+        }
     }
 #endif
-    
+    _isTransitionFinished = true;
     for( const auto &child: _children)
         child->onEnterTransitionDidFinish();
 }
 
 void Node::onExitTransitionDidStart()
 {
-    for( const auto &child: _children)
-        child->onExitTransitionDidStart();
-
 #if CC_ENABLE_SCRIPT_BINDING
     if (_scriptType != kScriptTypeNone)
     {
-        int action = kNodeOnExitTransitionDidStart;
-        BasicScriptData data(this,(void*)&action);
-        ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
-        ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
+        auto scriptEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+        if (!scriptEngine->isCalledFromScript())
+        {
+            int action = kNodeOnExitTransitionDidStart;
+            BasicScriptData data(this,(void*)&action);
+            ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
+            scriptEngine->setCalledFromScript(false);
+            int ret = ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
+            if (ret)
+                return;
+        }
     }
 #endif
+    for( const auto &child: _children)
+        child->onExitTransitionDidStart();
 }
 
 void Node::onExit()
 {
-    this->pause();
-
-    _running = false;
-
-    for( const auto &child: _children)
-        child->onExit();
-    
 #if CC_ENABLE_SCRIPT_BINDING
     if (_scriptType != kScriptTypeNone)
     {
-        int action = kNodeOnExit;
-        BasicScriptData data(this,(void*)&action);
-        ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
-        ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
+        auto scriptEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+        if (!scriptEngine->isCalledFromScript())
+        {
+            int action = kNodeOnExit;
+            BasicScriptData data(this,(void*)&action);
+            ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
+            scriptEngine->setCalledFromScript(false);
+            int ret = ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
+            if (ret)
+                return;
+        }
     }
 #endif
+    this->pause();
+    
+    _running = false;
+    
+    for( const auto &child: _children)
+        child->onExit();
 }
 
 void Node::setEventDispatcher(EventDispatcher* dispatcher)
